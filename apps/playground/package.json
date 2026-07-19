@@ -1,0 +1,14 @@
+{
+	"name": "playground",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Live in-browser markdown editor / demo. Stub.",
+	"scripts": {
+		"dev": "echo \"TODO: playground app not implemented yet\" && exit 0",
+		"build": "echo \"TODO: playground app not implemented yet\" && exit 0"
+	},
+	"dependencies": {
+		"@basemark/core": "workspace:*",
+		"@basemark/react": "workspace:*"
+	}
+}

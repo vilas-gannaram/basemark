@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>basemark — vanilla example</title>
+</head>
+<body>
+	<div id="content"></div>
+
+	<!--
+		TODO: this currently can't run as-is — @basemark/core ships TS source
+		with no browser-ready build yet. Once core has a real ESM build output,
+		import it here directly (no bundler) to prove the zero-build claim:
+
+		<script type="module">
+			import { createRegistry } from '@basemark/core';
+			// ... register web components, parse markdown, mount into #content
+		</script>
+	-->
+</body>
+</html>

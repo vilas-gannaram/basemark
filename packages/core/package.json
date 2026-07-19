@@ -1,0 +1,12 @@
+{
+	"name": "@basemark/core",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Markdown + directive parser and component registry — framework-agnostic",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"scripts": {
+		"check-types": "tsc --noEmit"
+	}
+}

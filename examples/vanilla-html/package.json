@@ -1,0 +1,9 @@
+{
+	"name": "example-vanilla-html",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Zero-build proof point: renders basemark output with no framework, no bundler.",
+	"scripts": {
+		"dev": "npx --yes serve ."
+	}
+}

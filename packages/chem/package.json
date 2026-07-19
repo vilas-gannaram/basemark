@@ -1,0 +1,12 @@
+{
+	"name": "@basemark/chem",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Chem domain components (rdkit, smiles, reactions) — stub, pending core validation",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"dependencies": {
+		"@basemark/core": "workspace:*"
+	}
+}
