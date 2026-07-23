@@ -55,26 +55,6 @@ importers:
 
   configs/vitest-config: {}
 
-  examples/react-vite:
-    dependencies:
-      '@basemark/react':
-        specifier: workspace:*
-        version: link:../../packages/react
-
-  examples/solid-start:
-    dependencies:
-      '@basemark/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-
-  examples/svelte-kit:
-    dependencies:
-      '@basemark/svelte':
-        specifier: workspace:*
-        version: link:../../packages/svelte
-
-  examples/vanilla-html: {}
-
   packages/bio:
     dependencies:
       '@basemark/core':

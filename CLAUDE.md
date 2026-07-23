@@ -24,9 +24,9 @@ Known open question: SSR/hydration behavior of the web components (shadow DOM vs
 - `packages/react`, `packages/svelte` — framework bindings (stub)
 - `packages/cli` — build/render tooling (stub)
 - `apps/docs`, `apps/playground` — docs site and live editor (stub)
-- `examples/*` — per-framework integration demos; `vanilla-html` is the zero-build proof point (currently blocked — core has no browser-ready build output yet)
-- `experiments/` — POCs only. Nothing in `packages/`, `apps/`, or `examples/` may depend on this directory. No stability or deprecation guarantees.
 - `configs/*` — shared eslint/tsconfig/vitest config, not published (currently stubs; packages don't extend them yet)
+
+`examples/` and `experiments/` have been removed for now; re-add them later if needed.
 
 ## Commands
 

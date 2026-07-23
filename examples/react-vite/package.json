@@ -1,9 +1,0 @@
-{
-	"name": "example-react-vite",
-	"version": "0.0.0",
-	"private": true,
-	"description": "React + Vite integration example. Stub, pending @basemark/react.",
-	"dependencies": {
-		"@basemark/react": "workspace:*"
-	}
-}

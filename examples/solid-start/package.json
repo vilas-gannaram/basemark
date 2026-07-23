@@ -1,9 +1,0 @@
-{
-	"name": "example-solid-start",
-	"version": "0.0.0",
-	"private": true,
-	"description": "SolidStart integration example. Stub, pending a @basemark/solid binding (or direct web-component usage).",
-	"dependencies": {
-		"@basemark/core": "workspace:*"
-	}
-}
