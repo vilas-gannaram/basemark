@@ -43,6 +43,10 @@ export class ComponentRegistry {
 	resolve(name: string): ComponentDefinition | undefined {
 		return this.entries.get(name);
 	}
+
+	list(): Array<[string, ComponentDefinition]> {
+		return [...this.entries];
+	}
 }
 
 export function createRegistry(): ComponentRegistry {
