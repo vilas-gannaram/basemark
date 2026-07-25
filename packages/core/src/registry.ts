@@ -1,10 +1,18 @@
 export interface PropSchema {
 	type: 'string' | 'number' | 'boolean';
 	required?: boolean;
+	// What this prop means and how to fill it in — shown to AI authors via
+	// generateSystemPrompt(), not just a type constraint.
+	description?: string;
 }
 
 export interface ComponentDefinition {
 	tag: string;
+	// Human/AI-facing name and explanation of what the component renders and
+	// when to use it — required so generateSystemPrompt() output is more than
+	// a bare type signature.
+	title: string;
+	description: string;
 	schema?: Record<string, PropSchema>;
 }
 

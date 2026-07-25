@@ -1,16 +1,19 @@
-import type { ComponentRegistry, PropSchema } from './registry';
+import type { ComponentDefinition, ComponentRegistry, PropSchema } from './registry';
 
 function describeProp(name: string, schema: PropSchema): string {
-	return `${name}: ${schema.type}${schema.required ? ' (required)' : ' (optional)'}`;
+	const requirement = schema.required ? 'required' : 'optional';
+	const summary = `${name} (${schema.type}, ${requirement})`;
+	return schema.description ? `  - ${summary}: ${schema.description}` : `  - ${summary}`;
 }
 
-function describeComponent(name: string, schema: Record<string, PropSchema> | undefined): string {
-	const props = schema
-		? Object.entries(schema)
-				.map(([propName, propSchema]) => `  - ${describeProp(propName, propSchema)}`)
+function describeComponent(name: string, definition: ComponentDefinition): string {
+	const props = definition.schema
+		? Object.entries(definition.schema)
+				.map(([propName, propSchema]) => describeProp(propName, propSchema))
 				.join('\n')
 		: '  (no props)';
-	return `::${name}{...}\n${props}`;
+
+	return `## ${definition.title} (::${name})\n${definition.description}\n\n::${name}{...}\n${props}`;
 }
 
 // Per ARCHITECTURE.md §5: derive the AI-facing component reference from the
@@ -22,10 +25,10 @@ export function generateSystemPrompt(registry: ComponentRegistry): string {
 
 	const intro = [
 		'You can embed components in markdown using leaf directive syntax: ::name{attr="value" ...}',
-		'Only use the components and props listed below — do not invent new ones.',
+		'Only use the components and props listed below — do not invent new ones. Read each description before choosing a component.',
 	].join('\n');
 
-	const body = components.map(([name, definition]) => describeComponent(name, definition.schema)).join('\n\n');
+	const body = components.map(([name, definition]) => describeComponent(name, definition)).join('\n\n');
 
 	return `${intro}\n\n${body}`;
 }

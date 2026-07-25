@@ -63,10 +63,28 @@ export function registerBioComponents(registry: ComponentRegistry): void {
 	}
 	registry.register('locuszoom-assoc', {
 		tag: LOCUSZOOM_ASSOC_TAG,
+		title: 'GWAS Association Plot (LocusZoom)',
+		description:
+			'Renders an interactive regional association plot for a genomic locus: GWAS -log10(p-value) points colored by ' +
+			'linkage disequilibrium (LD), a recombination-rate overlay, and a gene track for the region. Use this when the ' +
+			'author wants to show the association signal and gene context around a specific locus (e.g. a GWAS hit or a ' +
+			'gene of interest), not for genome-wide or multi-locus comparisons.',
 		schema: {
-			chrom: { type: 'string', required: true },
-			start: { type: 'number', required: true },
-			end: { type: 'number', required: true },
+			chrom: {
+				type: 'string',
+				required: true,
+				description: 'Chromosome name, without a "chr" prefix (e.g. "10").',
+			},
+			start: {
+				type: 'number',
+				required: true,
+				description: 'Start position of the region to plot, in base pairs (GRCh37 coordinates).',
+			},
+			end: {
+				type: 'number',
+				required: true,
+				description: 'End position of the region to plot, in base pairs (GRCh37 coordinates). Must be greater than start.',
+			},
 		},
 	});
 }
