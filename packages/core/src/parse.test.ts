@@ -14,6 +14,7 @@ describe('parseMarkdown', () => {
 		const registry = createRegistry();
 		registry.register('locuszoom-assoc', {
 			tag: 'basemark-locuszoom-assoc',
+			domain: 'bio',
 			title: 'GWAS Association Plot (LocusZoom)',
 			description: 'Renders an interactive regional association plot for a genomic locus.',
 			schema: {
@@ -44,6 +45,7 @@ describe('parseMarkdown', () => {
 		const registry = createRegistry();
 		registry.register('locuszoom-assoc', {
 			tag: 'basemark-locuszoom-assoc',
+			domain: 'bio',
 			title: 'GWAS Association Plot (LocusZoom)',
 			description: 'Renders an interactive regional association plot for a genomic locus.',
 			schema: { chrom: { type: 'string', required: true } },

@@ -8,6 +8,10 @@ export interface PropSchema {
 
 export interface ComponentDefinition {
 	tag: string;
+	// Which pack this component belongs to (e.g. "bio", "chem", "common") —
+	// lets generateSystemPrompt() scope its index to one domain instead of
+	// the whole registry as more packs get built out.
+	domain: string;
 	// Human/AI-facing name and explanation of what the component renders and
 	// when to use it — required so generateSystemPrompt() output is more than
 	// a bare type signature.

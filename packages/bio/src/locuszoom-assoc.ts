@@ -63,6 +63,7 @@ export function registerBioComponents(registry: ComponentRegistry): void {
 	}
 	registry.register('locuszoom-assoc', {
 		tag: LOCUSZOOM_ASSOC_TAG,
+		domain: 'bio',
 		title: 'GWAS Association Plot (LocusZoom)',
 		description:
 			'Renders an interactive regional association plot for a genomic locus: GWAS -log10(p-value) points colored by ' +
