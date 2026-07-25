@@ -6,7 +6,13 @@ import { MarkdownRenderer } from '@basemark/react';
 const registry = createRegistry();
 registerBioComponents(registry);
 
-const source = '::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}';
+const source = [
+	'::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}',
+	'',
+	'::locuszoom-gwas-catalog{chrom="9" start="21751670" end="22351670"}',
+	'',
+	'::locuszoom-phewas{variant="10:114758349_C/T"}',
+].join('\n');
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root element not found');
