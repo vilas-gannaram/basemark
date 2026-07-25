@@ -23,7 +23,9 @@ export function generateSystemPrompt(registry: ComponentRegistry): string {
 	const intro = [
 		'You can embed components in markdown using leaf directive syntax: ::name{attr="value" ...}',
 		'Only use the components and props listed below — do not invent new ones.',
-	];
+	].join('\n');
 
-	return [...intro, '', ...components.map(([name, definition]) => describeComponent(name, definition.schema))].join('\n\n');
+	const body = components.map(([name, definition]) => describeComponent(name, definition.schema)).join('\n\n');
+
+	return `${intro}\n\n${body}`;
 }
