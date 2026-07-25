@@ -10,8 +10,10 @@
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
+		"3dmol": "^2.5.5",
 		"@basemark/core": "workspace:*",
-		"locuszoom": "^0.14.0"
+		"locuszoom": "^0.14.0",
+		"protvista-uniprot": "^4.9.3"
 	},
 	"devDependencies": {
 		"@basemark/tsconfig-base": "workspace:*"

@@ -7,6 +7,10 @@ const registry = createRegistry();
 registerBioComponents(registry);
 
 const source = [
+	'::protvista{accession="P05067"}',
+	'',
+	'::structure{pdbid="1cbs"}',
+	'',
 	'::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}',
 	'',
 	'::locuszoom-gwas-catalog{chrom="9" start="21751670" end="22351670"}',
