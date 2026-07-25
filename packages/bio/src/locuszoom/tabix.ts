@@ -41,7 +41,10 @@ const TabixElement = createLocusZoomElement({
 	observedAttrs: OBSERVED_ATTRS,
 	buildDataSources: () =>
 		new LocusZoom.DataSources()
-			.add('assoc', ['TabixUrlSource', { url_data: `${TABIX_DEMO_BASE}gwas_giant-bmi_meta_women-only.gz`, parser_func: gwasParser, overfetch: 0 }])
+			.add('assoc', [
+				'TabixUrlSource',
+				{ url_data: `${TABIX_DEMO_BASE}gwas_giant-bmi_meta_women-only.gz`, parser_func: gwasParser, overfetch: 0 },
+			])
 			.add('ld', ['UserTabixLD', { url_data: `${TABIX_DEMO_BASE}plink.ld.tab.gz`, parser_func: ldParser }])
 			.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
 			.add('intervals', ['TabixUrlSource', { url_data: `${TABIX_DEMO_BASE}DFF622JQK.bed.bgz`, parser_func: bedParser, overfetch: 0.25 }])

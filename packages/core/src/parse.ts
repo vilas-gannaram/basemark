@@ -34,31 +34,35 @@ function markAsError(node: Directives, source: string, directive: string, messag
 // instead of failing silently (§3, mitigation #4: "fail visibly").
 export const resolveDirectives: Plugin<[ComponentRegistry], MdastRoot> = (registry) => {
 	return (tree, file) => {
-		visit(tree, (node) => DIRECTIVE_TYPES.includes(node.type as (typeof DIRECTIVE_TYPES)[number]), (untypedNode) => {
-			const node = untypedNode as Directives;
-			const raw = node.position ? String(file.value).slice(node.position.start.offset, node.position.end.offset) : '';
-			const definition = registry.resolve(node.name);
+		visit(
+			tree,
+			(node) => DIRECTIVE_TYPES.includes(node.type as (typeof DIRECTIVE_TYPES)[number]),
+			(untypedNode) => {
+				const node = untypedNode as Directives;
+				const raw = node.position ? String(file.value).slice(node.position.start.offset, node.position.end.offset) : '';
+				const definition = registry.resolve(node.name);
 
-			if (!definition) {
-				markAsError(node, raw, node.name, `Unknown component "${node.name}"`);
-				return;
-			}
+				if (!definition) {
+					markAsError(node, raw, node.name, `Unknown component "${node.name}"`);
+					return;
+				}
 
-			const attributes = node.attributes ?? {};
-			const props: Record<string, string | number | boolean> = {};
-			for (const [key, value] of Object.entries(attributes)) {
-				if (value == null) continue;
-				props[key] = coerceValue(value, definition.schema?.[key]?.type);
-			}
+				const attributes = node.attributes ?? {};
+				const props: Record<string, string | number | boolean> = {};
+				for (const [key, value] of Object.entries(attributes)) {
+					if (value == null) continue;
+					props[key] = coerceValue(value, definition.schema?.[key]?.type);
+				}
 
-			const errors = validateProps(definition.schema, props);
-			if (errors.length > 0) {
-				markAsError(node, raw, node.name, errors.join('; '));
-				return;
-			}
+				const errors = validateProps(definition.schema, props);
+				if (errors.length > 0) {
+					markAsError(node, raw, node.name, errors.join('; '));
+					return;
+				}
 
-			node.data = { ...node.data, hName: definition.tag, hProperties: props };
-		});
+				node.data = { ...node.data, hName: definition.tag, hProperties: props };
+			},
+		);
 	};
 };
 

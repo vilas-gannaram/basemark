@@ -38,7 +38,7 @@ export function registerGwasCatalog(registry: ComponentRegistry): void {
 			'Same regional association plot as locuszoom-assoc (points colored by LD, recombination-rate overlay, gene ' +
 			'track), plus known significant hits from the NHGRI-EBI GWAS Catalog labeled directly on the plot. Use this ' +
 			'when the author wants to relate a signal to previously published GWAS hits in the same region — prefer ' +
-			'locuszoom-assoc if that catalog context isn\'t needed, since this adds an extra data source and can be busier.',
+			"locuszoom-assoc if that catalog context isn't needed, since this adds an extra data source and can be busier.",
 		schema: {
 			chrom: {
 				type: 'string',

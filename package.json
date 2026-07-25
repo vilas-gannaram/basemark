@@ -10,6 +10,8 @@
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
 		"lint": "turbo run lint && eslint .",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
 		"prepare": "husky"
 	},
 	"keywords": [],
@@ -21,6 +23,7 @@
 		"eslint": "^10.7.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^17.1.1",
+		"prettier": "^3.6.2",
 		"turbo": "^2.10.6",
 		"typescript-eslint": "^8.64.0"
 	},
@@ -31,6 +34,12 @@
 		}
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx}": "eslint --fix"
+		"*.{js,jsx,ts,tsx}": [
+			"prettier --write",
+			"eslint --fix"
+		],
+		"*.json": [
+			"prettier --write"
+		]
 	}
 }

@@ -45,9 +45,7 @@ export class ComponentRegistry {
 
 	register(name: string, definition: ComponentDefinition, options?: RegisterOptions): void {
 		if (this.entries.has(name) && !options?.override) {
-			throw new Error(
-				`Component "${name}" is already registered. Pass { override: true } to replace it.`
-			);
+			throw new Error(`Component "${name}" is already registered. Pass { override: true } to replace it.`);
 		}
 		this.entries.set(name, definition);
 	}

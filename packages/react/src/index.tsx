@@ -22,9 +22,7 @@ function getWrappedComponent(tagName: string): ReactWebComponent<HTMLElement> | 
 	if (wrapperCache.has(tagName)) return wrapperCache.get(tagName) ?? null;
 
 	const elementClass = customElements.get(tagName) as (new () => HTMLElement) | undefined;
-	const component = elementClass
-		? createComponent({ react: React, tagName, elementClass, displayName: tagName })
-		: null;
+	const component = elementClass ? createComponent({ react: React, tagName, elementClass, displayName: tagName }) : null;
 	wrapperCache.set(tagName, component);
 	return component;
 }

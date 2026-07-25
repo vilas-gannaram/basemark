@@ -1,0 +1,18 @@
+# Build output
+dist
+.next
+.turbo
+coverage
+
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Markdown is intentionally excluded from auto-format — docs in this repo use
+# hand-tuned line breaks and table layouts (ARCHITECTURE.md, VISION.md, etc.)
+# that Prettier's prose/table rewrapping would churn. Format code, not prose.
+*.md
+
+# Generated/vendored
+CHANGELOG.md
+.changeset/*.md

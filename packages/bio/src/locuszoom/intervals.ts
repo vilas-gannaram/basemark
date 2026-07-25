@@ -44,7 +44,7 @@ export function registerIntervals(registry: ComponentRegistry): void {
 			'track), plus an interval annotation track showing labeled genomic regions (e.g. chromatin states, regulatory ' +
 			'elements) beneath the association points. Use this when the author wants to relate an association signal ' +
 			'to annotated functional regions in the same locus — prefer locuszoom-assoc if that annotation track ' +
-			'isn\'t needed.',
+			"isn't needed.",
 		schema: {
 			chrom: {
 				type: 'string',
