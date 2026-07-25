@@ -1,6 +1,6 @@
 # Basemark — Architecture & Design Spec
 
-Design rationale and decisions for Basemark. See [README.md](README.md) for a project overview and [CLAUDE.md](CLAUDE.md) for repo-specific working guidance.
+Technical design rationale and decisions for Basemark — the pipeline, syntax, registry, and rendering model. See [README.md](README.md) for a project overview and current status, [CLAUDE.md](CLAUDE.md) for repo-specific working guidance, and [VISION.md](VISION.md) for who consumes this and how (a product concern, kept separate from the technical design here).
 
 ## 1. What this is
 
@@ -153,7 +153,7 @@ Everything depends on core; core depends on nothing framework-specific. No sidew
 
 - **`@basemark/core`** — parse (mdast), transform (mdast→hast + registry resolution), data resolver, registry API. Pure logic, no DOM, runs in Node or browser. Output is a plain hast tree, not rendered anything. Must stay small and stable since everything depends on it.
 - **`@basemark/react` / `@basemark/svelte`** — take core's hast tree and mount it per-framework. Only layer where native (non-web-component) registration and children-based composition make sense.
-- **`@basemark/cli`** — build-time tooling: static-site batch rendering, structural/schema linter (CI, not in-browser), component scaffolding, registry validation. Depends on core; optionally a wrapper for specific SSG subcommands.
+- **`@basemark/cli`** — build-time tooling: static-site batch rendering, structural/schema linter (CI, not in-browser), component scaffolding, registry validation, and rendering a single markdown+directives doc to one self-contained shareable HTML file (see VISION.md). Depends on core; optionally a wrapper for specific SSG subcommands.
 
 ---
 
@@ -199,3 +199,4 @@ basemark/
 - Full manifest JSON Schema spec (§5 is conceptual, not finalized field-by-field).
 - SSR fallback contract for natively-registered (non-web-component) framework components — no defined behavior for server-rendering a doc with no framework runtime present.
 - Full list of guided Mermaid wrapper directives to ship at v1 vs. leave to the raw-fence escape hatch.
+- Who consumes this and how (direct library use, Claude Skills authoring, CLI-rendered shareable HTML) is a separate, product-facing concern — see [VISION.md](VISION.md), including that initiative's own open questions (bundling strategy, data self-containment, offline fallback).

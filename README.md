@@ -2,7 +2,7 @@
 
 Markdown + directives → web components. Authors (human or AI) write markdown with a directive syntax; a framework-agnostic core resolves each directive to a web component, which consumers embed in React, Svelte, Solid, or plain HTML.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design spec and rationale.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full technical design spec and rationale, and [VISION.md](VISION.md) for who's meant to consume this and how (AI-powered content apps, Claude Skills authoring, CLI-rendered shareable HTML).
 
 ### Status
 
