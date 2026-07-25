@@ -10,7 +10,8 @@
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@basemark/core": "workspace:*"
+		"@basemark/core": "workspace:*",
+		"@lit/react": "^1.0.8"
 	},
 	"peerDependencies": {
 		"react": ">=18"
