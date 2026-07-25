@@ -12,6 +12,12 @@ const source = [
 	'::locuszoom-gwas-catalog{chrom="9" start="21751670" end="22351670"}',
 	'',
 	'::locuszoom-phewas{variant="10:114758349_C/T"}',
+	'',
+	'::locuszoom-intervals{chrom="10" start="114550452" end="115067678"}',
+	'',
+	'::locuszoom-credible-sets{chrom="16" start="74947245" end="75547245"}',
+	'',
+	'::locuszoom-multi-pheno{chrom="10" start="114550452" end="115067678"}',
 ].join('\n');
 
 const root = document.getElementById('root');
