@@ -14,10 +14,16 @@ export interface LocusZoomElementConfig<A extends string> {
 
 let plotIdCounter = 0;
 
-// Shared lifecycle for every LocusZoom-backed custom element: wait until all
-// observed attrs are present, mount a fresh container, and hand off to
-// LocusZoom. What differs per plot type (data sources, layout preset) is
-// supplied by the caller — see assoc.ts/gwas-catalog.ts/phewas.ts.
+// Unlike structure.ts/protvista.ts, this stays in light DOM — NOT a shadow
+// root. LocusZoom.populate()'s own internals (esm/helpers/display.js) look up
+// the container it was just handed via `d3.select('div#' + plot.id)`, a
+// global `document`-level ID selector, rather than using the node reference
+// it already has. Inside a shadow root that lookup finds nothing and the
+// `.append('svg')` that follows silently no-ops — the plot never renders, no
+// error thrown. So `locuszoom.css`'s import below stays a genuine global
+// side effect for now (a real, open leak risk — see CLAUDE.md/ARCHITECTURE.md
+// §10) until that's addressed upstream or patched locally; box styling here
+// is applied to the light-DOM host directly instead of via a scoped :host rule.
 export function createLocusZoomElement<A extends string>(config: LocusZoomElementConfig<A>): CustomElementConstructor {
 	return class extends HTMLElement {
 		static get observedAttributes(): string[] {
@@ -41,6 +47,14 @@ export function createLocusZoomElement<A extends string>(config: LocusZoomElemen
 			}
 
 			this.innerHTML = '';
+			this.style.display = 'block';
+			this.style.boxSizing = 'border-box';
+			this.style.margin = '1.5rem 0';
+			this.style.border = '1px solid var(--border)';
+			this.style.borderRadius = 'var(--radius)';
+			this.style.padding = '0.75rem';
+			this.style.background = 'var(--card)';
+
 			const container = document.createElement('div');
 			// LocusZoom.populate requires the target element to already have a
 			// non-empty `id` — its own auto-id fallback only triggers when

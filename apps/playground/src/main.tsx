@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { createRegistry } from '@basemark/core';
 import { registerBioComponents } from '@basemark/bio';
 import { MarkdownRenderer } from '@basemark/react';
+import '@basemark/core/theme.css';
 
 const registry = createRegistry();
 registerBioComponents(registry);

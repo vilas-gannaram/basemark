@@ -5,6 +5,31 @@ import type { ComponentRegistry } from '@basemark/core';
 export const STRUCTURE_TAG = 'basemark-structure';
 const STRUCTURE_HEIGHT_PX = 620;
 
+// :host styling is scoped to this element's own shadow root — it can't leak
+// onto the host page, and the host page's own CSS (resets, MUI/AntD
+// baselines, etc.) can't reach in and distort it. Theme values (--border,
+// --radius, --card) still arrive via inheritance: CSS custom properties
+// cross shadow boundaries even though ordinary rules don't (see @basemark/core's
+// theme.css).
+const STYLES = `
+	:host {
+		display: block;
+		box-sizing: border-box;
+		height: ${STRUCTURE_HEIGHT_PX}px;
+		max-height: ${STRUCTURE_HEIGHT_PX}px;
+		margin: 1.5rem 0;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		padding: 0.75rem;
+		background: var(--card);
+	}
+	.viewer {
+		width: 100%;
+		height: 100%;
+		position: relative;
+	}
+`;
+
 // 3Dmol.js instead of pdbe-molstar (used earlier): pdbe-molstar ships a full
 // Mol* application — toolbar, Structure Tools panel, Quick Styles, save
 // PNG/SVG — when the goal here is just rendering the structure, not
@@ -15,6 +40,11 @@ const STRUCTURE_HEIGHT_PX = 620;
 class StructureElement extends HTMLElement {
 	static get observedAttributes(): string[] {
 		return ['pdbid'];
+	}
+
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
 	}
 
 	connectedCallback(): void {
@@ -29,20 +59,15 @@ class StructureElement extends HTMLElement {
 		const pdbId = this.getAttribute('pdbid');
 		if (!pdbId) return;
 
-		this.innerHTML = '';
-		// 3Dmol.js sizes its canvas off the container element passed to
-		// createViewer, not an ancestor's — without an explicit height here it
-		// collapses to zero, since neither this element nor its container has
-		// any other height to inherit from.
-		this.style.display = 'block';
-		this.style.height = `${STRUCTURE_HEIGHT_PX}px`;
-		this.style.maxHeight = `${STRUCTURE_HEIGHT_PX}px`;
+		const root = this.shadowRoot as ShadowRoot;
+		root.innerHTML = `<style>${STYLES}</style>`;
 
+		// 3Dmol.js sizes its canvas off the container element passed to
+		// createViewer, not an ancestor's — the :host rule above gives this
+		// element (and so `.viewer`'s 100%) an explicit height to size against.
 		const container = document.createElement('div');
-		container.style.width = '100%';
-		container.style.height = '100%';
-		container.style.position = 'relative';
-		this.appendChild(container);
+		container.className = 'viewer';
+		root.appendChild(container);
 
 		const viewer = createViewer(container, { backgroundColor: 'white' });
 		if (!viewer) return;

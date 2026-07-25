@@ -3,6 +3,23 @@ import type { ComponentRegistry } from '@basemark/core';
 
 export const PROTVISTA_TAG = 'basemark-protvista';
 
+// Scoped to this element's own shadow root, same reasoning as structure.ts —
+// theme custom properties (--border, --radius, --card) still inherit in from
+// @basemark/core's theme.css despite the boundary. protvista-uniprot attaches
+// its own shadow root internally too; nesting shadow roots is fine, and theme
+// custom properties keep inheriting through both levels.
+const STYLES = `
+	:host {
+		display: block;
+		box-sizing: border-box;
+		margin: 1.5rem 0;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		padding: 0.75rem;
+		background: var(--card);
+	}
+`;
+
 // protvista-uniprot's own connectedCallback only starts its data fetch if
 // `accession` is already present at connection time — there's no reactive
 // branch that retries later if it arrives after. Our generic React wrapper
@@ -19,6 +36,11 @@ class ProtvistaElement extends HTMLElement {
 		return ['accession'];
 	}
 
+	constructor() {
+		super();
+		this.attachShadow({ mode: 'open' });
+	}
+
 	connectedCallback(): void {
 		this.render();
 	}
@@ -31,10 +53,11 @@ class ProtvistaElement extends HTMLElement {
 		const accession = this.getAttribute('accession');
 		if (!accession) return;
 
-		this.innerHTML = '';
+		const root = this.shadowRoot as ShadowRoot;
+		root.innerHTML = `<style>${STYLES}</style>`;
 		const viewer = document.createElement('protvista-uniprot');
 		viewer.setAttribute('accession', accession);
-		this.appendChild(viewer);
+		root.appendChild(viewer);
 	}
 }
 
