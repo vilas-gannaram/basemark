@@ -167,6 +167,8 @@ Everything depends on core; core depends on nothing framework-specific. No sidew
 
 **General-purpose (`@basemark/common`):** Mermaid family (flowchart, gantt, timeline, fishbone — native Mermaid diagram types as of v11.13), Vega-Lite/Plotly charts, KaTeX, sortable tables, maps (MapLibre/Leaflet), citations (BibTeX), JSON/tree viewers, media embeds.
 
+**Layout/container (`@basemark/common`) — not yet built:** the only components in every pack today are leaf directives (Tier 1/2); nothing exercises the container-directive/Shadow-DOM-slot composition described in §6's "Nesting & layout" yet. Candidates, roughly in build-first order: `:::card{title="..."}` (single slot, simplest possible validation of the pattern), `:::tabs` / `::tab-panel{label="..."}` (named slots), `:::columns` or `:::grid{cols="2"}` (layout-only, multiple anonymous slots). Build `card` first — it's the minimal case needed to prove directive-nesting → hast-nesting → `<slot>` projection works end-to-end before anything else nests inside it.
+
 **Mermaid design note:** one shared `<mermaid-diagram>` component renders raw Mermaid source (Mermaid dispatches by diagram type itself). Guided directives (`::gantt{...}`, `::flowchart{...}`, `::fishbone{...}`) are thin translators — structured attrs → generated Mermaid source → same shared renderer. Raw ` ```mermaid ` fence remains the Tier-4 escape hatch for diagram types without a guided wrapper, or unusual custom syntax.
 
 ---
@@ -199,4 +201,6 @@ basemark/
 - Full manifest JSON Schema spec (§5 is conceptual, not finalized field-by-field).
 - SSR fallback contract for natively-registered (non-web-component) framework components — no defined behavior for server-rendering a doc with no framework runtime present.
 - Full list of guided Mermaid wrapper directives to ship at v1 vs. leave to the raw-fence escape hatch.
+- §6's native framework registration escape hatch (`{ type: 'react', component: X }`, app-local only — never for pack authors) has no implementation path yet: `registry.ts`'s `ComponentDefinition` has no `render` field to distinguish it from the default custom-element tag, `parse.ts`'s `resolveDirectives` unconditionally emits `hName: definition.tag`, and `packages/react`'s renderer only ever resolves via `customElements.get(tagName)`. All three would need to change together for this to exist.
+- Nesting/layout (§6, §8) is entirely unbuilt: every real component so far is a leaf directive, so the container-directive → hast-nesting → Shadow-DOM-`<slot>` path has never been exercised end-to-end. Need to pick which container component proves it out first (§8 proposes `card` as the minimal case) and validate slot projection actually works before more layout components are built on the same assumption.
 - Who consumes this and how (direct library use, Claude Skills authoring, CLI-rendered shareable HTML) is a separate, product-facing concern — see [VISION.md](VISION.md), including that initiative's own open questions (bundling strategy, data self-containment, offline fallback).
