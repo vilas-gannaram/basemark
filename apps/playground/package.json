@@ -2,13 +2,25 @@
 	"name": "playground",
 	"version": "0.0.0",
 	"private": true,
-	"description": "Live in-browser markdown editor / demo. Stub.",
+	"description": "Live in-browser markdown editor / demo.",
+	"type": "module",
 	"scripts": {
-		"dev": "echo \"TODO: playground app not implemented yet\" && exit 0",
-		"build": "echo \"TODO: playground app not implemented yet\" && exit 0"
+		"dev": "vite",
+		"build": "vite build",
+		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@basemark/bio": "workspace:*",
 		"@basemark/core": "workspace:*",
-		"@basemark/react": "workspace:*"
+		"@basemark/react": "workspace:*",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8"
+	},
+	"devDependencies": {
+		"@basemark/tsconfig-base": "workspace:*",
+		"@types/react": "^19.2.17",
+		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^6.0.4",
+		"vite": "^8.1.5"
 	}
 }

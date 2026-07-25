@@ -1,9 +1,31 @@
+export interface PropSchema {
+	type: 'string' | 'number' | 'boolean';
+	required?: boolean;
+}
+
 export interface ComponentDefinition {
 	tag: string;
+	schema?: Record<string, PropSchema>;
 }
 
 export interface RegisterOptions {
 	override?: boolean;
+}
+
+export function validateProps(schema: Record<string, PropSchema> | undefined, props: Record<string, unknown>): string[] {
+	if (!schema) return [];
+	const errors: string[] = [];
+	for (const [key, propSchema] of Object.entries(schema)) {
+		const value = props[key];
+		if (value === undefined) {
+			if (propSchema.required) errors.push(`missing required prop "${key}"`);
+			continue;
+		}
+		if (typeof value !== propSchema.type) {
+			errors.push(`prop "${key}" must be of type ${propSchema.type}, got ${typeof value}`);
+		}
+	}
+	return errors;
 }
 
 export class ComponentRegistry {

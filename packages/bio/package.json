@@ -6,7 +6,14 @@
 	"type": "module",
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
+	"scripts": {
+		"check-types": "tsc --noEmit"
+	},
 	"dependencies": {
-		"@basemark/core": "workspace:*"
+		"@basemark/core": "workspace:*",
+		"locuszoom": "^0.14.0"
+	},
+	"devDependencies": {
+		"@basemark/tsconfig-base": "workspace:*"
 	}
 }
