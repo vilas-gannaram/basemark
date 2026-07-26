@@ -1,0 +1,21 @@
+{
+	"name": "vanilla-example",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Direct @basemark/core usage with no framework — the plain-HTML consumption path (VISION.md).",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"check-types": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@basemark/bio": "workspace:*",
+		"@basemark/common": "workspace:*",
+		"@basemark/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@basemark/tsconfig-base": "workspace:*",
+		"vite": "^8.1.5"
+	}
+}
