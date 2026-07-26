@@ -1,20 +1,34 @@
 import { createRoot } from 'react-dom/client';
 import { createRegistry } from '@basemark/core';
 import { registerBioComponents } from '@basemark/bio';
+import { registerCommonComponents } from '@basemark/common';
 import { MarkdownRenderer } from '@basemark/react';
 import '@basemark/core/theme.css';
 
 const registry = createRegistry();
 registerBioComponents(registry);
+registerCommonComponents(registry);
 
 const source = [
-	'::protvista{accession="P05067"}',
-	'',
+	':::card{title="3D Structure (1cbs)"}',
 	'::structure{pdbid="1cbs"}',
+	':::',
 	'',
+	':::columns{cols="2"}',
 	'::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}',
 	'',
 	'::locuszoom-gwas-catalog{chrom="9" start="21751670" end="22351670"}',
+	':::',
+	'',
+	'::::tabs',
+	':::tab-panel{label="Structure"}',
+	'::structure{pdbid="1cbs"}',
+	':::',
+	'',
+	':::tab-panel{label="Sequence"}',
+	'::protvista{accession="P05067"}',
+	':::',
+	'::::',
 	'',
 	'::locuszoom-phewas{variant="10:114758349_C/T"}',
 	'',

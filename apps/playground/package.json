@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"@basemark/bio": "workspace:*",
+		"@basemark/common": "workspace:*",
 		"@basemark/core": "workspace:*",
 		"@basemark/react": "workspace:*",
 		"react": "^19.2.8",

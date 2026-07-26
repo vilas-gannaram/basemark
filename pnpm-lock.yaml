@@ -47,6 +47,9 @@ importers:
       '@basemark/bio':
         specifier: workspace:*
         version: link:../../packages/bio
+      '@basemark/common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@basemark/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -128,6 +131,10 @@ importers:
       '@basemark/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
+      '@basemark/tsconfig-base':
+        specifier: workspace:*
+        version: link:../../configs/tsconfig-base
 
   packages/core:
     dependencies:
