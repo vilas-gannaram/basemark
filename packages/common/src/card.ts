@@ -18,12 +18,14 @@ const STYLES = `
 	}
 	.title {
 		margin: 0;
-		padding: 0.75rem 1rem;
-		border-bottom: 1px solid var(--border);
+		padding: 0.75rem 1rem 0.25rem;
 		font-weight: 600;
 	}
 	.body {
 		padding: 1rem;
+	}
+	.title + .body {
+		padding-top: 0.25rem;
 	}
 `;
 
