@@ -4,7 +4,7 @@ See [README.md](README.md) for what Basemark is and current implementation statu
 
 ## Three consumption paths
 
-1. **Direct library use in AI-powered content apps** (chat UIs, notebook-style tools). A dev imports `core` + a framework binding + whichever domain packs they need, registers components, and renders either hand-authored or LLM-generated markdown directly in their app.
+1. **Direct library use in AI-powered content apps** (chat UIs, notebook-style tools). A dev imports `core` + whichever domain packs they need, registers components, and renders either hand-authored or LLM-generated markdown directly in their app — via a framework binding (`@basemark/react` today), or with no framework at all using `core`'s own `renderMarkdown()` straight to real DOM (see `examples/vanilla`).
 2. **Claude Skills as an authoring surface.** A Skill's job is a user task that happens to produce a document as its output. Instead of handing back plain markdown or a wall of raw HTML, the Skill emits markdown with Basemark directives — using `generateSystemPrompt()`/`describeComponent()` (ARCHITECTURE.md §5) as its own component reference — so the deliverable can embed a real interactive plot/viewer, not just a description of one.
 3. **CLI renders that doc to one shareable static HTML file.** The user is left with a markdown(+directives) file; `@basemark/cli` resolves it and produces a single self-contained `.html` — open it in any browser, send it to anyone, no build step and no framework runtime required on the recipient's end.
 

@@ -48,12 +48,12 @@ Chosen over raw HTML custom elements (ambiguous CommonMark raw-HTML parsing rule
 
 ### Known failure mode: unclosed container directives
 
-An unclosed `:::` doesn't error — it silently swallows the rest of the document as children (same as an unclosed code fence). Mitigations, in priority order:
+An unclosed `:::` doesn't error at the remark-directive level — it silently swallows the rest of the document (or the rest of its parent block quote/list item) as children, same as an unclosed code fence. Mitigations, in priority order:
 
 1. Prefer leaf directives (structural fix).
-2. Post-parse validation: flag `containerDirective` nodes with suspiciously large/heterogeneous children as likely malformed.
-3. A structural linter (colon-balance check) in CI/pre-commit, especially for layout directives.
-4. Fail visibly — a broken-component card with raw source shown, never a silent content gap.
+2. **Built**: `parse.ts`'s `resolveDirectives` checks whether a container directive's raw source actually ends in a closing fence line (`:::`, or more colons for a nested container); if not, it's flagged rather than silently accepted.
+3. A structural linter (colon-balance check) in CI/pre-commit, especially for layout directives — not built.
+4. **Built**: fail visibly — flagged containers resolve to the `basemark-error` component (`error-element.ts`), which shows the error banner *and* still renders whatever content got swallowed (via its own slot), so nothing silently disappears along with the warning.
 
 ---
 
@@ -135,9 +135,9 @@ Container directives nest naturally (mdast/hast trees nest). Layout composition 
 :::
 ```
 
-→ `<basemark-card>` has a `<slot>` in its shadow root; the nested `<chart-viewer>` projects into it via native slot assignment. Named slots (`slot="tab-1"`) support tabs/columns/captions.
+→ `<basemark-card>` has a `<slot>` in its shadow root; the nested `<chart-viewer>` projects into it via native slot assignment. This is now built and validated end-to-end (`@basemark/common`'s `card`/`columns`/`tabs` — see §8 and `packages/common/README.md`); `tabs` deviates from the "named slots" idea sketched above in favor of one default slot plus imperative light-DOM reads, since named slots need a static slot count that a dynamic tab list doesn't have.
 
-For natively-registered React/Svelte containers, slotting isn't available — the framework binding must reimplement composition by recursively rendering children and passing them as e.g. React's `children` prop. Real asymmetry between the two render paths.
+For natively-registered React/Svelte containers, slotting isn't available — the framework binding must reimplement composition by recursively rendering children and passing them as e.g. React's `children` prop. Real asymmetry between the two render paths. (This asymmetry doesn't apply to the plain-DOM path — `examples/vanilla` mounts the same nested custom elements with no framework and no reimplemented composition at all, since slotting is native browser behavior, not something a renderer has to provide.)
 
 ---
 
@@ -167,7 +167,7 @@ Everything depends on core; core depends on nothing framework-specific. No sidew
 
 **General-purpose (`@basemark/common`):** Mermaid family (flowchart, gantt, timeline, fishbone — native Mermaid diagram types as of v11.13), Vega-Lite/Plotly charts, KaTeX, sortable tables, maps (MapLibre/Leaflet), citations (BibTeX), JSON/tree viewers, media embeds.
 
-**Layout/container (`@basemark/common`) — not yet built:** the only components in every pack today are leaf directives (Tier 1/2); nothing exercises the container-directive/Shadow-DOM-slot composition described in §6's "Nesting & layout" yet. Candidates, roughly in build-first order: `:::card{title="..."}` (single slot, simplest possible validation of the pattern), `:::tabs` / `::tab-panel{label="..."}` (named slots), `:::columns` or `:::grid{cols="2"}` (layout-only, multiple anonymous slots). Build `card` first — it's the minimal case needed to prove directive-nesting → hast-nesting → `<slot>` projection works end-to-end before anything else nests inside it.
+**Layout/container (`@basemark/common`) — built:** `:::card{title="..."}` (single slot — built first, as the minimal case to prove directive-nesting → hast-nesting → `<slot>` projection end-to-end), `:::columns{cols="..."}` (layout-only CSS Grid, one child per cell), `:::tabs` / `:::tab-panel{label="..."}` (one default slot plus imperative light-DOM reads instead of named slots — see §6 and `packages/common/README.md` for why). All three zero the vertical margin a nested bio/chem component would otherwise contribute, via `::slotted()` overrides.
 
 **Mermaid design note:** one shared `<mermaid-diagram>` component renders raw Mermaid source (Mermaid dispatches by diagram type itself). Guided directives (`::gantt{...}`, `::flowchart{...}`, `::fishbone{...}`) are thin translators — structured attrs → generated Mermaid source → same shared renderer. Raw ` ```mermaid ` fence remains the Tier-4 escape hatch for diagram types without a guided wrapper, or unusual custom syntax.
 
@@ -191,7 +191,7 @@ basemark/
 
 `examples/` and `apps/` packages are `private: true` and unscoped, so it's visually obvious in tooling output which packages are real published artifacts.
 
-`examples/` and `experiments/` don't exist in the repo yet (see CLAUDE.md) — this is the target structure once there's something real to put in them.
+`examples/` now has its first real member — `examples/vanilla`, direct `@basemark/core` usage with no framework binding. `experiments/` still doesn't exist (see CLAUDE.md) — still the target structure once there's something real to put there.
 
 ---
 
@@ -202,5 +202,5 @@ basemark/
 - SSR fallback contract for natively-registered (non-web-component) framework components — no defined behavior for server-rendering a doc with no framework runtime present.
 - Full list of guided Mermaid wrapper directives to ship at v1 vs. leave to the raw-fence escape hatch.
 - §6's native framework registration escape hatch (`{ type: 'react', component: X }`, app-local only — never for pack authors) has no implementation path yet: `registry.ts`'s `ComponentDefinition` has no `render` field to distinguish it from the default custom-element tag, `parse.ts`'s `resolveDirectives` unconditionally emits `hName: definition.tag`, and `packages/react`'s renderer only ever resolves via `customElements.get(tagName)`. All three would need to change together for this to exist.
-- Nesting/layout (§6, §8) is entirely unbuilt: every real component so far is a leaf directive, so the container-directive → hast-nesting → Shadow-DOM-`<slot>` path has never been exercised end-to-end. Need to pick which container component proves it out first (§8 proposes `card` as the minimal case) and validate slot projection actually works before more layout components are built on the same assumption.
+- The unclosed-container detection (§3) is a heuristic — it checks whether a container's raw source ends in a fence-only line, which is reliable for the common case but isn't a from-first-principles parse of remark-directive's own closing rules (nested indentation inside a list item/block quote isn't specifically exercised). A structural linter (§3 mitigation #3) is still unbuilt.
 - Who consumes this and how (direct library use, Claude Skills authoring, CLI-rendered shareable HTML) is a separate, product-facing concern — see [VISION.md](VISION.md), including that initiative's own open questions (bundling strategy, data self-containment, offline fallback).
