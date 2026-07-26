@@ -3,21 +3,23 @@ import type { ComponentRegistry } from '@basemark/core';
 export const TABS_TAG = 'basemark-tabs';
 export const TAB_PANEL_TAG = 'basemark-tab-panel';
 
+// No border/background of its own — unlike card, tabs is navigation chrome
+// for its content, not a callout box. It should read as part of the
+// surrounding page, same as columns; only the tab-strip's own
+// border-bottom (a functional divider between the buttons and the active
+// panel, not a wrapper box) and the selected-tab highlight carry any chrome.
 const TABS_STYLES = `
 	:host {
 		display: block;
 		box-sizing: border-box;
 		margin: 1.5rem 0;
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-		background: var(--card);
-		color: var(--card-foreground);
+		color: var(--foreground);
 		font-family: var(--font-sans);
 	}
 	.tab-strip {
 		display: flex;
 		gap: 0.25rem;
-		padding: 0.5rem 0.5rem 0;
+		padding-bottom: 0.5rem;
 		border-bottom: 1px solid var(--border);
 	}
 	.tab-button {
@@ -26,7 +28,7 @@ const TABS_STYLES = `
 		border: none;
 		background: none;
 		padding: 0.5rem 0.75rem;
-		border-radius: var(--radius) var(--radius) 0 0;
+		border-radius: var(--radius);
 		color: var(--muted-foreground);
 	}
 	.tab-button[aria-selected='true'] {
@@ -34,7 +36,7 @@ const TABS_STYLES = `
 		color: var(--foreground);
 	}
 	.body {
-		padding: 1rem;
+		padding: 1rem 0;
 	}
 `;
 
