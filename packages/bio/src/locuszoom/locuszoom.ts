@@ -9,10 +9,19 @@ declare module 'locuszoom' {
 		get(type: string, name: string, overrides?: Record<string, unknown>): Record<string, unknown>;
 	}
 
+	interface Plot {
+		// Re-measures the plot's container and resizes the SVG to fit — see
+		// esm/components/plot.js. populate() itself never calls this with an
+		// actual measured width (see shared.ts), so callers that mount into a
+		// container narrower than the layout's configured `width` must call
+		// this explicitly once the container has its real size.
+		rescaleSVG(): void;
+	}
+
 	interface LocusZoomStatic {
 		DataSources: new () => LocusZoomDataSources;
 		Layouts: LocusZoomLayouts;
-		populate(selector: string | Element, datasource: LocusZoomDataSources, layout: Record<string, unknown>): unknown;
+		populate(selector: string | Element, datasource: LocusZoomDataSources, layout: Record<string, unknown>): Plot;
 		// Installs an ext plugin (see the locuszoom/esm/ext/* module declarations
 		// below) — idempotent, safe to call more than once with the same plugin.
 		use(plugin: (LocusZoom: LocusZoomStatic) => void): void;

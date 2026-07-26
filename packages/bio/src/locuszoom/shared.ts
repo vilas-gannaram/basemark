@@ -26,6 +26,8 @@ let plotIdCounter = 0;
 // is applied to the light-DOM host directly instead of via a scoped :host rule.
 export function createLocusZoomElement<A extends string>(config: LocusZoomElementConfig<A>): CustomElementConstructor {
 	return class extends HTMLElement {
+		private resizeObserver?: ResizeObserver;
+
 		static get observedAttributes(): string[] {
 			return [...config.observedAttrs];
 		}
@@ -38,7 +40,13 @@ export function createLocusZoomElement<A extends string>(config: LocusZoomElemen
 			if (this.isConnected) this.render();
 		}
 
+		disconnectedCallback(): void {
+			this.resizeObserver?.disconnect();
+		}
+
 		private render(): void {
+			this.resizeObserver?.disconnect();
+
 			const attrs = {} as Record<A, string>;
 			for (const name of config.observedAttrs) {
 				const value = this.getAttribute(name);
@@ -63,7 +71,18 @@ export function createLocusZoomElement<A extends string>(config: LocusZoomElemen
 			container.className = 'lz-container-responsive';
 			this.appendChild(container);
 
-			LocusZoom.populate(container, config.buildDataSources(), config.buildLayout(attrs));
+			const plot = LocusZoom.populate(container, config.buildDataSources(), config.buildLayout(attrs));
+
+			// LocusZoom.populate()'s initial setDimensions() call (esm/helpers/display.js)
+			// runs with no arguments, which skips responsive_resize's width-measuring
+			// branch entirely (esm/components/plot.js) — the plot mounts at its
+			// layout's configured `width` (e.g. 800px) regardless of container size,
+			// and only corrects itself on a subsequent `window` `resize` event.
+			// A ResizeObserver on our own container catches the case a window resize
+			// never would: mounting into a CSS Grid/flex cell that's narrower than
+			// the viewport (see basemark-columns) without the window itself resizing.
+			this.resizeObserver = new ResizeObserver(() => plot.rescaleSVG());
+			this.resizeObserver.observe(container);
 		}
 	};
 }
