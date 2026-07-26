@@ -95,6 +95,25 @@ importers:
 
   configs/vitest-config: {}
 
+  examples/vanilla:
+    dependencies:
+      '@basemark/bio':
+        specifier: workspace:*
+        version: link:../../packages/bio
+      '@basemark/common':
+        specifier: workspace:*
+        version: link:../../packages/common
+      '@basemark/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@basemark/tsconfig-base':
+        specifier: workspace:*
+        version: link:../../configs/tsconfig-base
+      vite:
+        specifier: ^8.1.5
+        version: 8.1.5(@types/node@22.20.1)(yaml@2.9.0)
+
   packages/bio:
     dependencies:
       3dmol:
@@ -138,6 +157,9 @@ importers:
 
   packages/core:
     dependencies:
+      hast-util-to-dom:
+        specifier: ^4.0.1
+        version: 4.0.1
       mdast-util-directive:
         specifier: ^3.1.0
         version: 3.1.0
@@ -156,6 +178,9 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
+      vfile:
+        specifier: ^6.0.3
+        version: 6.0.3
     devDependencies:
       '@basemark/tsconfig-base':
         specifier: workspace:*
@@ -1766,6 +1791,9 @@ packages:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
+  hast-util-to-dom@4.0.1:
+    resolution: {integrity: sha512-z1VE7sZ8uFzS2baF3LEflX1IPw2gSzrdo3QFEsyoi23MkCVY3FoE9x6nLgOgjwJu8VNWgo+07iaxtONhDzKrUQ==}
+
   hast-util-to-jsx-runtime@2.3.6:
     resolution: {integrity: sha512-zl6s8LwNyo1P9uw+XJGvZtdFF1GdAkOg8ujOw+4Pyb76874fLps4ueHXDhXWdk6YHQ6OgUtinliG7RsYvCbbBg==}
 
@@ -3244,6 +3272,9 @@ packages:
         optional: true
       jsdom:
         optional: true
+
+  web-namespaces@2.0.1:
+    resolution: {integrity: sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -5252,6 +5283,12 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  hast-util-to-dom@4.0.1:
+    dependencies:
+      '@types/hast': 3.0.5
+      property-information: 7.2.0
+      web-namespaces: 2.0.1
+
   hast-util-to-jsx-runtime@2.3.6:
     dependencies:
       '@types/estree': 1.0.9
@@ -7135,6 +7172,8 @@ snapshots:
       '@types/node': 22.20.1
     transitivePeerDependencies:
       - msw
+
+  web-namespaces@2.0.1: {}
 
   webidl-conversions@3.0.1: {}
 
