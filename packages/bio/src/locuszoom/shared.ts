@@ -4,6 +4,30 @@ import 'locuszoom/dist/locuszoom.css';
 
 export const LOCUSZOOM_API_BASE = 'https://portaldev.sph.umich.edu/api/v1/';
 
+const OVERRIDE_STYLE_ID = 'basemark-locuszoom-overrides';
+
+// Same light-DOM/global-CSS constraint as the locuszoom.css import above —
+// these target LocusZoom's own generated markup (toolbar chrome, in-SVG
+// <text>), which lives outside any shadow root. Injected once as a real
+// <style> tag (not a CSS module import) so no new build-time CSS module
+// declaration is needed alongside the existing one for locuszoom.css.
+// !important because these compete with LocusZoom's own same-or-higher-
+// specificity rules and its layout code's inline style/attribute writes.
+function ensureOverrideStyles(): void {
+	if (document.getElementById(OVERRIDE_STYLE_ID)) return;
+	const style = document.createElement('style');
+	style.id = OVERRIDE_STYLE_ID;
+	style.textContent = `
+		.lz-toolbar-title {
+			display: none !important;
+		}
+		svg.lz-locuszoom text {
+			font-size: 12px !important;
+		}
+	`;
+	document.head.appendChild(style);
+}
+
 type LocusZoomDataSources = InstanceType<typeof LocusZoom.DataSources>;
 
 export interface LocusZoomElementConfig<A extends string> {
@@ -46,6 +70,7 @@ export function createLocusZoomElement<A extends string>(config: LocusZoomElemen
 
 		private render(): void {
 			this.resizeObserver?.disconnect();
+			ensureOverrideStyles();
 
 			const attrs = {} as Record<A, string>;
 			for (const name of config.observedAttrs) {
