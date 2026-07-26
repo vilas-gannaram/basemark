@@ -48,7 +48,18 @@ class TabPanelElement extends HTMLElement {
 	constructor() {
 		super();
 		const root = this.attachShadow({ mode: 'open' });
-		root.innerHTML = `<style>:host([hidden]) { display: none; }</style><slot></slot>`;
+		// Same reasoning as card.ts: a nested bio component's own :host margin
+		// is redundant against tabs' .body padding — only the boundary margins
+		// need zeroing (!important to beat the child's own :host on specificity),
+		// margin between multiple slotted children is left alone.
+		root.innerHTML = `
+			<style>
+				:host([hidden]) { display: none; }
+				::slotted(:first-child) { margin-top: 0 !important; }
+				::slotted(:last-child) { margin-bottom: 0 !important; }
+			</style>
+			<slot></slot>
+		`;
 	}
 }
 

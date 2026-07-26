@@ -27,6 +27,21 @@ const STYLES = `
 	.title + .body {
 		padding-top: 0.25rem;
 	}
+	/*
+	 * Bio components each set their own top-level margin (e.g. structure.ts's
+	 * :host { margin: 1.5rem 0 }) for spacing when placed directly in a
+	 * document. Nested inside our own padded .body, that's a redundant double
+	 * margin. :host in the child's own shadow root outbeats ::slotted() on
+	 * specificity ((0,1,0) vs (0,0,1)), so !important is required to actually
+	 * win here — only the first/last child's boundary margin is zeroed;
+	 * margins between multiple slotted children are left alone.
+	 */
+	::slotted(:first-child) {
+		margin-top: 0 !important;
+	}
+	::slotted(:last-child) {
+		margin-bottom: 0 !important;
+	}
 `;
 
 // The single case this component exists to prove: a container directive's

@@ -32,6 +32,15 @@ const STYLES = `
 	::slotted(*) {
 		min-width: 0;
 		min-height: 0;
+		/*
+		 * Cells sit side by side, not stacked — the grid's own gap is what
+		 * separates them, not a child's own vertical margin (e.g. bio
+		 * components' :host { margin: 1.5rem 0 }). !important is needed since
+		 * :host in the child's own shadow root otherwise outbeats ::slotted()
+		 * on specificity.
+		 */
+		margin-top: 0 !important;
+		margin-bottom: 0 !important;
 	}
 `;
 
