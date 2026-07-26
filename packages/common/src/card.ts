@@ -14,6 +14,7 @@ const STYLES = `
 		border-radius: var(--radius);
 		background: var(--card);
 		color: var(--card-foreground);
+		font-family: var(--font-sans);
 	}
 	.title {
 		margin: 0;

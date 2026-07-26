@@ -11,6 +11,7 @@ const STYLES = `
 	:host {
 		display: block;
 		margin: 1.5rem 0;
+		font-family: var(--font-sans);
 	}
 	.grid {
 		display: grid;

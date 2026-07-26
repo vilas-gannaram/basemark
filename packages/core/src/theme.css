@@ -10,6 +10,27 @@
  */
 
 :root {
+	/*
+	 * The system font stack (same list GitHub/Bootstrap use), not a single
+	 * named font — the generic `sans-serif` at the end is what actually
+	 * matters cross-platform. Components that don't set their own
+	 * font-family inherit whatever the host page's body font is (often a
+	 * browser-default serif, or a specific font missing glyphs the content
+	 * needs on a given OS/font-config, e.g. Fedora). Set font-family: var(
+	 * --font-sans) explicitly per component :host rather than relying on
+	 * inheritance from the host page.
+	 */
+	--font-sans:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji',
+		sans-serif;
+	/*
+	 * Same reasoning as --font-sans, for components that render code/data
+	 * (e.g. a future JSON/tree viewer, or an author-supplied Tier-4 fence) —
+	 * generic `monospace` as the final fallback rather than trusting a named
+	 * font to exist.
+	 */
+	--font-mono:
+		ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.153 0.006 107.1);
 	--card: oklch(1 0 0);

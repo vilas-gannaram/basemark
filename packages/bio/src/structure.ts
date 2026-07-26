@@ -22,6 +22,7 @@ const STYLES = `
 		border-radius: var(--radius);
 		padding: 0.75rem;
 		background: var(--card);
+		font-family: var(--font-sans);
 	}
 	.viewer {
 		width: 100%;

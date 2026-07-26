@@ -12,6 +12,7 @@ const TABS_STYLES = `
 		border-radius: var(--radius);
 		background: var(--card);
 		color: var(--card-foreground);
+		font-family: var(--font-sans);
 	}
 	.tab-strip {
 		display: flex;
