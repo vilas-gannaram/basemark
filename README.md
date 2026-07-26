@@ -6,15 +6,16 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full technical design spec and ra
 
 ### Status
 
-Pre-alpha, but the core pipeline is now validated end-to-end: `@basemark/core` parses `remark-directive` markdown into a hast tree (with schema-based prop validation and a "fail visibly" error node for unknown/invalid directives), and can auto-generate an AI-facing component prompt from the registry. `@basemark/bio` has its first real Tier-2 component (`::locuszoom-assoc{chrom start end}`, wrapping LocusZoom.js). `@basemark/react` renders that hast tree — every resolved custom element is wrapped generically (via `@lit/react`'s `createComponent`, not per-component code) so it mounts as a real React component, not a bare host tag. `apps/playground` is a working Vite app exercising the whole path in a browser.
+Pre-alpha, but the core pipeline is now validated end-to-end: `@basemark/core` parses `remark-directive` markdown into a hast tree (with schema-based prop validation and a "fail visibly" error node for unknown/invalid directives), and can auto-generate an AI-facing component prompt from the registry. `@basemark/bio` has its first real Tier-2 component (`::locuszoom-assoc{chrom start end}`, wrapping LocusZoom.js). `@basemark/common` has its first real components too — `card`/`columns`/`tabs`, the container-directive/Shadow-DOM-slot pattern proven out (see `packages/common/README.md`). `@basemark/react` renders that hast tree — every resolved custom element is wrapped generically (via `@lit/react`'s `createComponent`, not per-component code) so it mounts as a real React component, not a bare host tag. `apps/playground` is a working Vite app exercising the whole path in a browser.
 
-`packages/common`, `packages/chem`, `packages/cli`, `packages/svelte`, `apps/docs` are still stubs — see `packages/bio` and `packages/react` for the now-validated pattern to extend.
+`packages/chem`, `packages/cli`, `packages/svelte`, `apps/docs` are still stubs — see `packages/bio`, `packages/common`, and `packages/react` for the now-validated patterns to extend.
 
 ### Layout
 
 - `packages/core` — remark-directive parser + component registry + AI prompt generation (real)
 - `packages/bio` — domain components; first real one is `locuszoom-assoc` (LocusZoom.js)
-- `packages/common`, `packages/chem` — domain component packages (stub)
+- `packages/common` — general-purpose/layout components; real: `card`, `columns`, `tabs` (see its README)
+- `packages/chem` — domain component package (stub)
 - `packages/react` — framework binding (real: parses markdown, renders resolved custom elements as generically-wrapped React components)
 - `packages/svelte` — framework binding (stub, mirrors react's pattern once needed)
 - `packages/cli` — build/render tooling (stub)
