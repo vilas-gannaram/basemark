@@ -59,6 +59,8 @@ class TabPanelElement extends HTMLElement {
 				:host([hidden]) { display: none; }
 				::slotted(:first-child) { margin-top: 0 !important; }
 				::slotted(:last-child) { margin-bottom: 0 !important; }
+				/* Same reasoning as card.ts: a panel is already the visual boundary. */
+				::slotted(*) { border: none !important; background: transparent !important; }
 			</style>
 			<slot></slot>
 		`;

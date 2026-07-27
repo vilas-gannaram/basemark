@@ -41,6 +41,14 @@ const STYLES = `
 		 */
 		margin-top: 0 !important;
 		margin-bottom: 0 !important;
+		/*
+		 * A cell's own component (e.g. a locuszoom-* plot) drawing its own
+		 * border/background reads as a floating box misaligned against the
+		 * grid's gap-based separation — columns has no chrome of its own (see
+		 * the module comment), so a direct child shouldn't add any either.
+		 */
+		border: none !important;
+		background: transparent !important;
 	}
 `;
 

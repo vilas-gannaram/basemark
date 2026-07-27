@@ -42,6 +42,16 @@ const STYLES = `
 	::slotted(:last-child) {
 		margin-bottom: 0 !important;
 	}
+	/*
+	 * Same reasoning as the margin zeroing above, for border/background: a
+	 * slotted component's own :host chrome (border + background) would double
+	 * up against this card's own border — the card already establishes the
+	 * visual boundary, so a direct child shouldn't draw a second one.
+	 */
+	::slotted(*) {
+		border: none !important;
+		background: transparent !important;
+	}
 `;
 
 // The single case this component exists to prove: a container directive's
