@@ -13,6 +13,18 @@ import { registerErrorComponent } from './error-element';
 
 const DIRECTIVE_TYPES = ['leafDirective', 'containerDirective', 'textDirective'] as const;
 
+// Marker hName for a resolved `type: 'react'` (or any future non-web-component
+// escape hatch) definition — there's no real tag to emit, since it isn't a
+// customElements-registered element. Framework-agnostic here on purpose:
+// this module doesn't know which consumer (dom.ts, @basemark/react, ...) will
+// walk the resulting hast tree, so it leaves a neutral marker plus the
+// directive name in `data-basemark-component`, and each consumer decides for
+// itself what it's capable of doing with that — swap in the real component
+// (a framework binding that supports the escape hatch) or fail visibly (one
+// that doesn't, e.g. the plain-DOM path).
+export const NATIVE_COMPONENT_TAG = 'basemark-native';
+export const NATIVE_COMPONENT_DATA_ATTR = 'data-basemark-component';
+
 // A container's closing fence (`:::`, or more colons for an outer container
 // wrapping a nested one — see micromark-extension-directive's readme) is its
 // own source line of nothing but colons. If remark-directive never found a
@@ -88,6 +100,15 @@ export const resolveDirectives: Plugin<[ComponentRegistry], MdastRoot> = (regist
 						`Missing closing ":::" for ":::${node.name}" — everything below, up to the end of its ` +
 							'parent, was captured inside this component instead of rendering as separate content.',
 					);
+					return;
+				}
+
+				if (definition.type === 'react') {
+					node.data = {
+						...node.data,
+						hName: NATIVE_COMPONENT_TAG,
+						hProperties: { [NATIVE_COMPONENT_DATA_ATTR]: node.name, ...props },
+					};
 					return;
 				}
 
