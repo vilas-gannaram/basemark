@@ -3,24 +3,30 @@ import type { ComponentRegistry } from '@basemark/core';
 
 export const PROTVISTA_TAG = 'basemark-protvista';
 
-// Scoped to this element's own shadow root, same reasoning as structure.ts —
-// theme custom properties (--border, --radius, --card) still inherit in from
-// @basemark/core's theme.css despite the boundary. protvista-uniprot attaches
-// its own shadow root internally too; nesting shadow roots is fine, and theme
-// custom properties keep inheriting through both levels.
-const STYLES = `
-	:host {
-		display: block;
-		box-sizing: border-box;
-		margin: 1.5rem 0;
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-		padding: 0.75rem;
-		background: var(--card);
-		color: var(--card-foreground);
-		font-family: var(--font-sans);
-	}
-`;
+// No shadow root here — deliberately, unlike every other bio component.
+// protvista-uniprot itself renders into light DOM, not its own shadow root
+// (its source: "we are not using shadowDOM because of Mol*"), and it injects
+// the stylesheet its tracks/categories depend on via a plain <style> appended
+// to `document.head`. If we put it inside our own shadow root (as this
+// component used to), that page-level stylesheet can never reach it — shadow
+// DOM encapsulation blocks outside author styles from crossing in, same as it
+// blocks inside styles from leaking out. The visible symptom: category labels
+// render as plain unstyled text and no track/feature graphics ever draw,
+// while the Mol* structure viewer at the bottom still works fine (it draws to
+// a canvas, no CSS dependency). So this wrapper sets its own chrome as plain
+// inline styles on the host element itself, in the same light-DOM/document
+// style scope protvista-uniprot expects to be rendered into.
+const HOST_STYLE: Partial<CSSStyleDeclaration> = {
+	display: 'block',
+	boxSizing: 'border-box',
+	margin: '1.5rem 0',
+	border: '1px solid var(--border)',
+	borderRadius: 'var(--radius)',
+	padding: '0.75rem',
+	background: 'var(--card)',
+	color: 'var(--card-foreground)',
+	fontFamily: 'var(--font-sans)',
+};
 
 // protvista-uniprot's own connectedCallback only starts its data fetch if
 // `accession` is already present at connection time — there's no reactive
@@ -38,12 +44,8 @@ class ProtvistaElement extends HTMLElement {
 		return ['accession'];
 	}
 
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
 	connectedCallback(): void {
+		Object.assign(this.style, HOST_STYLE);
 		this.render();
 	}
 
@@ -55,11 +57,10 @@ class ProtvistaElement extends HTMLElement {
 		const accession = this.getAttribute('accession');
 		if (!accession) return;
 
-		const root = this.shadowRoot as ShadowRoot;
-		root.innerHTML = `<style>${STYLES}</style>`;
+		this.innerHTML = '';
 		const viewer = document.createElement('protvista-uniprot');
 		viewer.setAttribute('accession', accession);
-		root.appendChild(viewer);
+		this.appendChild(viewer);
 	}
 }
 
