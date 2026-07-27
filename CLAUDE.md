@@ -15,7 +15,7 @@ Guidance for Claude Code when working in this repository. See [README.md](README
 
 Tracked in one place only: see README.md's "Status" section for what's currently real vs. stub. Don't duplicate it here — this file drifted out of sync with the actual package contents the last time it tried. Open design questions: ARCHITECTURE.md §10. Open questions specific to the consumption-paths vision: VISION.md.
 
-`examples/` (described in ARCHITECTURE.md §9 as target structure) now has its first real member, `examples/vanilla`. `experiments/` still doesn't exist — removed until there's something real to prototype.
+`examples/` (described in ARCHITECTURE.md §9 as target structure) now has two real members, `examples/vanilla` and `examples/react` (the latter replaces the former `apps/playground`). `experiments/` still doesn't exist — removed until there's something real to prototype.
 
 ## Gotchas
 

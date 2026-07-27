@@ -1,8 +1,8 @@
 {
-	"name": "playground",
+	"name": "react-example",
 	"version": "0.0.0",
 	"private": true,
-	"description": "Live in-browser markdown editor / demo.",
+	"description": "@basemark/react usage — the React consumption path (VISION.md).",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",

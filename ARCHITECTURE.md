@@ -180,7 +180,7 @@ Tooling: pnpm workspaces + Turborepo + Changesets. (Not Bun — install-speed ga
 ```
 basemark/
 ├── packages/     # published, versioned (core, common, bio, chem, react, svelte, cli)
-├── apps/         # deployed, not published (docs site, playground)
+├── apps/         # deployed, not published (docs site)
 ├── examples/     # per-framework integration demos + CI surface for wrapper breakage
 ├── experiments/  # POCs, no stability contract, excluded from workspace/turbo globs
 ├── configs/      # shared eslint/tsconfig/vitest configs, workspace-internal
@@ -191,7 +191,7 @@ basemark/
 
 `examples/` and `apps/` packages are `private: true` and unscoped, so it's visually obvious in tooling output which packages are real published artifacts.
 
-`examples/` now has its first real member — `examples/vanilla`, direct `@basemark/core` usage with no framework binding. `experiments/` still doesn't exist (see CLAUDE.md) — still the target structure once there's something real to put there.
+`examples/` now has two real members — `examples/vanilla` (direct `@basemark/core` usage with no framework binding) and `examples/react` (`@basemark/react` usage in the browser). `experiments/` still doesn't exist (see CLAUDE.md) — still the target structure once there's something real to put there.
 
 ---
 
