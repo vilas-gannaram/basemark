@@ -6,8 +6,7 @@ export interface PropSchema {
 	description?: string;
 }
 
-export interface ComponentDefinition {
-	tag: string;
+interface ComponentDefinitionBase {
 	// Which pack this component belongs to (e.g. "bio", "chem", "common") —
 	// lets generateSystemPrompt() scope its index to one domain instead of
 	// the whole registry as more packs get built out.
@@ -19,6 +18,29 @@ export interface ComponentDefinition {
 	description: string;
 	schema?: Record<string, PropSchema>;
 }
+
+// The default: a customElements-registered tag (ARCHITECTURE.md §6), works
+// across every consumption path (React, Svelte, plain HTML). `type` is
+// omitted rather than `'web-component'` on every existing call site.
+export interface WebComponentDefinition extends ComponentDefinitionBase {
+	type?: 'web-component';
+	tag: string;
+}
+
+// The §6/§10 escape hatch: an app-local, non-portable component rendered
+// natively by one specific framework binding, not a Web Component. Never for
+// domain packs (bio/chem/common) — those must stay Web Components so they
+// work everywhere; this is for e.g. an app that already has React state/
+// context it wants a directive to plug straight into, with no customElements
+// indirection. `component` is left untyped here so @basemark/core carries no
+// framework dependency — the consuming framework binding casts it back (see
+// @basemark/react's renderNode).
+export interface NativeComponentDefinition extends ComponentDefinitionBase {
+	type: 'react';
+	component: unknown;
+}
+
+export type ComponentDefinition = WebComponentDefinition | NativeComponentDefinition;
 
 export interface RegisterOptions {
 	override?: boolean;
