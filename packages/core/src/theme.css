@@ -98,3 +98,16 @@
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.58 0.031 107.3);
 }
+
+/*
+ * Plain markdown prose (h1-h6, p, ul/ol, ...) renders as ordinary light-DOM
+ * elements, not inside any component's shadow root — so unlike every
+ * component's own :host { font-family: var(--font-sans) }, nothing sets its
+ * font unless the host page's body already does. Setting it here once, and
+ * letting it inherit down, covers all of it without per-tag rules.
+ */
+body {
+	font-family: var(--font-sans);
+	color: var(--foreground);
+	background: var(--background);
+}
