@@ -10,33 +10,63 @@ registerBioComponents(registry);
 registerCommonComponents(registry);
 
 const source = [
-	'# React renderer',
+	'# One variant, many phenotypes',
 	'',
-	'`MarkdownRenderer` from `@basemark/react` parses the markdown and mounts every resolved custom ' +
-		"element as a real React component — via a generic wrapper (`@lit/react`'s `createComponent`), " +
-		'not per-component code.',
+	'`MarkdownRenderer` from `@basemark/react` parses the markdown below and mounts every resolved ' +
+		"custom element as a real React component — via a generic wrapper (`@lit/react`'s " +
+		'`createComponent`), not per-component code.',
 	'',
-	':::card{title="Works fine"}',
-	'A normal card, rendered through the React binding.',
+	'**rs7903146**, in an intron of *TCF7L2* on chromosome 10, is the single most replicated hit in ' +
+		"type 2 diabetes genetics. But a variant's associations rarely stop at the phenotype it was " +
+		'first found for — the views below ask how far this one actually reaches.',
 	'',
-	'::structure{pdbid="1cbs"}',
+	':::card{title="A phenome-wide scan"}',
+	'Instead of scanning many variants across one region, this flips the axis: one variant, scanned ' +
+		'across many phenotypes at once, colored by trait category.',
+	'',
+	'::locuszoom-phewas{variant="10:114758349_C/T"}',
 	':::',
 	'',
-	'## Invalid syntax, on purpose',
+	'The signal clearly is not confined to a single trait. Two more views narrow in on *why*: what sits ' +
+		'in the region at the DNA level, and how the locus behaves across other metabolic traits ' +
+		'specifically.',
 	'',
-	'An unknown directive:',
+	'::::columns{cols="2"}',
+	':::card{title="Regulatory context"}',
+	'Chromatin/regulatory interval annotations across the same locus — the kind of evidence used to ' +
+		'argue a variant is doing something at the DNA level, not just correlating with disease.',
 	'',
-	'::not-a-real-component{foo="bar"}',
+	'::locuszoom-intervals{chrom="10" start="114550452" end="115067678"}',
+	':::',
 	'',
-	'A container missing its closing fence — everything below gets captured inside it instead of ' +
-		'rendering separately, and the error banner shows what was swallowed:',
+	':::card{title="Other metabolic traits, same locus"}',
+	'Four independent metabolic-trait GWAS (fasting glucose, fasting insulin, triglycerides, total ' +
+		'cholesterol) layered on the same region, so the signal can be compared across traits directly ' +
+		'rather than one plot per trait.',
 	'',
-	':::card{title="Unclosed"}',
-	'This text is inside the broken card.',
+	'::locuszoom-multi-pheno{chrom="10" start="114550452" end="115067678"}',
+	':::',
+	'::::',
 	'',
-	'## This heading got swallowed too',
+	'All of that pleiotropy traces back to one gene product. Two more views bring it back down to the ' +
+		'protein: its sequence, and the one structure solved of it in complex with its binding partner.',
 	'',
-	'So did this paragraph.',
+	'::::tabs',
+	':::tab-panel{label="Protein sequence"}',
+	'The full TCF7L2 sequence (UniProt Q9NQB0) — the gene every plot above is ultimately pointing at.',
+	'',
+	'::protvista{accession="Q9NQB0"}',
+	':::',
+	'',
+	':::tab-panel{label="Bound to β-catenin"}',
+	'PDB entry 1JPW — TCF7L2 in complex with β-catenin, the interaction through which it acts in Wnt ' + 'signaling.',
+	'',
+	'::structure{pdbid="1jpw"}',
+	':::',
+	'::::',
+	'',
+	'One variant, one gene, and a reach across an entire metabolic phenotype space — which is exactly ' +
+		'the kind of cross-cutting evidence a GWAS hit needs before it becomes a drug target.',
 ].join('\n');
 
 const root = document.getElementById('root');
