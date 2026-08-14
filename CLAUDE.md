@@ -1,24 +1,6 @@
 # CLAUDE.md
 
-Guidance for Claude Code when working in this repository. See [README.md](README.md) for what Basemark is, the package layout, commands, and current implementation status. See [ARCHITECTURE.md](ARCHITECTURE.md) for the full technical design spec, and [VISION.md](VISION.md) for the intended consumption paths (direct library use, Claude Skills authoring, CLI-rendered shareable HTML) — this file only covers what changes how you should work here.
-
-## Decisions that constrain implementation
-
-- **Authoring syntax is `remark-directive`** (leaf `::name{attrs}`, container `:::name{attrs}...:::`, text `:name[label]{attrs}`) — not raw HTML, not markdown-it. Default new components to **leaf directives**; containers are reserved for things that genuinely need child content (cards, tabs, layouts), since an unclosed `:::` silently swallows the rest of the document. `parse.ts` now detects this case and fails visibly via `basemark-error` (ARCHITECTURE.md §3) — that's a safety net, not a reason to reach for containers by default.
-- **Tiering model**: default every new component to Tier 1 (single ID, e.g. `::structure{pdbId="..."}`) or Tier 2 (2-4 short fields). Never make an author supply a raw data blob (Tier 4) except as an explicit escape hatch. Check new component proposals against this first.
-- **Web Components are the default render target** for anything published/shared (`bio`, `chem`, `common`) — must work cross-framework and in raw HTML. Native framework registration (`{ type: 'react', component: X }`) is an escape hatch for app-local, non-portable components only.
-- **Registry is behind the manifest spec**: `packages/core/src/registry.ts`'s `ComponentDefinition` doesn't yet include `mimetypes` or `version` from the full manifest contract (ARCHITECTURE.md §5) — don't assume mimetype/version validation exists. (Don't hardcode the rest of the shape here either — read `registry.ts` directly; it's evolved past a bare `{ tag, schema }` since this bullet was written and will keep moving.)
-- **Custom elements from React render via a generic wrapper, not per-component code.** `packages/react`'s `MarkdownRenderer` wraps every resolved custom element with `@lit/react`'s `createComponent()` (looked up via `customElements.get(tagName)`), so it mounts as a real React component rather than a bare host tag. This works for any custom element regardless of how it was authored (no Lit dependency needed in the component itself) — don't write bespoke per-component React wrappers or reimplement a component's logic natively in React; extend the generic wrapper instead.
-- **Formatting is enforced by Prettier, not hand-applied or debated.** A Husky `pre-commit` hook runs `lint-staged` (Prettier then ESLint `--fix`) on staged files — see `.prettierrc.json`. Don't add stylistic rules to `configs/eslint-config` (it ends with `eslint-config-prettier` specifically to prevent that conflict), and don't hand-format code to "fix" something Prettier would just rewrite on commit.
-
-## Status
-
-Tracked in one place only: see README.md's "Status" section for what's currently real vs. stub. Don't duplicate it here — this file drifted out of sync with the actual package contents the last time it tried. Open design questions: ARCHITECTURE.md §10. Open questions specific to the consumption-paths vision: VISION.md.
-
-`examples/` (described in ARCHITECTURE.md §9 as target structure) now has two real members, `examples/vanilla` and `examples/react` (the latter replaces the former `apps/playground`). `experiments/` still doesn't exist — removed until there's something real to prototype.
-
-## Gotchas
-
-- The root `.gitignore` was generated from a generic template and originally contained a NuGet rule (`**/[Pp]ackages/*`) that silently excluded the entire `packages/` directory from git. It's been commented out — do not re-add a bare `packages/*` ignore rule, it will hide this monorepo's real source packages.
-- **A custom element class must never be declared at module scope in `@basemark/core`.** `class X extends HTMLElement` evaluates `HTMLElement` the instant the class statement runs, not on first instantiation — and `packages/core`'s tests run in plain Node, no jsdom, no DOM globals at all. `error-element.ts`'s `registerErrorComponent()` defines its class *inside* the function, after a `typeof HTMLElement === 'undefined'` guard, specifically so `parse.ts` (which calls it) stays importable and callable from a Node-only test. Any future core-level custom element needs the same shape; domain packages (`bio`, `common`) don't have this constraint since nothing imports them into a Node test today.
-- **`unified`'s `processor.runSync(tree)` silently drops the source text if you don't pass the same `VFile` you parsed with.** `parse.ts` used to call `processor.parse(source)` then `processor.runSync(mdastTree)` with no second argument — `runSync` then creates a fresh, valueless `VFile` of its own, so any plugin reading `file.value` (as `resolveDirectives` does, to slice out a directive's raw source) silently gets `undefined`. Construct one `VFile` and pass it to both `parse()` and `runSync(tree, file)`. This went unnoticed for a while because no test asserted on the `source` property's actual content — if you add a plugin that reads `file.value`, add a test that checks it's non-empty, not just that it exists.
+- [AGENTS.md](AGENTS.md)
+- [README.md](README.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [VISION.md](VISION.md)

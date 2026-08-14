@@ -1,14 +1,12 @@
 # Basemark — Architecture & Design Spec
 
-Technical design rationale and decisions for Basemark — the pipeline, syntax, registry, and rendering model. See [README.md](README.md) for a project overview and current status, [CLAUDE.md](CLAUDE.md) for repo-specific working guidance, and [VISION.md](VISION.md) for who consumes this and how (a product concern, kept separate from the technical design here).
+Technical design and rationale for Basemark — the pipeline, syntax, registry, and rendering model. See [README.md](README.md) for a project overview, [AGENTS.md](AGENTS.md) for repo-specific working guidance, and [VISION.md](VISION.md) for who consumes this and how.
 
 ## 1. What this is
 
 A Markdown renderer that lets authors embed live, interactive components — protein structure viewers, molecule viewers, genomic tracks, charts, diagrams — using a short identifier (accession ID, PDB ID, locus) instead of raw config or markup.
 
-Primary users: bioinformatics/cheminformatics authors (researchers, data scientists writing docs/reports/wikis). Secondary: general Markdown authors wanting MDX-like power without a JS framework.
-
-Both human and AI authors are expected to write this Markdown — the syntax must be cheap and hard to get wrong for an LLM to generate, and legible for a human to hand-write. It's meant to be community-extended: others should be able to register their own components and domain packs without forking core.
+Primary users: bioinformatics/cheminformatics authors. Secondary: general Markdown authors wanting MDX-like power without a JS framework. Both human and AI authors are expected to write it — the syntax must be cheap and hard to get wrong for an LLM, and legible for a human to hand-write. Meant to be community-extended: others should be able to register components and domain packs without forking core.
 
 ---
 
@@ -24,15 +22,13 @@ Never make an author supply a data blob if a short identifier is enough for the 
 | 3 — inline literal | the actual (short) content | parse + render, no fetch | ` ```smiles ` fence, small FASTA |
 | 4 — full data/URL | structured blob or file URL | render only | escape hatch, avoid as default |
 
-Default every new component to Tier 1/2. Tier 4 is an escape hatch, not the primary UX — this keeps AI-authoring token-cheap/low-error and human-authoring low-effort.
+Default every new component to Tier 1/2 — keeps AI-authoring token-cheap/low-error and human-authoring low-effort. Tier 4 is an escape hatch, not the primary UX.
 
 ---
 
 ## 3. Authoring syntax: remark-directive
 
-Chosen over raw HTML custom elements (ambiguous CommonMark raw-HTML parsing rules, bad AI failure mode, more tokens per invocation) and markdown-it + a custom container plugin (token-stream parsing, no tree/visitor pattern).
-
-### Three directive forms
+Chosen over raw HTML custom elements (ambiguous CommonMark raw-HTML parsing, bad AI failure mode, more tokens per invocation) and markdown-it + a custom container plugin (token-stream parsing, no tree/visitor pattern).
 
 ```
 :name[label]{attrs}   — text directive: inline, sits inside a sentence
@@ -46,14 +42,7 @@ Chosen over raw HTML custom elements (ambiguous CommonMark raw-HTML parsing rule
 
 `{}` = structured attrs (component props). `[]` = optional inline content slot. Default to leaf directives — nothing to leave unclosed.
 
-### Known failure mode: unclosed container directives
-
-An unclosed `:::` doesn't error at the remark-directive level — it silently swallows the rest of the document (or the rest of its parent block quote/list item) as children, same as an unclosed code fence. Mitigations, in priority order:
-
-1. Prefer leaf directives (structural fix).
-2. **Built**: `parse.ts`'s `resolveDirectives` checks whether a container directive's raw source actually ends in a closing fence line (`:::`, or more colons for a nested container); if not, it's flagged rather than silently accepted.
-3. A structural linter (colon-balance check) in CI/pre-commit, especially for layout directives — not built.
-4. **Built**: fail visibly — flagged containers resolve to the `basemark-error` component (`error-element.ts`), which shows the error banner *and* still renders whatever content got swallowed (via its own slot), so nothing silently disappears along with the warning.
+**Known failure mode:** an unclosed `:::` doesn't error at the remark-directive level — it silently swallows the rest of the document (or its parent block quote/list item) as children, same as an unclosed code fence. Mitigations, in priority order: (1) prefer leaf directives — structural fix; (2) **built** — `parse.ts`'s `resolveDirectives` checks whether a container's raw source actually ends in a closing fence line, flagging it if not; (3) a structural colon-balance linter in CI/pre-commit — not built; (4) **built** — fail visibly: flagged containers resolve to `basemark-error` (`error-element.ts`), which shows the error banner *and* still renders the swallowed content via its own slot, so nothing silently disappears.
 
 ---
 
@@ -72,9 +61,7 @@ DOM / static HTML / React tree / etc.
 
 `unified` is the pipeline runner, not a parser. All directive-to-component logic lives in one custom remark plugin between mdast and hast.
 
-### Data resolution model (mimebundles)
-
-For Tier 1/2 components, a data resolver fetches from a URL and hands the component a `{mimetype: representation}` bundle (Jupyter's mimebundle pattern), rather than the renderer guessing raw/base64/json/txt per component. Each manifest declares accepted mimetypes; components own their own parsing (RDKit.js parses SMILES, Mol* parses PDB) — no universal parsing layer.
+**Data resolution (mimebundles):** for Tier 1/2 components, a data resolver fetches from a URL and hands the component a `{mimetype: representation}` bundle (Jupyter's mimebundle pattern) rather than the renderer guessing raw/base64/json/txt per component. Each manifest declares accepted mimetypes; components own their own parsing (RDKit.js parses SMILES, Mol* parses PDB) — no universal parsing layer.
 
 ```yaml
 :::structure-viewer
@@ -114,30 +101,13 @@ Auto-generate an AI system prompt from the registry (component list + schemas) r
 
 ## 6. Rendering: Web Components as default, with an escape hatch
 
-**Default path (framework-agnostic):** the transform plugin emits hast nodes that become custom elements (`<protvista-viewer>`, `<structure-viewer>`). Any framework consumes these as plain HTML tags:
+**Default path (framework-agnostic):** the transform plugin emits hast nodes that become custom elements (`<protvista-viewer>`, `<structure-viewer>`). Any framework consumes these as plain HTML tags — Svelte via native `<svelte:options customElement="...">`, Solid via `solid-element`, Lit/vanilla natively, React via a wrapper (mounts a React root in `connectedCallback`). Published/shared components (`bio`, `chem`, `common`) must target this tier — cross-framework, raw HTML/SSR.
 
-- **Svelte**: native `<svelte:options customElement="...">`, no wrapper.
-- **Solid**: `solid-element`.
-- **React**: needs a wrapper (e.g. `react-to-webcomponent`) — mounts a React root in `connectedCallback`.
-- **Lit / vanilla**: thin native layer.
+**Escape hatch:** an app author (not a package author) can register `{ type: 'react', component: X }` and skip the custom-element boundary. Only renders inside that specific framework binding — no cross-framework portability, no SSR fallback unless supplied. For private, app-local components only.
 
-Published/shared components (`bio`, `chem`, `common`) must target this tier — cross-framework, raw HTML/SSR.
+**Nesting & layout:** container directives nest naturally (mdast/hast trees nest); layout composition uses Shadow DOM slots — a `:::card{...}` with a nested `::chart{...}` becomes `<basemark-card>` with a `<slot>` in its shadow root, and the chart projects into it via native slot assignment. Built and validated end-to-end (`@basemark/common`'s `card`/`columns`/`tabs`, §8). `tabs` uses one default slot plus imperative light-DOM reads instead of named slots, since named slots need a static slot count a dynamic tab list doesn't have.
 
-**Escape hatch:** an app author (not a package author) can register `{ type: 'react', component: X }` and skip the custom-element boundary — the framework binding intercepts before rendering, falling through to `customElements.get()` otherwise. Tradeoff: only renders inside that specific framework binding, no cross-framework portability, no SSR fallback unless one is supplied. For private, app-local components only.
-
-### Nesting & layout
-
-Container directives nest naturally (mdast/hast trees nest). Layout composition uses Shadow DOM slots:
-
-```
-:::card{title="Expression levels"}
-::chart{type="bar" data-url="/expr.json"}
-:::
-```
-
-→ `<basemark-card>` has a `<slot>` in its shadow root; the nested `<chart-viewer>` projects into it via native slot assignment. This is now built and validated end-to-end (`@basemark/common`'s `card`/`columns`/`tabs` — see §8 and `packages/common/README.md`); `tabs` deviates from the "named slots" idea sketched above in favor of one default slot plus imperative light-DOM reads, since named slots need a static slot count that a dynamic tab list doesn't have.
-
-For natively-registered React/Svelte containers, slotting isn't available — the framework binding must reimplement composition by recursively rendering children and passing them as e.g. React's `children` prop. Real asymmetry between the two render paths. (This asymmetry doesn't apply to the plain-DOM path — `examples/vanilla` mounts the same nested custom elements with no framework and no reimplemented composition at all, since slotting is native browser behavior, not something a renderer has to provide.)
+For natively-registered React/Svelte containers, slotting isn't available — the framework binding must reimplement composition by recursively rendering children (e.g. React's `children` prop). Real asymmetry between the two render paths; doesn't apply to the plain-DOM path (`examples/vanilla`), since slotting there is native browser behavior.
 
 ---
 
@@ -149,11 +119,11 @@ For natively-registered React/Svelte containers, slotting isn't available — th
         (consumer apps)  ────┘
 ```
 
-Everything depends on core; core depends on nothing framework-specific. No sideways dependencies (react never imports svelte; cli doesn't require react unless a specific opt-in subcommand needs it).
+Everything depends on core; core depends on nothing framework-specific. No sideways dependencies.
 
-- **`@basemark/core`** — parse (mdast), transform (mdast→hast + registry resolution), data resolver, registry API. Pure logic, no DOM, runs in Node or browser. Output is a plain hast tree, not rendered anything. Must stay small and stable since everything depends on it.
-- **`@basemark/react` / `@basemark/svelte`** — take core's hast tree and mount it per-framework. Only layer where native (non-web-component) registration and children-based composition make sense.
-- **`@basemark/cli`** — build-time tooling: static-site batch rendering, structural/schema linter (CI, not in-browser), component scaffolding, registry validation, and rendering a single markdown+directives doc to one self-contained shareable HTML file (see VISION.md). Depends on core; optionally a wrapper for specific SSG subcommands.
+- **`@basemark/core`** — parse (mdast), transform (mdast→hast + registry resolution), data resolver, registry API. Pure logic, no DOM, runs in Node or browser. Must stay small and stable since everything depends on it.
+- **`@basemark/react` / `@basemark/svelte`** — take core's hast tree and mount it per-framework. Only layer where native registration and children-based composition make sense.
+- **`@basemark/cli`** — build-time tooling: static-site batch rendering, structural/schema linter, component scaffolding, registry validation, and rendering a single doc to one self-contained shareable HTML file (see VISION.md).
 
 ---
 
@@ -165,11 +135,13 @@ Everything depends on core; core depends on nothing framework-specific. No sidew
 
 **Bio/chem — Tier 3:** ` ```smiles ` (RDKit.js/SmilesDrawer), ` ```fasta `, ` ```newick ` (phylogenetic tree)
 
-**General-purpose (`@basemark/common`):** Mermaid family (flowchart, gantt, timeline, fishbone — native Mermaid diagram types as of v11.13), Vega-Lite/Plotly charts, KaTeX, sortable tables, maps (MapLibre/Leaflet), citations (BibTeX), JSON/tree viewers, media embeds.
+**General-purpose (`@basemark/common`):** Mermaid family, Vega-Lite/Plotly charts, KaTeX, sortable tables, maps (MapLibre/Leaflet), citations (BibTeX), JSON/tree viewers, media embeds.
 
-**Layout/container (`@basemark/common`) — built:** `:::card{title="..."}` (single slot — built first, as the minimal case to prove directive-nesting → hast-nesting → `<slot>` projection end-to-end), `:::columns{cols="..."}` (layout-only CSS Grid, one child per cell), `:::tabs` / `:::tab-panel{label="..."}` (one default slot plus imperative light-DOM reads instead of named slots — see §6 and `packages/common/README.md` for why). All three zero the vertical margin a nested bio/chem component would otherwise contribute, via `::slotted()` overrides.
+**Layout/container (`@basemark/common`):** `:::card{title="..."}`, `:::columns{cols="..."}` (CSS Grid), `:::tabs`/`:::tab-panel{label="..."}` — see §6 for the slotting model and `packages/common/README.md` for build status. All three zero the vertical margin a nested bio/chem component would otherwise contribute, via `::slotted()` overrides.
 
-**Mermaid design note:** one shared `<mermaid-diagram>` component renders raw Mermaid source (Mermaid dispatches by diagram type itself). Guided directives (`::gantt{...}`, `::flowchart{...}`, `::fishbone{...}`) are thin translators — structured attrs → generated Mermaid source → same shared renderer. Raw ` ```mermaid ` fence remains the Tier-4 escape hatch for diagram types without a guided wrapper, or unusual custom syntax.
+**Mermaid design note:** one shared `<mermaid-diagram>` component renders raw Mermaid source (Mermaid dispatches by diagram type itself). Guided directives (`::gantt{...}`, `::flowchart{...}`, `::fishbone{...}`) are thin translators — structured attrs → generated Mermaid source → same shared renderer. Raw ` ```mermaid ` fence remains the Tier-4 escape hatch for unguided diagram types.
+
+Build status per component (what's real vs. planned) lives in `packages/bio/README.md` and `packages/common/README.md`, not here.
 
 ---
 
@@ -189,9 +161,7 @@ basemark/
 └── .changeset/
 ```
 
-`examples/` and `apps/` packages are `private: true` and unscoped, so it's visually obvious in tooling output which packages are real published artifacts.
-
-`examples/` now has two real members — `examples/vanilla` (direct `@basemark/core` usage with no framework binding) and `examples/react` (`@basemark/react` usage in the browser). `experiments/` still doesn't exist (see CLAUDE.md) — still the target structure once there's something real to put there.
+`examples/` and `apps/` packages are `private: true` and unscoped, so it's visually obvious in tooling output which packages are real published artifacts. `experiments/` doesn't exist yet (see AGENTS.md) — target structure once there's something real to put there.
 
 ---
 
@@ -199,8 +169,8 @@ basemark/
 
 - Final project name ("Basemark" kept domain-neutral so it prefixes cleanly across `core`, `bio`, `chem`, and future packs like `geo`).
 - Full manifest JSON Schema spec (§5 is conceptual, not finalized field-by-field).
-- SSR fallback contract for natively-registered (non-web-component) framework components — no defined behavior for server-rendering a doc with no framework runtime present.
+- SSR fallback contract for natively-registered (non-web-component) framework components.
 - Full list of guided Mermaid wrapper directives to ship at v1 vs. leave to the raw-fence escape hatch.
-- §6's native framework registration escape hatch (`{ type: 'react', component: X }`, app-local only — never for pack authors) has no implementation path yet: `registry.ts`'s `ComponentDefinition` has no `render` field to distinguish it from the default custom-element tag, `parse.ts`'s `resolveDirectives` unconditionally emits `hName: definition.tag`, and `packages/react`'s renderer only ever resolves via `customElements.get(tagName)`. All three would need to change together for this to exist.
-- The unclosed-container detection (§3) is a heuristic — it checks whether a container's raw source ends in a fence-only line, which is reliable for the common case but isn't a from-first-principles parse of remark-directive's own closing rules (nested indentation inside a list item/block quote isn't specifically exercised). A structural linter (§3 mitigation #3) is still unbuilt.
-- Who consumes this and how (direct library use, Claude Skills authoring, CLI-rendered shareable HTML) is a separate, product-facing concern — see [VISION.md](VISION.md), including that initiative's own open questions (bundling strategy, data self-containment, offline fallback).
+- §6's native framework registration escape hatch has no implementation path yet: `registry.ts`'s `ComponentDefinition` has no `render` field to distinguish it from the default custom-element tag, `parse.ts`'s `resolveDirectives` unconditionally emits `hName: definition.tag`, and `packages/react`'s renderer only ever resolves via `customElements.get(tagName)`. All three would need to change together.
+- The unclosed-container detection (§3) is a heuristic (checks for a fence-only closing line), not a from-first-principles parse of remark-directive's closing rules — nested indentation inside a list item/block quote isn't specifically exercised. The structural linter (§3 mitigation #3) is still unbuilt.
+- Who consumes this and how is a separate, product-facing concern — see [VISION.md](VISION.md).
