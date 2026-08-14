@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { createElement, Fragment, type ReactNode } from 'react';
+import { createElement, Fragment, type ComponentType, type ReactNode } from 'react';
 import type { RootContent } from 'hast';
 import { createComponent, type ReactWebComponent } from '@lit/react';
-import { parseMarkdown, type ComponentRegistry } from '@basemark/core';
+import { NATIVE_COMPONENT_DATA_ATTR, NATIVE_COMPONENT_TAG, parseMarkdown, type ComponentRegistry } from '@basemark/core';
 
 export interface MarkdownRendererProps {
 	source: string;
@@ -27,11 +27,28 @@ function getWrappedComponent(tagName: string): ReactWebComponent<HTMLElement> | 
 	return component;
 }
 
-function renderNode(node: RootContent, key: number): ReactNode {
+// The §6/§10 native escape hatch: parse.ts leaves a neutral NATIVE_COMPONENT_TAG
+// marker (it doesn't know which consumer will walk its output), carrying the
+// original directive name in NATIVE_COMPONENT_DATA_ATTR. This is the one
+// consumer that can actually honor it — swap the marker for the real
+// component the registry has on file, cast back from the `unknown` core keeps
+// it as (see registry.ts's NativeComponentDefinition).
+function renderNativeComponent(node: RootContent & { type: 'element' }, key: number, registry: ComponentRegistry): ReactNode {
+	const { [NATIVE_COMPONENT_DATA_ATTR]: name, ...props } = node.properties as Record<string, unknown>;
+	const definition = registry.resolve(String(name));
+	if (definition?.type !== 'react') return null;
+
+	const Component = definition.component as ComponentType<Record<string, unknown>>;
+	const children = node.children.map((child, index) => renderNode(child, index, registry));
+	return createElement(Component, { key, ...props }, ...children);
+}
+
+function renderNode(node: RootContent, key: number, registry: ComponentRegistry): ReactNode {
 	if (node.type === 'text') return node.value;
 	if (node.type !== 'element') return null;
+	if (node.tagName === NATIVE_COMPONENT_TAG) return renderNativeComponent(node, key, registry);
 
-	const children = node.children.map(renderNode);
+	const children = node.children.map((child, index) => renderNode(child, index, registry));
 	// hast `properties` values (arbitrary attribute data) don't line up
 	// statically with either the host-element or wrapped-component prop
 	// types, since both are runtime-determined here.
@@ -43,5 +60,5 @@ function renderNode(node: RootContent, key: number): ReactNode {
 
 export function MarkdownRenderer({ source, registry }: MarkdownRendererProps): ReactNode {
 	const hast = parseMarkdown(source, registry);
-	return createElement(Fragment, null, ...hast.children.map(renderNode));
+	return createElement(Fragment, null, ...hast.children.map((node, index) => renderNode(node, index, registry)));
 }

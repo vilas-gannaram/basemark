@@ -4,10 +4,29 @@ import { registerBioComponents } from '@basemark/bio';
 import { registerCommonComponents } from '@basemark/common';
 import { MarkdownRenderer } from '@basemark/react';
 import '@basemark/core/theme.css';
+import { GeneChip } from './gene-chip';
 
 const registry = createRegistry();
 registerBioComponents(registry);
 registerCommonComponents(registry);
+
+// ARCHITECTURE.md §6/§10's native registration escape hatch: an app-local
+// React component (with its own useState, no customElements involved),
+// registered as `type: 'react'` instead of a tag. Never for domain packs —
+// see gene-chip.tsx.
+registry.register('gene-chip', {
+	type: 'react',
+	component: GeneChip,
+	domain: 'app',
+	title: 'Gene Chip',
+	description:
+		'An inline, clickable chip for a gene symbol — click to expand its full name and chromosome. Text directive ' +
+		'only (renders inline within a sentence, not as its own block); app-local, not part of any published pack.',
+	schema: {
+		full: { type: 'string', description: 'Full gene name shown when expanded.' },
+		chrom: { type: 'string', description: 'Chromosome, without a "chr" prefix (e.g. "10").' },
+	},
+});
 
 const source = [
 	'# One variant, many phenotypes',
@@ -16,9 +35,11 @@ const source = [
 		"custom element as a real React component — via a generic wrapper (`@lit/react`'s " +
 		'`createComponent`), not per-component code.',
 	'',
-	'**rs7903146**, in an intron of *TCF7L2* on chromosome 10, is the single most replicated hit in ' +
-		"type 2 diabetes genetics. But a variant's associations rarely stop at the phenotype it was " +
-		'first found for — the views below ask how far this one actually reaches.',
+	'**rs7903146**, in an intron of :gene-chip[TCF7L2]{full="Transcription factor 7-like 2" chrom="10"}, is ' +
+		"the single most replicated hit in type 2 diabetes genetics. But a variant's associations rarely " +
+		'stop at the phenotype it was first found for — the views below ask how far this one actually ' +
+		"reaches. (Click the gene name — it's a real React component with its own state, registered " +
+		'through the native escape hatch, ARCHITECTURE.md §6/§10 — not a Web Component.)',
 	'',
 	':::card{title="A phenome-wide scan"}',
 	'Instead of scanning many variants across one region, this flips the axis: one variant, scanned ' +
