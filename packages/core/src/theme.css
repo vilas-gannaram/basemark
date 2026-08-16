@@ -138,21 +138,42 @@ h6 {
 	font-weight: 600;
 	line-height: var(--leading-tight);
 }
+/*
+ * Vertical rhythm: margin-top separates a heading from whatever preceded it
+ * (unrelated content above), margin-bottom ties it to the content that
+ * follows (which it's introducing) — so top is deliberately larger than
+ * bottom at every level, and both shrink together as heading level
+ * increases. `:first-child` drops the top margin so a page/container's
+ * opening heading doesn't add extra space on top of the container's own
+ * padding.
+ */
 h1 {
 	font-size: var(--text-2xl);
 	font-weight: 700;
+	margin: 2.5rem 0 1rem;
 }
 h2 {
 	font-size: var(--text-xl);
+	margin: 2rem 0 0.875rem;
 }
 h3 {
 	font-size: var(--text-lg);
 	line-height: var(--leading-snug);
+	margin: 1.75rem 0 0.75rem;
 }
 h4,
 h5,
 h6 {
 	font-size: var(--text-base);
+	margin: 1.25rem 0 0.5rem;
+}
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child {
+	margin-top: 0;
 }
 
 /*
