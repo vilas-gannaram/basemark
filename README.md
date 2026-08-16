@@ -12,7 +12,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the technical design, and [VISION.md]
 - `packages/chem` — domain component package (stub)
 - `packages/react` — framework binding: parses markdown, renders resolved custom elements as generically-wrapped React components
 - `packages/svelte` — framework binding (stub, mirrors react's pattern once needed)
-- `packages/cli` — build/render tooling (stub)
+- `packages/cli` — build/render tooling; `basemark render` resolves a markdown(+directives) file to one self-contained HTML file (see `packages/cli/README.md`)
 - `apps/docs` — docs site (stub)
 - `examples/vanilla` — direct `@basemark/core` usage with no framework (Vite + `renderMarkdown()`)
 - `examples/react` — `@basemark/react` usage in the browser (Vite + React)
