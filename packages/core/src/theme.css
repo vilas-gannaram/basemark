@@ -194,6 +194,19 @@ h6:first-child {
 }
 
 /*
+ * Plain Markdown `![alt](url)` — same bucket as h1-h6/table above, ordinary
+ * light-DOM output with no directive or component involved. max-width: 100%
+ * keeps a wide source image from overflowing a narrower host container
+ * (e.g. examples/vanilla's 860px #root) instead of forcing a horizontal
+ * scrollbar on the page.
+ */
+img {
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius);
+}
+
+/*
  * GFM pipe-table syntax (remark-gfm, wired up in parse.ts) renders as a plain
  * light-DOM <table> — same situation as h1-h6/p/ul above, not a shadow-DOM
  * component — so it's themed here globally rather than via a custom element.
