@@ -149,7 +149,7 @@ Build status per component (what's real vs. planned) lives in `packages/bio/READ
 
 ## 9. Monorepo structure & tooling
 
-Tooling: Bun workspaces + Turborepo + Changesets. (Not pnpm — `packages/cli` ships as a compiled standalone executable via `bun build --compile`, so the CLI's runtime and the repo's package manager/workspace resolver are the same Bun install; running two JS toolchains side by side wasn't worth it. Not Lerna — Turbo supersedes its task-running role, and Changesets fits a PR-driven OSS release flow better.)
+Tooling: Bun workspaces + Turborepo + Changesets. (Not pnpm — `packages/cli` is meant to eventually ship as a compiled standalone executable via `bun build --compile`, so the CLI's runtime and the repo's package manager/workspace resolver are the same Bun install; running two JS toolchains side by side wasn't worth it. Not wired up yet — `bun build --compile`'s output runs from an embedded virtual filesystem, and the CLI's runtime component-bundling step (`Bun.build()` in `packages/cli/src/bundle.ts`) needs real files on disk, so it currently only works via `bun run`/`bunx`; making it `--compile`-safe means pre-bundling that step at CLI-package build time instead of per-render, not yet done. Not Lerna — Turbo supersedes its task-running role, and Changesets fits a PR-driven OSS release flow better.)
 
 ```
 basemark/

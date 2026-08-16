@@ -2,14 +2,23 @@
 	"name": "@basemark/cli",
 	"version": "0.0.0",
 	"private": true,
-	"description": "Build/render tooling for basemark — stub",
+	"description": "Build/render tooling for basemark — renders a markdown(+directives) file to one self-contained HTML file",
 	"type": "module",
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
 	"bin": {
 		"basemark": "./src/index.ts"
 	},
+	"scripts": {
+		"check-types": "tsc --noEmit"
+	},
 	"dependencies": {
+		"@basemark/common": "workspace:*",
 		"@basemark/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@basemark/tsconfig-base": "workspace:*",
+		"@types/bun": "^1.3.10",
+		"@types/node": "^26.2.0"
 	}
 }
