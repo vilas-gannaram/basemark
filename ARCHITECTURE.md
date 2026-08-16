@@ -121,6 +121,8 @@ For natively-registered React/Svelte containers, slotting isn't available — th
 
 Everything depends on core; core depends on nothing framework-specific. No sideways dependencies.
 
+> **Flag:** `@basemark/common`'s `registerCommonComponents()` eagerly registers every component in the package from one call, which a consumer who only wants `card` still pays for in bundle size. That's a minor cost for the layout/shadcn-ui set built so far, but §8's still-unbuilt general-purpose components (Mermaid, Vega-Lite/Plotly, MapLibre/Leaflet) are each genuinely heavy dependencies — bundling any of those into `@basemark/common` itself would make the whole package expensive for every consumer, not just the one using that component. Before building them, split each heavy one out into its own package (e.g. `@basemark/diagrams`, `@basemark/charts`, `@basemark/maps`) rather than adding it to `common` — not a subpath export, a real separate package with its own `register*Components(registry)`, same shape as `bio`/`chem`. Undecided which components clear the "heavy enough to need its own package" bar; KaTeX/citations/JSON-tree-viewers are probably light enough to stay in `common`.
+
 - **`@basemark/core`** — parse (mdast), transform (mdast→hast + registry resolution), data resolver, registry API. Pure logic, no DOM, runs in Node or browser. Must stay small and stable since everything depends on it.
 - **`@basemark/react` / `@basemark/svelte`** — take core's hast tree and mount it per-framework. Only layer where native registration and children-based composition make sense.
 - **`@basemark/cli`** — build-time tooling: static-site batch rendering, structural/schema linter, component scaffolding, registry validation, and rendering a single doc to one self-contained shareable HTML file (see VISION.md).
@@ -171,6 +173,7 @@ basemark/
 - Full manifest JSON Schema spec (§5 is conceptual, not finalized field-by-field).
 - SSR fallback contract for natively-registered (non-web-component) framework components.
 - Full list of guided Mermaid wrapper directives to ship at v1 vs. leave to the raw-fence escape hatch.
+- Whether Mermaid/Vega-Lite-Plotly/MapLibre-Leaflet ship as their own packages instead of joining `@basemark/common`, and exactly where the size threshold sits for that call — see §7's flag.
 - §6's native framework registration escape hatch has no implementation path yet: `registry.ts`'s `ComponentDefinition` has no `render` field to distinguish it from the default custom-element tag, `parse.ts`'s `resolveDirectives` unconditionally emits `hName: definition.tag`, and `packages/react`'s renderer only ever resolves via `customElements.get(tagName)`. All three would need to change together.
 - The unclosed-container detection (§3) is a heuristic (checks for a fence-only closing line), not a from-first-principles parse of remark-directive's closing rules — nested indentation inside a list item/block quote isn't specifically exercised. The structural linter (§3 mitigation #3) is still unbuilt.
 - Who consumes this and how is a separate, product-facing concern — see [VISION.md](VISION.md).
