@@ -22,11 +22,20 @@ Visual/interactive primitives styled after [shadcn/ui](https://ui.shadcn.com), r
 - [x] `::separator{orientation="horizontal|vertical"}` — leaf directive; themed divider line.
 - [x] `:::accordion` / `:::accordion-item{label="..."}` — collapsible-section container. Same tabs.ts shape: a single default slot, `accordion` reads each item's `label` off its light-DOM children and toggles an `open` attribute; opening one item closes any other.
 - [x] `:::carousel` — horizontally scrollable, snap-aligned slide track (one direct child block per slide, `columns.ts`-style) plus prev/next buttons. Sliding is pure CSS `scroll-snap`; JS only drives the two nav buttons — no swipe/autoplay/drag logic.
-- [x] `:::popover{trigger="..." side="..."} ... :::` — container directive; click-to-open panel anchored to a generated trigger button, absolutely positioned by `side`, closes on outside click or Escape.
+- [x] `:::popover{trigger="..." side="..."} ... :::` — container directive; click-to-open panel anchored to a generated trigger button. Positioned via `position: fixed` computed from the trigger's `getBoundingClientRect()`, not `position: absolute` — an ancestor with `overflow: hidden` (e.g. an accordion item's collapsing body) would otherwise clip an absolutely-positioned panel regardless of the shadow boundary. Closes on outside click or Escape.
 
 Also: **table** — plain GFM pipe-table syntax (`| a | b |`), not a directive. `remark-gfm` is now wired into `@basemark/core`'s `parse.ts` pipeline (it was documented in ARCHITECTURE.md §4 but not actually installed before), and the resulting `<table>` is themed globally in `theme.css`, the same way plain `h1`-`h6`/`p`/`ul` markdown is — it's ordinary light-DOM output, not a shadow-DOM component, so no new directive/tag was needed.
 
 More of shadcn's set (dialog, dropdown-menu, tooltip, ...) can follow the same pattern — see `button.ts`/`badge.ts`/`alert.ts`/`accordion.ts`/`popover.ts` for the leaf/text/container directive choice per component's shape, and `card.ts` for the underlying custom-element/shadow-DOM/registry pattern all of these extend.
+
+## Media embeds
+
+Tier 0 (ARCHITECTURE.md §2) — the author writes nothing but the video/track's ordinary page URL; the component detects the provider and builds the real embeddable iframe URL itself. An unrecognized URL renders an inline error message (not a silent blank box, not a `basemark-error` — that's reserved for directive-level failures in core, this is a runtime data problem inside an otherwise-valid component).
+
+- [x] `::video{url="..."}` — YouTube or Vimeo, from any of their normal page/share URL shapes (`youtube.com/watch?v=`, `youtu.be/`, `youtube.com/shorts/`, `vimeo.com/`). Renders a 16:9 responsive iframe.
+- [x] `::audio{url="..."}` — Spotify (track/album/playlist/episode/show) or SoundCloud. Spotify needs a `(type, id)` pair parsed out of the URL to build its `/embed/` path; SoundCloud's player accepts the whole original URL directly via a query param, so that branch passes it through instead of extracting an ID.
+
+Self-hosted `<video>`/`<audio>` (Tier 3, a direct file URL with no provider) and other providers (Twitter/X, Bluesky, generic oEmbed) are deliberately out of scope for this pass — YouTube/Vimeo + Spotify/SoundCloud covers the Tier-0 "just a URL" case for what this repo's own example content (a protocol walkthrough, a lab recording) would actually embed.
 
 Everything below is still exactly as originally planned in §8 — nothing else in this package has been started.
 
@@ -39,7 +48,6 @@ Everything below is still exactly as originally planned in §8 — nothing else 
 - [ ] Maps (MapLibre/Leaflet)
 - [ ] Citations (BibTeX)
 - [ ] JSON/tree viewers
-- [ ] Media embeds
 
 ---
 
