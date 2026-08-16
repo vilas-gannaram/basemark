@@ -149,7 +149,7 @@ Build status per component (what's real vs. planned) lives in `packages/bio/READ
 
 ## 9. Monorepo structure & tooling
 
-Tooling: pnpm workspaces + Turborepo + Changesets. (Not Bun — install-speed gains don't outweigh OSS contributor friction at this scale; not Lerna — Turbo supersedes its task-running role, and Changesets fits a PR-driven OSS release flow better.)
+Tooling: Bun workspaces + Turborepo + Changesets. (Not pnpm — `packages/cli` ships as a compiled standalone executable via `bun build --compile`, so the CLI's runtime and the repo's package manager/workspace resolver are the same Bun install; running two JS toolchains side by side wasn't worth it. Not Lerna — Turbo supersedes its task-running role, and Changesets fits a PR-driven OSS release flow better.)
 
 ```
 basemark/
@@ -159,7 +159,7 @@ basemark/
 ├── experiments/  # POCs, no stability contract, excluded from workspace/turbo globs
 ├── configs/      # shared eslint/tsconfig/vitest configs, workspace-internal
 ├── turbo.json
-├── pnpm-workspace.yaml
+├── package.json  # "workspaces" field defines the workspace globs (bun, no separate yaml)
 └── .changeset/
 ```
 
