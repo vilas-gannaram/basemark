@@ -12,6 +12,7 @@ import { GeneChip } from './gene-chip';
 // — not JS string arrays. Mirrors examples/vanilla's content/ layout; the
 // bio-domain reports (gwas-variant-report, lab-protocol) are shared story
 // material, adapted only where the intro text names the render path.
+import architecture from '../content/architecture.md?raw';
 import phenomeWideScan from '../content/phenome-wide-scan.md?raw';
 import gwasVariantReport from '../content/gwas-variant-report.md?raw';
 import labProtocol from '../content/lab-protocol.md?raw';
@@ -46,13 +47,14 @@ interface Page {
 }
 
 const PAGES: Page[] = [
+	{ slug: 'architecture', label: 'Architecture', source: architecture },
 	{ slug: 'phenome-wide-scan', label: 'Phenome-wide Scan', source: phenomeWideScan },
 	{ slug: 'gwas-report', label: 'GWAS Variant Report', source: gwasVariantReport },
 	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
 	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
 ];
 
-// Hash-based routing — no router dependency needed for four static pages.
+// Hash-based routing — no router dependency needed for five static pages.
 // Falls back to the first page for an empty or unrecognized hash (first
 // load, or a stale/typo'd link).
 function activeSlug(): string {

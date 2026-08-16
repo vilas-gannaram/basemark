@@ -7,6 +7,7 @@ import '@basemark/core/theme.css';
 // Vite's `?raw` import (declared by vite/client's `declare module '*?raw'`)
 // — not JS string arrays. Each is parsed fresh by renderMarkdown() per page
 // switch, same as the single-page version this replaced.
+import architecture from '../content/architecture.md?raw';
 import gwasVariantReport from '../content/gwas-variant-report.md?raw';
 import labProtocol from '../content/lab-protocol.md?raw';
 import componentGallery from '../content/component-gallery.md?raw';
@@ -22,6 +23,7 @@ interface Page {
 }
 
 const PAGES: Page[] = [
+	{ slug: 'architecture', label: 'Architecture', source: architecture },
 	{ slug: 'gwas-report', label: 'GWAS Variant Report', source: gwasVariantReport },
 	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
 	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
