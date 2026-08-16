@@ -6,7 +6,12 @@
  *
  * These are plain CSS custom properties, so they inherit through Shadow DOM
  * boundaries into every component's shadow root without each component (or
- * this file) needing to do anything special per element.
+ * this file) needing to do anything special per element. That also makes
+ * every value below a starting default, not a fixed brand — a consumer who
+ * imports this file can still redefine any subset of these tokens on their
+ * own `:root`/`.dark` afterward (last one in the cascade wins, no rebuild or
+ * theming API needed). See this package's README's "Theming" section, and
+ * examples/vanilla + examples/react's index.html for a worked override.
  */
 
 :root {
