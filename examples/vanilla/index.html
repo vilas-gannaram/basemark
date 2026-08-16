@@ -20,6 +20,20 @@
 				--font-sans: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 			}
 
+			/* Onest's default letter-spacing reads as too loose at heading sizes
+			   (theme.css's h1-h6 rules don't set letter-spacing at all, since the
+			   system-font stack they're written against doesn't need it). Scoped
+			   here, not theme.css, since this is a correction for this specific
+			   font, not a default every consumer should inherit. */
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6 {
+				letter-spacing: -0.02em;
+			}
+
 			/* App chrome only (page nav) — not a Basemark component, so plain CSS
 			   here rather than a shadow-DOM element. Reuses the same theme.css
 			   custom properties every component reads, so it stays in sync with
