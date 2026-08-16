@@ -12,6 +12,22 @@ ARCHITECTURE.md §8 split this package's scope into two buckets: layout/containe
 
 All three deliberately zero the vertical margin a nested bio/chem component would otherwise contribute (`::slotted()` overrides in each component's own shadow styles) — see each file's comments for why that needs `!important` to actually win.
 
+## shadcn/ui-inspired components
+
+Visual/interactive primitives styled after [shadcn/ui](https://ui.shadcn.com), reimplemented from scratch as plain custom elements against the shadcn-compatible CSS custom properties already defined in `@basemark/core`'s `theme.css` (`--primary`, `--radius`, `--ring`, etc.) — no Tailwind, no copied shadcn source, no React dependency. Each ships as its own web component so it renders identically across every consumption path (React, Svelte, plain HTML), per ARCHITECTURE.md §6.
+
+- [x] `:button[Label]{variant="..." size="..." href="..."}` — text directive (inline, sits in a sentence); renders `<a>` when `href` is set, otherwise `<button>`.
+- [x] `:badge[Label]{variant="..."}` — text directive; small inline status label.
+- [x] `:::alert{variant="..." title="..."} ... :::` — container directive; callout box with an optional title and markdown body.
+- [x] `::separator{orientation="horizontal|vertical"}` — leaf directive; themed divider line.
+- [x] `:::accordion` / `:::accordion-item{label="..."}` — collapsible-section container. Same tabs.ts shape: a single default slot, `accordion` reads each item's `label` off its light-DOM children and toggles an `open` attribute; opening one item closes any other.
+- [x] `:::carousel` — horizontally scrollable, snap-aligned slide track (one direct child block per slide, `columns.ts`-style) plus prev/next buttons. Sliding is pure CSS `scroll-snap`; JS only drives the two nav buttons — no swipe/autoplay/drag logic.
+- [x] `:::popover{trigger="..." side="..."} ... :::` — container directive; click-to-open panel anchored to a generated trigger button, absolutely positioned by `side`, closes on outside click or Escape.
+
+Also: **table** — plain GFM pipe-table syntax (`| a | b |`), not a directive. `remark-gfm` is now wired into `@basemark/core`'s `parse.ts` pipeline (it was documented in ARCHITECTURE.md §4 but not actually installed before), and the resulting `<table>` is themed globally in `theme.css`, the same way plain `h1`-`h6`/`p`/`ul` markdown is — it's ordinary light-DOM output, not a shadow-DOM component, so no new directive/tag was needed.
+
+More of shadcn's set (dialog, dropdown-menu, tooltip, ...) can follow the same pattern — see `button.ts`/`badge.ts`/`alert.ts`/`accordion.ts`/`popover.ts` for the leaf/text/container directive choice per component's shape, and `card.ts` for the underlying custom-element/shadow-DOM/registry pattern all of these extend.
+
 Everything below is still exactly as originally planned in §8 — nothing else in this package has been started.
 
 ## General-purpose (untiered in ARCHITECTURE.md — leaf directives, Tier 1/2 by nature)
@@ -19,7 +35,7 @@ Everything below is still exactly as originally planned in §8 — nothing else 
 - [ ] Mermaid family — one shared `<mermaid-diagram>` renderer; `::gantt{...}`, `::flowchart{...}`, `::fishbone{...}` etc. as thin translators to generated Mermaid source (see §8's Mermaid design note)
 - [ ] Vega-Lite/Plotly charts
 - [ ] KaTeX
-- [ ] Sortable tables
+- [ ] Sortable tables (plain GFM tables now render — see shadcn/ui-inspired section above; sorting/filtering behavior is still unbuilt)
 - [ ] Maps (MapLibre/Leaflet)
 - [ ] Citations (BibTeX)
 - [ ] JSON/tree viewers
