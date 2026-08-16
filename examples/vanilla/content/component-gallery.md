@@ -74,6 +74,28 @@ A click-to-open panel anchored to a trigger button, closing on outside click or 
 `oklch()` keeps perceived lightness consistent across hues, so swapping the theme's accent color doesn't accidentally make text unreadable against `--foreground`.
 :::
 
+### Images
+
+Ordinary `![alt](url)` Markdown — not a directive, no component involved. `remark-parse` turns it straight into a plain `<img>` in the hast tree, same bucket as headings/tables/code, so it already worked before any of the components above existed. It also composes with `:::carousel:::` for free — each image's own paragraph is just another direct child block, same as the card slides in the Carousel section above:
+
+::::carousel
+![Lab microscope](https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=80)
+
+![Pipetting samples](https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800&q=80)
+
+![Petri dishes](https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&q=80)
+::::
+
+### Media embeds
+
+Tier 0 — just a page URL, provider and embed ID are both detected from it:
+
+::video{url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+
+::audio{url="https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC"}
+
+::audio{url="https://soundcloud.com/forss/flickermood"}
+
 ## Appendix: failing visibly
 
 Basemark's other job is to fail loudly, not silently, when a directive is wrong. An unknown directive:
