@@ -60,47 +60,54 @@ const STYLES = `
 	}
 `;
 
-class AudioElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['url'];
-	}
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const url = this.getAttribute('url') ?? '';
-		const embed = resolveEmbed(url);
-		const height = embed?.height ?? 96;
-
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			<div class="frame" style="height: ${height}px">
-				${
-					embed
-						? `<iframe src="${embed.embedUrl}" title="${embed.provider} audio" height="${embed.height}" allow="autoplay; encrypted-media" loading="lazy"></iframe>`
-						: `<div class="error">Unsupported audio URL — supported providers: Spotify, SoundCloud.</div>`
-				}
-			</div>
-		`;
-	}
-}
-
 export function registerAudio(registry: ComponentRegistry): void {
-	if (!customElements.get(AUDIO_TAG)) {
-		customElements.define(AUDIO_TAG, AudioElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so registerAudio()
+	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		class AudioElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['url'];
+			}
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const url = this.getAttribute('url') ?? '';
+				const embed = resolveEmbed(url);
+				const height = embed?.height ?? 96;
+
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					<div class="frame" style="height: ${height}px">
+						${
+							embed
+								? `<iframe src="${embed.embedUrl}" title="${embed.provider} audio" height="${embed.height}" allow="autoplay; encrypted-media" loading="lazy"></iframe>`
+								: `<div class="error">Unsupported audio URL — supported providers: Spotify, SoundCloud.</div>`
+						}
+					</div>
+				`;
+			}
+		}
+
+		if (!customElements.get(AUDIO_TAG)) {
+			customElements.define(AUDIO_TAG, AudioElement);
+		}
 	}
+
 	registry.register('audio', {
 		tag: AUDIO_TAG,
 		domain: 'common',

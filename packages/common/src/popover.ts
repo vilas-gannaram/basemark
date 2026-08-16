@@ -56,131 +56,139 @@ const STYLES = `
 	::slotted(*) { border: none !important; background: transparent !important; }
 `;
 
-class PopoverElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['trigger', 'side'];
-	}
+export function registerPopover(registry: ComponentRegistry): void {
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so
+	// registerPopover() stays importable from a DOM-less consumer (e.g.
+	// @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		class PopoverElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['trigger', 'side'];
+			}
 
-	private open = false;
-	// Bound once in the constructor (not per-render) so addEventListener/
-	// removeEventListener in connectedCallback/disconnectedCallback target
-	// the same function reference — an inline arrow re-created each render
-	// would never actually be removable.
-	private readonly onDocumentPointerDown = (event: PointerEvent): void => {
-		if (!this.open) return;
-		if (event.composedPath().includes(this)) return;
-		this.close();
-	};
-	private readonly onDocumentKeydown = (event: KeyboardEvent): void => {
-		if (event.key === 'Escape') this.close();
-	};
-	// Only actually reposition while open (position: fixed needs manual
-	// tracking, since it doesn't get clipped/scrolled-with by an ancestor the
-	// way position: absolute would) — cheap no-op check otherwise, same
-	// always-listening pattern as onDocumentPointerDown above.
-	private readonly onReposition = (): void => {
-		if (this.open) this.positionPanel();
-	};
+			private open = false;
+			// Bound once in the constructor (not per-render) so addEventListener/
+			// removeEventListener in connectedCallback/disconnectedCallback target
+			// the same function reference — an inline arrow re-created each render
+			// would never actually be removable.
+			private readonly onDocumentPointerDown = (event: PointerEvent): void => {
+				if (!this.open) return;
+				if (event.composedPath().includes(this)) return;
+				this.close();
+			};
+			private readonly onDocumentKeydown = (event: KeyboardEvent): void => {
+				if (event.key === 'Escape') this.close();
+			};
+			// Only actually reposition while open (position: fixed needs manual
+			// tracking, since it doesn't get clipped/scrolled-with by an ancestor the
+			// way position: absolute would) — cheap no-op check otherwise, same
+			// always-listening pattern as onDocumentPointerDown above.
+			private readonly onReposition = (): void => {
+				if (this.open) this.positionPanel();
+			};
 
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
 
-	connectedCallback(): void {
-		this.render();
-		document.addEventListener('pointerdown', this.onDocumentPointerDown);
-		document.addEventListener('keydown', this.onDocumentKeydown);
-		// capture: true so this also catches scrolling inside any nested
-		// scroll container between here and the window, not just window-level
-		// scroll — scroll events don't bubble, but do fire during capture.
-		window.addEventListener('scroll', this.onReposition, { capture: true, passive: true });
-		window.addEventListener('resize', this.onReposition);
-	}
+			connectedCallback(): void {
+				this.render();
+				document.addEventListener('pointerdown', this.onDocumentPointerDown);
+				document.addEventListener('keydown', this.onDocumentKeydown);
+				// capture: true so this also catches scrolling inside any nested
+				// scroll container between here and the window, not just window-level
+				// scroll — scroll events don't bubble, but do fire during capture.
+				window.addEventListener('scroll', this.onReposition, { capture: true, passive: true });
+				window.addEventListener('resize', this.onReposition);
+			}
 
-	disconnectedCallback(): void {
-		document.removeEventListener('pointerdown', this.onDocumentPointerDown);
-		document.removeEventListener('keydown', this.onDocumentKeydown);
-		window.removeEventListener('scroll', this.onReposition, { capture: true });
-		window.removeEventListener('resize', this.onReposition);
-	}
+			disconnectedCallback(): void {
+				document.removeEventListener('pointerdown', this.onDocumentPointerDown);
+				document.removeEventListener('keydown', this.onDocumentKeydown);
+				window.removeEventListener('scroll', this.onReposition, { capture: true });
+				window.removeEventListener('resize', this.onReposition);
+			}
 
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
 
-	private close(): void {
-		if (!this.open) return;
-		this.open = false;
-		this.updateOpenState();
-	}
+			private close(): void {
+				if (!this.open) return;
+				this.open = false;
+				this.updateOpenState();
+			}
 
-	private resolvedSide(): (typeof SIDES)[number] {
-		const side = this.getAttribute('side');
-		return SIDES.includes(side as (typeof SIDES)[number]) ? (side as (typeof SIDES)[number]) : 'bottom';
-	}
+			private resolvedSide(): (typeof SIDES)[number] {
+				const side = this.getAttribute('side');
+				return SIDES.includes(side as (typeof SIDES)[number]) ? (side as (typeof SIDES)[number]) : 'bottom';
+			}
 
-	// position: fixed panel, positioned from the trigger's *viewport*
-	// coordinates (not relative to :host) — see the .panel comment in STYLES
-	// for why fixed is used instead of absolute in the first place.
-	private positionPanel(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const trigger = root.querySelector('.trigger') as HTMLElement;
-		const panel = root.querySelector('.panel') as HTMLElement;
-		const gap = 6; // 0.375rem at the standard 16px root font-size
-		const rect = trigger.getBoundingClientRect();
+			// position: fixed panel, positioned from the trigger's *viewport*
+			// coordinates (not relative to :host) — see the .panel comment in STYLES
+			// for why fixed is used instead of absolute in the first place.
+			private positionPanel(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const trigger = root.querySelector('.trigger') as HTMLElement;
+				const panel = root.querySelector('.panel') as HTMLElement;
+				const gap = 6; // 0.375rem at the standard 16px root font-size
+				const rect = trigger.getBoundingClientRect();
 
-		panel.style.top = panel.style.bottom = panel.style.left = panel.style.right = 'auto';
-		switch (this.resolvedSide()) {
-			case 'top':
-				panel.style.bottom = `${window.innerHeight - rect.top + gap}px`;
-				panel.style.left = `${rect.left}px`;
-				break;
-			case 'right':
-				panel.style.top = `${rect.top}px`;
-				panel.style.left = `${rect.right + gap}px`;
-				break;
-			case 'left':
-				panel.style.top = `${rect.top}px`;
-				panel.style.right = `${window.innerWidth - rect.left + gap}px`;
-				break;
-			default:
-				panel.style.top = `${rect.bottom + gap}px`;
-				panel.style.left = `${rect.left}px`;
+				panel.style.top = panel.style.bottom = panel.style.left = panel.style.right = 'auto';
+				switch (this.resolvedSide()) {
+					case 'top':
+						panel.style.bottom = `${window.innerHeight - rect.top + gap}px`;
+						panel.style.left = `${rect.left}px`;
+						break;
+					case 'right':
+						panel.style.top = `${rect.top}px`;
+						panel.style.left = `${rect.right + gap}px`;
+						break;
+					case 'left':
+						panel.style.top = `${rect.top}px`;
+						panel.style.right = `${window.innerWidth - rect.left + gap}px`;
+						break;
+					default:
+						panel.style.top = `${rect.bottom + gap}px`;
+						panel.style.left = `${rect.left}px`;
+				}
+			}
+
+			private updateOpenState(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const panel = root.querySelector('.panel') as HTMLElement;
+				const trigger = root.querySelector('.trigger') as HTMLElement;
+				panel.hidden = !this.open;
+				trigger.setAttribute('aria-expanded', String(this.open));
+				if (this.open) this.positionPanel();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const triggerLabel = this.getAttribute('trigger') ?? 'Open';
+
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					<button class="trigger" aria-expanded="false" aria-haspopup="true"></button>
+					<div class="panel" hidden><slot></slot></div>
+				`;
+
+				(root.querySelector('.trigger') as HTMLElement).textContent = triggerLabel;
+				root.querySelector('.trigger')?.addEventListener('click', () => {
+					this.open = !this.open;
+					this.updateOpenState();
+				});
+			}
+		}
+
+		if (!customElements.get(POPOVER_TAG)) {
+			customElements.define(POPOVER_TAG, PopoverElement);
 		}
 	}
 
-	private updateOpenState(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const panel = root.querySelector('.panel') as HTMLElement;
-		const trigger = root.querySelector('.trigger') as HTMLElement;
-		panel.hidden = !this.open;
-		trigger.setAttribute('aria-expanded', String(this.open));
-		if (this.open) this.positionPanel();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const triggerLabel = this.getAttribute('trigger') ?? 'Open';
-
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			<button class="trigger" aria-expanded="false" aria-haspopup="true"></button>
-			<div class="panel" hidden><slot></slot></div>
-		`;
-
-		(root.querySelector('.trigger') as HTMLElement).textContent = triggerLabel;
-		root.querySelector('.trigger')?.addEventListener('click', () => {
-			this.open = !this.open;
-			this.updateOpenState();
-		});
-	}
-}
-
-export function registerPopover(registry: ComponentRegistry): void {
-	if (!customElements.get(POPOVER_TAG)) {
-		customElements.define(POPOVER_TAG, PopoverElement);
-	}
 	registry.register('popover', {
 		tag: POPOVER_TAG,
 		domain: 'common',

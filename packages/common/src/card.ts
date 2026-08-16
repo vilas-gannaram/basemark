@@ -54,49 +54,59 @@ const STYLES = `
 	}
 `;
 
-// The single case this component exists to prove: a container directive's
-// markdown children arrive as light-DOM children of this element (see
-// parse.ts's resolveDirectives, which never touches node.children), and a
-// default <slot> projects them into the shadow root's body region.
-class CardElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['title'];
-	}
+export function registerCard(registry: ComponentRegistry): void {
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. registerCard() now also
+	// needs to stay importable from a DOM-less consumer (e.g. @basemark/cli
+	// running under Bun), which register*Components() previously never had to
+	// support.
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		// The single case this component exists to prove: a container
+		// directive's markdown children arrive as light-DOM children of this
+		// element (see parse.ts's resolveDirectives, which never touches
+		// node.children), and a default <slot> projects them into the shadow
+		// root's body region.
+		class CardElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['title'];
+			}
 
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
 
-	connectedCallback(): void {
-		this.render();
-	}
+			connectedCallback(): void {
+				this.render();
+			}
 
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
 
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const title = this.getAttribute('title');
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const title = this.getAttribute('title');
 
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			${title ? `<h3 class="title"></h3>` : ''}
-			<div class="body"><slot></slot></div>
-		`;
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					${title ? `<h3 class="title"></h3>` : ''}
+					<div class="body"><slot></slot></div>
+				`;
 
-		if (title) {
-			const titleEl = root.querySelector('.title') as HTMLElement;
-			titleEl.textContent = title;
+				if (title) {
+					const titleEl = root.querySelector('.title') as HTMLElement;
+					titleEl.textContent = title;
+				}
+			}
+		}
+
+		if (!customElements.get(CARD_TAG)) {
+			customElements.define(CARD_TAG, CardElement);
 		}
 	}
-}
 
-export function registerCard(registry: ComponentRegistry): void {
-	if (!customElements.get(CARD_TAG)) {
-		customElements.define(CARD_TAG, CardElement);
-	}
 	registry.register('card', {
 		tag: CARD_TAG,
 		domain: 'common',

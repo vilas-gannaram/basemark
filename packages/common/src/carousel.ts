@@ -67,47 +67,56 @@ const STYLES = `
 	}
 `;
 
-// Each direct child block of the :::carousel::: container becomes one full-
-// width slide — same "one child = one item" shape as columns.ts, just laid
-// out as a horizontal snap track instead of a grid.
-class CarouselElement extends HTMLElement {
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			<div class="viewport"><slot></slot></div>
-			<div class="controls">
-				<button class="nav-btn prev" aria-label="Previous slide">‹</button>
-				<button class="nav-btn next" aria-label="Next slide">›</button>
-			</div>
-		`;
-
-		const viewport = root.querySelector('.viewport') as HTMLElement;
-		const step = (): number => viewport.clientWidth;
-
-		root.querySelector('.prev')?.addEventListener('click', () => {
-			viewport.scrollBy({ left: -step(), behavior: 'smooth' });
-		});
-		root.querySelector('.next')?.addEventListener('click', () => {
-			viewport.scrollBy({ left: step(), behavior: 'smooth' });
-		});
-	}
-}
-
 export function registerCarousel(registry: ComponentRegistry): void {
-	if (!customElements.get(CAROUSEL_TAG)) {
-		customElements.define(CAROUSEL_TAG, CarouselElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so
+	// registerCarousel() stays importable from a DOM-less consumer (e.g.
+	// @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		// Each direct child block of the :::carousel::: container becomes one
+		// full-width slide — same "one child = one item" shape as
+		// columns.ts, just laid out as a horizontal snap track instead of a
+		// grid.
+		class CarouselElement extends HTMLElement {
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					<div class="viewport"><slot></slot></div>
+					<div class="controls">
+						<button class="nav-btn prev" aria-label="Previous slide">‹</button>
+						<button class="nav-btn next" aria-label="Next slide">›</button>
+					</div>
+				`;
+
+				const viewport = root.querySelector('.viewport') as HTMLElement;
+				const step = (): number => viewport.clientWidth;
+
+				root.querySelector('.prev')?.addEventListener('click', () => {
+					viewport.scrollBy({ left: -step(), behavior: 'smooth' });
+				});
+				root.querySelector('.next')?.addEventListener('click', () => {
+					viewport.scrollBy({ left: step(), behavior: 'smooth' });
+				});
+			}
+		}
+
+		if (!customElements.get(CAROUSEL_TAG)) {
+			customElements.define(CAROUSEL_TAG, CarouselElement);
+		}
 	}
+
 	registry.register('carousel', {
 		tag: CAROUSEL_TAG,
 		domain: 'common',
