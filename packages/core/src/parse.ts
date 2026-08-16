@@ -1,6 +1,7 @@
 import { unified, type Plugin } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkDirective from 'remark-directive';
+import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
@@ -124,7 +125,7 @@ export function parseMarkdown(source: string, registry: ComponentRegistry): Hast
 	// importable in non-DOM contexts (see registerErrorComponent's own guard).
 	registerErrorComponent();
 
-	const processor = unified().use(remarkParse).use(remarkDirective).use(resolveDirectives, registry).use(remarkRehype);
+	const processor = unified().use(remarkParse).use(remarkGfm).use(remarkDirective).use(resolveDirectives, registry).use(remarkRehype);
 
 	// resolveDirectives reads the original source text back off `file.value`
 	// (to slice out each directive's raw source for error messages). Passing

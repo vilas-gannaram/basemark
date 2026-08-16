@@ -20,17 +20,14 @@
 	 * --font-sans) explicitly per component :host rather than relying on
 	 * inheritance from the host page.
 	 */
-	--font-sans:
-		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji',
-		sans-serif;
+	--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
 	/*
 	 * Same reasoning as --font-sans, for components that render code/data
 	 * (e.g. a future JSON/tree viewer, or an author-supplied Tier-4 fence) —
 	 * generic `monospace` as the final fallback rather than trusting a named
 	 * font to exist.
 	 */
-	--font-mono:
-		ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+	--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.153 0.006 107.1);
 	--card: oklch(1 0 0);
@@ -54,7 +51,7 @@
 	--chart-3: oklch(0.466 0.025 107.3);
 	--chart-4: oklch(0.394 0.023 107.4);
 	--chart-5: oklch(0.286 0.016 107.4);
-	--radius: 0.625rem;
+	--radius: 0;
 	--sidebar: oklch(0.988 0.003 106.5);
 	--sidebar-foreground: oklch(0.153 0.006 107.1);
 	--sidebar-primary: oklch(0.228 0.013 107.4);
@@ -110,4 +107,29 @@ body {
 	font-family: var(--font-sans);
 	color: var(--foreground);
 	background: var(--background);
+}
+
+/*
+ * GFM pipe-table syntax (remark-gfm, wired up in parse.ts) renders as a plain
+ * light-DOM <table> — same situation as h1-h6/p/ul above, not a shadow-DOM
+ * component — so it's themed here globally rather than via a custom element.
+ */
+table {
+	width: 100%;
+	margin: 1.5rem 0;
+	border-collapse: collapse;
+	font-size: 0.875rem;
+}
+th,
+td {
+	padding: 0.5rem 0.75rem;
+	text-align: left;
+	border-bottom: 1px solid var(--border);
+}
+thead th {
+	color: var(--muted-foreground);
+	font-weight: 500;
+}
+tbody tr:hover {
+	background: var(--muted);
 }

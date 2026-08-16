@@ -18,10 +18,11 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"hast-util-to-dom": "^4.0.1",
 		"mdast-util-directive": "^3.1.0",
 		"remark-directive": "^4.0.0",
+		"remark-gfm": "^4.0.1",
 		"remark-parse": "^11.0.0",
-		"hast-util-to-dom": "^4.0.1",
 		"remark-rehype": "^11.1.2",
 		"unified": "^11.0.5",
 		"unist-util-visit": "^5.1.0",

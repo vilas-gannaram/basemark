@@ -102,4 +102,12 @@ describe('parseMarkdown', () => {
 		// for basemark-error's own slot to render.
 		expect(el.children.some((child) => child.type === 'element' && child.tagName === 'h2')).toBe(true);
 	});
+
+	it('parses GFM pipe-table syntax into a real table element (remark-gfm)', () => {
+		const registry = createRegistry();
+		const hast = parseMarkdown(['| a | b |', '| - | - |', '| 1 | 2 |'].join('\n'), registry);
+		const el = firstElement(hast);
+
+		expect(el.tagName).toBe('table');
+	});
 });
