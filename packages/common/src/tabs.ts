@@ -40,109 +40,115 @@ const TABS_STYLES = `
 	}
 `;
 
-// basemark-tab-panel is a near-inert shell: no named slots, no JS behavior of
-// its own. basemark-tabs owns all behavior (reading labels, building the tab
-// strip, toggling visibility) via direct DOM access to its light-DOM
-// children — legal even across the shadow boundary, since those children are
-// still ordinary nodes physically owned by the light tree, not the panel's
-// own shadow root.
-class TabPanelElement extends HTMLElement {
-	constructor() {
-		super();
-		const root = this.attachShadow({ mode: 'open' });
-		// Same reasoning as card.ts: a nested bio component's own :host margin
-		// is redundant against tabs' .body padding — only the boundary margins
-		// need zeroing (!important to beat the child's own :host on specificity),
-		// margin between multiple slotted children is left alone.
-		root.innerHTML = `
-			<style>
-				:host([hidden]) { display: none; }
-				::slotted(:first-child) { margin-top: 0 !important; }
-				::slotted(:last-child) { margin-bottom: 0 !important; }
-				/* Same reasoning as card.ts: a panel is already the visual boundary. */
-				::slotted(*) { border: none !important; background: transparent !important; }
-			</style>
-			<slot></slot>
-		`;
-	}
-}
-
-// One default <slot> rather than named slots: named slots would require
-// knowing the number of tabs statically, where reading each panel's `label`
-// attribute off this.children (or assignedElements()) handles an arbitrary,
-// dynamic number of tabs with less machinery.
-class TabsElement extends HTMLElement {
-	private activeIndex = 0;
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-		const slot = this.shadowRoot?.querySelector('slot');
-		slot?.addEventListener('slotchange', () => this.render());
-	}
-
-	private get panels(): HTMLElement[] {
-		return [...this.querySelectorAll(TAB_PANEL_TAG)] as HTMLElement[];
-	}
-
-	private selectTab(index: number): void {
-		this.activeIndex = index;
-		this.updateVisibility();
-		this.updateTabStrip();
-	}
-
-	private updateVisibility(): void {
-		this.panels.forEach((panel, index) => {
-			panel.hidden = index !== this.activeIndex;
-		});
-	}
-
-	private updateTabStrip(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		root.querySelectorAll('.tab-button').forEach((button, index) => {
-			button.setAttribute('aria-selected', String(index === this.activeIndex));
-		});
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const panels = this.panels;
-		if (this.activeIndex >= panels.length) this.activeIndex = 0;
-
-		const tabStrip = panels
-			.map((panel, index) => {
-				const label = panel.getAttribute('label') ?? `Tab ${index + 1}`;
-				return `<button class="tab-button" role="tab" aria-selected="${index === this.activeIndex}" data-index="${index}">${label}</button>`;
-			})
-			.join('');
-
-		root.innerHTML = `
-			<style>${TABS_STYLES}</style>
-			<div class="tab-strip" role="tablist">${tabStrip}</div>
-			<div class="body"><slot></slot></div>
-		`;
-
-		root.querySelectorAll('.tab-button').forEach((button) => {
-			button.addEventListener('click', () => {
-				const index = Number((button as HTMLElement).dataset.index);
-				this.selectTab(index);
-			});
-		});
-
-		this.updateVisibility();
-	}
-}
-
 export function registerTabs(registry: ComponentRegistry): void {
-	if (!customElements.get(TAB_PANEL_TAG)) {
-		customElements.define(TAB_PANEL_TAG, TabPanelElement);
-	}
-	if (!customElements.get(TABS_TAG)) {
-		customElements.define(TABS_TAG, TabsElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so registerTabs()
+	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		// basemark-tab-panel is a near-inert shell: no named slots, no JS
+		// behavior of its own. basemark-tabs owns all behavior (reading
+		// labels, building the tab strip, toggling visibility) via direct DOM
+		// access to its light-DOM children — legal even across the shadow
+		// boundary, since those children are still ordinary nodes physically
+		// owned by the light tree, not the panel's own shadow root.
+		class TabPanelElement extends HTMLElement {
+			constructor() {
+				super();
+				const root = this.attachShadow({ mode: 'open' });
+				// Same reasoning as card.ts: a nested bio component's own :host margin
+				// is redundant against tabs' .body padding — only the boundary margins
+				// need zeroing (!important to beat the child's own :host on specificity),
+				// margin between multiple slotted children is left alone.
+				root.innerHTML = `
+					<style>
+						:host([hidden]) { display: none; }
+						::slotted(:first-child) { margin-top: 0 !important; }
+						::slotted(:last-child) { margin-bottom: 0 !important; }
+						/* Same reasoning as card.ts: a panel is already the visual boundary. */
+						::slotted(*) { border: none !important; background: transparent !important; }
+					</style>
+					<slot></slot>
+				`;
+			}
+		}
+
+		// One default <slot> rather than named slots: named slots would
+		// require knowing the number of tabs statically, where reading each
+		// panel's `label` attribute off this.children (or assignedElements())
+		// handles an arbitrary, dynamic number of tabs with less machinery.
+		class TabsElement extends HTMLElement {
+			private activeIndex = 0;
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+				const slot = this.shadowRoot?.querySelector('slot');
+				slot?.addEventListener('slotchange', () => this.render());
+			}
+
+			private get panels(): HTMLElement[] {
+				return [...this.querySelectorAll(TAB_PANEL_TAG)] as HTMLElement[];
+			}
+
+			private selectTab(index: number): void {
+				this.activeIndex = index;
+				this.updateVisibility();
+				this.updateTabStrip();
+			}
+
+			private updateVisibility(): void {
+				this.panels.forEach((panel, index) => {
+					panel.hidden = index !== this.activeIndex;
+				});
+			}
+
+			private updateTabStrip(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				root.querySelectorAll('.tab-button').forEach((button, index) => {
+					button.setAttribute('aria-selected', String(index === this.activeIndex));
+				});
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const panels = this.panels;
+				if (this.activeIndex >= panels.length) this.activeIndex = 0;
+
+				const tabStrip = panels
+					.map((panel, index) => {
+						const label = panel.getAttribute('label') ?? `Tab ${index + 1}`;
+						return `<button class="tab-button" role="tab" aria-selected="${index === this.activeIndex}" data-index="${index}">${label}</button>`;
+					})
+					.join('');
+
+				root.innerHTML = `
+					<style>${TABS_STYLES}</style>
+					<div class="tab-strip" role="tablist">${tabStrip}</div>
+					<div class="body"><slot></slot></div>
+				`;
+
+				root.querySelectorAll('.tab-button').forEach((button) => {
+					button.addEventListener('click', () => {
+						const index = Number((button as HTMLElement).dataset.index);
+						this.selectTab(index);
+					});
+				});
+
+				this.updateVisibility();
+			}
+		}
+
+		if (!customElements.get(TAB_PANEL_TAG)) {
+			customElements.define(TAB_PANEL_TAG, TabPanelElement);
+		}
+		if (!customElements.get(TABS_TAG)) {
+			customElements.define(TABS_TAG, TabsElement);
+		}
 	}
 
 	registry.register('tab-panel', {

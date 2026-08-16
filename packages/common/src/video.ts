@@ -56,46 +56,53 @@ const STYLES = `
 	}
 `;
 
-class VideoElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['url'];
-	}
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const url = this.getAttribute('url') ?? '';
-		const embed = resolveEmbed(url);
-
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			<div class="frame">
-				${
-					embed
-						? `<iframe src="${embed.embedUrl}" title="${embed.provider} video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`
-						: `<div class="error">Unsupported video URL — supported providers: YouTube, Vimeo.</div>`
-				}
-			</div>
-		`;
-	}
-}
-
 export function registerVideo(registry: ComponentRegistry): void {
-	if (!customElements.get(VIDEO_TAG)) {
-		customElements.define(VIDEO_TAG, VideoElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so registerVideo()
+	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		class VideoElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['url'];
+			}
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const url = this.getAttribute('url') ?? '';
+				const embed = resolveEmbed(url);
+
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					<div class="frame">
+						${
+							embed
+								? `<iframe src="${embed.embedUrl}" title="${embed.provider} video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`
+								: `<div class="error">Unsupported video URL — supported providers: YouTube, Vimeo.</div>`
+						}
+					</div>
+				`;
+			}
+		}
+
+		if (!customElements.get(VIDEO_TAG)) {
+			customElements.define(VIDEO_TAG, VideoElement);
+		}
 	}
+
 	registry.register('video', {
 		tag: VIDEO_TAG,
 		domain: 'common',

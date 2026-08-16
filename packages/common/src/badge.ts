@@ -28,41 +28,48 @@ const STYLES = `
 	.variant-outline { background: transparent; color: var(--foreground); border-color: var(--border); }
 `;
 
-class BadgeElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['variant'];
-	}
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const variant = VARIANTS.includes(this.getAttribute('variant') as (typeof VARIANTS)[number])
-			? (this.getAttribute('variant') as string)
-			: 'default';
-
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			<span class="badge variant-${variant}"><slot></slot></span>
-		`;
-	}
-}
-
 export function registerBadge(registry: ComponentRegistry): void {
-	if (!customElements.get(BADGE_TAG)) {
-		customElements.define(BADGE_TAG, BadgeElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so registerBadge()
+	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		class BadgeElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['variant'];
+			}
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const variant = VARIANTS.includes(this.getAttribute('variant') as (typeof VARIANTS)[number])
+					? (this.getAttribute('variant') as string)
+					: 'default';
+
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					<span class="badge variant-${variant}"><slot></slot></span>
+				`;
+			}
+		}
+
+		if (!customElements.get(BADGE_TAG)) {
+			customElements.define(BADGE_TAG, BadgeElement);
+		}
 	}
+
 	registry.register('badge', {
 		tag: BADGE_TAG,
 		domain: 'common',

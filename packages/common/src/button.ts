@@ -52,57 +52,67 @@ const STYLES = `
 	.variant-link { background: transparent; color: var(--primary); padding: 0; height: auto; text-decoration: underline; text-underline-offset: 4px; }
 `;
 
-// A single custom element renders as either <a> or <button> depending on
-// whether `href` is set — mirrors shadcn's Button-as-Link pattern (asChild +
-// next/link) without needing a separate directive for link-styled CTAs, the
-// most common use of Button inside a rendered content document.
-class ButtonElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['variant', 'size', 'href', 'disabled'];
-	}
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const variant = VARIANTS.includes(this.getAttribute('variant') as (typeof VARIANTS)[number])
-			? (this.getAttribute('variant') as string)
-			: 'default';
-		const size = SIZES.includes(this.getAttribute('size') as (typeof SIZES)[number]) ? (this.getAttribute('size') as string) : 'default';
-		const href = this.getAttribute('href');
-		const disabled = this.hasAttribute('disabled');
-		const asLink = Boolean(href) && !disabled;
-
-		// Built via DOM APIs, not string interpolation, for the one part of
-		// this that's untrusted author input: `href` could otherwise break out
-		// of its attribute (e.g. `" onclick="..."`) if concatenated into
-		// innerHTML the way class/tag-name are above (both are internally
-		// controlled, not author-supplied strings).
-		root.innerHTML = `<style>${STYLES}</style>`;
-		const el = document.createElement(asLink ? 'a' : 'button');
-		el.className = `btn variant-${variant} size-${size}`;
-		if (asLink) el.setAttribute('href', href as string);
-		if (disabled) el.setAttribute('disabled', '');
-		el.appendChild(document.createElement('slot'));
-		root.appendChild(el);
-	}
-}
-
 export function registerButton(registry: ComponentRegistry): void {
-	if (!customElements.get(BUTTON_TAG)) {
-		customElements.define(BUTTON_TAG, ButtonElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so registerButton()
+	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		// A single custom element renders as either <a> or <button> depending
+		// on whether `href` is set — mirrors shadcn's Button-as-Link pattern
+		// (asChild + next/link) without needing a separate directive for
+		// link-styled CTAs, the most common use of Button inside a rendered
+		// content document.
+		class ButtonElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['variant', 'size', 'href', 'disabled'];
+			}
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const variant = VARIANTS.includes(this.getAttribute('variant') as (typeof VARIANTS)[number])
+					? (this.getAttribute('variant') as string)
+					: 'default';
+				const size = SIZES.includes(this.getAttribute('size') as (typeof SIZES)[number])
+					? (this.getAttribute('size') as string)
+					: 'default';
+				const href = this.getAttribute('href');
+				const disabled = this.hasAttribute('disabled');
+				const asLink = Boolean(href) && !disabled;
+
+				// Built via DOM APIs, not string interpolation, for the one part of
+				// this that's untrusted author input: `href` could otherwise break out
+				// of its attribute (e.g. `" onclick="..."`) if concatenated into
+				// innerHTML the way class/tag-name are above (both are internally
+				// controlled, not author-supplied strings).
+				root.innerHTML = `<style>${STYLES}</style>`;
+				const el = document.createElement(asLink ? 'a' : 'button');
+				el.className = `btn variant-${variant} size-${size}`;
+				if (asLink) el.setAttribute('href', href as string);
+				if (disabled) el.setAttribute('disabled', '');
+				el.appendChild(document.createElement('slot'));
+				root.appendChild(el);
+			}
+		}
+
+		if (!customElements.get(BUTTON_TAG)) {
+			customElements.define(BUTTON_TAG, ButtonElement);
+		}
 	}
+
 	registry.register('button', {
 		tag: BUTTON_TAG,
 		domain: 'common',

@@ -39,49 +39,56 @@ const STYLES = `
 	::slotted(*) { border: none !important; background: transparent !important; }
 `;
 
-class AlertElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['variant', 'title'];
-	}
+export function registerAlert(registry: ComponentRegistry): void {
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so registerAlert()
+	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		class AlertElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['variant', 'title'];
+			}
 
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
 
-	connectedCallback(): void {
-		this.render();
-	}
+			connectedCallback(): void {
+				this.render();
+			}
 
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
 
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const variant = VARIANTS.includes(this.getAttribute('variant') as (typeof VARIANTS)[number])
-			? (this.getAttribute('variant') as string)
-			: 'default';
-		const title = this.getAttribute('title');
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const variant = VARIANTS.includes(this.getAttribute('variant') as (typeof VARIANTS)[number])
+					? (this.getAttribute('variant') as string)
+					: 'default';
+				const title = this.getAttribute('title');
 
-		this.className = `variant-${variant}`;
+				this.className = `variant-${variant}`;
 
-		root.innerHTML = `
-			<style>${STYLES}</style>
-			${title ? `<p class="title"></p>` : ''}
-			<div class="body"><slot></slot></div>
-		`;
+				root.innerHTML = `
+					<style>${STYLES}</style>
+					${title ? `<p class="title"></p>` : ''}
+					<div class="body"><slot></slot></div>
+				`;
 
-		if (title) {
-			(root.querySelector('.title') as HTMLElement).textContent = title;
+				if (title) {
+					(root.querySelector('.title') as HTMLElement).textContent = title;
+				}
+			}
+		}
+
+		if (!customElements.get(ALERT_TAG)) {
+			customElements.define(ALERT_TAG, AlertElement);
 		}
 	}
-}
 
-export function registerAlert(registry: ComponentRegistry): void {
-	if (!customElements.get(ALERT_TAG)) {
-		customElements.define(ALERT_TAG, AlertElement);
-	}
 	registry.register('alert', {
 		tag: ALERT_TAG,
 		domain: 'common',

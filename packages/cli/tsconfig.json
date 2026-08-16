@@ -1,0 +1,7 @@
+{
+	"extends": "@basemark/tsconfig-base/tsconfig.json",
+	"compilerOptions": {
+		"types": ["bun"]
+	},
+	"include": ["src"]
+}

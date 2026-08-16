@@ -30,41 +30,49 @@ const STYLES = `
 	}
 `;
 
-class SeparatorElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['orientation'];
-	}
-
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const root = this.shadowRoot as ShadowRoot;
-		const orientation = ORIENTATIONS.includes(this.getAttribute('orientation') as (typeof ORIENTATIONS)[number])
-			? (this.getAttribute('orientation') as string)
-			: 'horizontal';
-
-		this.className = orientation;
-		this.setAttribute('role', 'separator');
-
-		root.innerHTML = `<style>${STYLES}</style><div class="line"></div>`;
-	}
-}
-
 export function registerSeparator(registry: ComponentRegistry): void {
-	if (!customElements.get(SEPARATOR_TAG)) {
-		customElements.define(SEPARATOR_TAG, SeparatorElement);
+	// Guarded and declared inside the function, not at module scope — see
+	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
+	// must never be declared at module scope" note. Needed so
+	// registerSeparator() stays importable from a DOM-less consumer (e.g.
+	// @basemark/cli under Bun).
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		class SeparatorElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['orientation'];
+			}
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const root = this.shadowRoot as ShadowRoot;
+				const orientation = ORIENTATIONS.includes(this.getAttribute('orientation') as (typeof ORIENTATIONS)[number])
+					? (this.getAttribute('orientation') as string)
+					: 'horizontal';
+
+				this.className = orientation;
+				this.setAttribute('role', 'separator');
+
+				root.innerHTML = `<style>${STYLES}</style><div class="line"></div>`;
+			}
+		}
+
+		if (!customElements.get(SEPARATOR_TAG)) {
+			customElements.define(SEPARATOR_TAG, SeparatorElement);
+		}
 	}
+
 	registry.register('separator', {
 		tag: SEPARATOR_TAG,
 		domain: 'common',
