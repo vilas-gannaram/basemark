@@ -8,15 +8,13 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
 		<style>
-			/* App-local overrides of theme.css's tokens — only this example, not
-			   the shared package. Everything else (--border, --muted, --radius,
-			   ...) still comes from theme.css. `html:root` (specificity 0,1,1)
-			   rather than `:root` (0,1,0) so this wins regardless of whether
-			   Vite injects the theme.css import before or after this inline
-			   <style> block in the head. */
+			/* App-local override of theme.css's --font-sans only — the
+			   --background/--foreground values now live in theme.css itself
+			   (this app's palette became the shared default). `html:root`
+			   (specificity 0,1,1) rather than `:root` (0,1,0) so this wins
+			   regardless of whether Vite injects the theme.css import before or
+			   after this inline <style> block in the head. */
 			html:root {
-				--background: oklch(0.985 0.004 95);
-				--foreground: oklch(0.2 0.03 260);
 				--font-sans: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 			}
 

@@ -46,8 +46,8 @@
 	--leading-normal: 1.4;
 	--leading-relaxed: 1.5;
 	--leading-loose: 1.65;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.153 0.006 107.1);
+	--background: oklch(0.985 0.004 95);
+	--foreground: oklch(0.2 0.03 260);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.153 0.006 107.1);
 	--popover: oklch(1 0 0);
@@ -127,6 +127,18 @@ body {
 	line-height: var(--leading-loose);
 	color: var(--foreground);
 	background: var(--background);
+}
+
+/*
+ * ::selection is a highlight pseudo-element, not scoped per shadow tree the
+ * way most styling is — a rule declared once here paints across shadow
+ * boundaries too, so this covers text selected inside a component's own
+ * shadow root (e.g. a card's title) as well as ::slotted markdown content,
+ * with no need to repeat it per component.
+ */
+::selection {
+	background: var(--primary);
+	color: var(--primary-foreground);
 }
 
 h1,
