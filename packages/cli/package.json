@@ -10,7 +10,10 @@
 		"basemark": "./src/index.ts"
 	},
 	"scripts": {
-		"check-types": "tsc --noEmit"
+		"check-types": "tsc --noEmit",
+		"bundle:runtime": "bun run scripts/bundle-runtime.ts",
+		"postinstall": "bun run bundle:runtime",
+		"build": "bun run bundle:runtime && bun build --compile --outfile=dist/basemark ./src/index.ts"
 	},
 	"dependencies": {
 		"@basemark/common": "workspace:*",

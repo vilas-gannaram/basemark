@@ -7,8 +7,13 @@ import { renderMarkdownToHtml } from '@basemark/core';
 // constant, and works identically under plain `bun run` too.
 // @ts-expect-error -- no .d.ts for the text-loader import form
 import themeCss from '@basemark/core/theme.css' with { type: 'text' };
+// Pre-bundled by scripts/bundle-runtime.ts, not bundled here at render time —
+// see that script's comment for why. Run `bun run bundle:runtime` once after
+// cloning (or `bun run build`, which does it for you) before this import
+// resolves to anything real.
+// @ts-expect-error -- no .d.ts for the text-loader import form
+import runtimeJs from './generated/runtime.js' with { type: 'text' };
 import { buildRegistry } from './registry';
-import { bundleRuntime } from './bundle';
 
 // Falls back to the source's first ATX heading (`# Title`), then a fixed
 // default — markdown has no dedicated title field, and this only needs to
@@ -25,12 +30,11 @@ function escapeHtml(text: string): string {
 // VISION.md's third consumption path: resolve one markdown(+directives) file
 // into a single self-contained .html — open it in any browser, no build step
 // or framework runtime needed. "Self-contained" means the component runtime
-// (bundleRuntime) and theme are inlined, not linked, so the output has no
-// external file dependencies.
-export async function renderToHtml(source: string): Promise<string> {
+// and theme are inlined, not linked, so the output has no external file
+// dependencies.
+export function renderToHtml(source: string): string {
 	const registry = buildRegistry();
 	const bodyHtml = renderMarkdownToHtml(source, registry);
-	const runtimeJs = await bundleRuntime();
 
 	return `<!doctype html>
 <html lang="en">

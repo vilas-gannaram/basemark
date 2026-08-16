@@ -27,7 +27,7 @@ async function main(argv: string[]): Promise<void> {
 	const outputPath = values.out ?? inputPath.replace(/\.mdx?$/, '') + '.html';
 
 	const source = await Bun.file(inputPath).text();
-	const html = await renderToHtml(source);
+	const html = renderToHtml(source);
 	await Bun.write(outputPath, html);
 
 	console.log(`Wrote ${outputPath}`);
