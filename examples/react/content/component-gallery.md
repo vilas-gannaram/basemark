@@ -2,6 +2,18 @@
 
 This page exercises every `@basemark/common` component, including the shadcn/ui-inspired set (see `packages/common/README.md`), rendered here through `MarkdownRenderer` exactly like every other page: each resolves to a real React component via the generic `@lit/react` wrapper, not per-component code.
 
+## Code
+
+Inline code like `registerCommonComponents(registry)` is themed globally in `theme.css`, not a directive. Fenced code blocks get syntax highlighting too, via `rehype-highlight` wired into `@basemark/core`'s parse pipeline:
+
+```ts
+import { createRegistry } from '@basemark/core';
+import { registerCommonComponents } from '@basemark/common';
+
+const registry = createRegistry();
+registerCommonComponents(registry);
+```
+
 ## Buttons & badges
 
 Both are text directives, inline in a sentence: :button[Default]{} :button[Secondary]{variant="secondary"} :button[Destructive]{variant="destructive"} :button[Outline]{variant="outline"} :button[Ghost]{variant="ghost"} :button[Link]{variant="link"}, in :button[small]{size="sm"}, default, and :button[large]{size="lg"} sizes, and :button[as a link]{variant="outline" href="https://ui.shadcn.com"} when `href` is set.

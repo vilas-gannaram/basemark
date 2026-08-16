@@ -3,6 +3,7 @@ import remarkParse from 'remark-parse';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
+import rehypeHighlight from 'rehype-highlight';
 import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 import type { Root as MdastRoot } from 'mdast';
@@ -125,7 +126,17 @@ export function parseMarkdown(source: string, registry: ComponentRegistry): Hast
 	// importable in non-DOM contexts (see registerErrorComponent's own guard).
 	registerErrorComponent();
 
-	const processor = unified().use(remarkParse).use(remarkGfm).use(remarkDirective).use(resolveDirectives, registry).use(remarkRehype);
+	// `plainText: ['mermaid']` is a placeholder for ARCHITECTURE.md §8's future
+	// Tier-4 escape hatch (raw ```mermaid fence → mermaid-diagram component,
+	// not implemented yet) — once that lands, its fenced blocks must bypass
+	// syntax highlighting rather than render as highlighted plain text.
+	const processor = unified()
+		.use(remarkParse)
+		.use(remarkGfm)
+		.use(remarkDirective)
+		.use(resolveDirectives, registry)
+		.use(remarkRehype)
+		.use(rehypeHighlight, { plainText: ['mermaid'] });
 
 	// resolveDirectives reads the original source text back off `file.value`
 	// (to slice out each directive's raw source for error messages). Passing

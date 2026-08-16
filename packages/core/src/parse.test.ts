@@ -110,4 +110,24 @@ describe('parseMarkdown', () => {
 
 		expect(el.tagName).toBe('table');
 	});
+
+	it('syntax-highlights a fenced code block into hljs-classed spans (rehype-highlight)', () => {
+		const registry = createRegistry();
+		const hast = parseMarkdown(['```js', 'const x = 1;', '```'].join('\n'), registry);
+		const pre = firstElement(hast);
+		const code = pre.children.find((child): child is Element => child.type === 'element' && child.tagName === 'code');
+
+		expect(pre.tagName).toBe('pre');
+		expect(code?.properties.className).toContain('hljs');
+		expect(code?.children.some((child) => child.type === 'element' && String(child.properties.className).includes('hljs-'))).toBe(true);
+	});
+
+	it('leaves a ```mermaid fence as plain text, not highlighted (reserved for a future Tier-4 escape hatch)', () => {
+		const registry = createRegistry();
+		const hast = parseMarkdown(['```mermaid', 'graph TD; A-->B;', '```'].join('\n'), registry);
+		const pre = firstElement(hast);
+		const code = pre.children.find((child): child is Element => child.type === 'element' && child.tagName === 'code');
+
+		expect(code?.children.some((child) => child.type === 'element')).toBe(false);
+	});
 });

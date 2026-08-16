@@ -180,3 +180,94 @@ thead th {
 tbody tr:hover {
 	background: var(--muted);
 }
+
+/*
+ * Inline code (`like this`) vs fenced code blocks (<pre><code>) — both plain
+ * light-DOM output, same bucket as h1-h6/table/p above. `code`'s font-size is
+ * `em`-relative (not a fixed --text-* token) so it scales with whatever
+ * surrounding text it's inside — a heading's inline code stays proportional
+ * to the heading instead of always rendering small. `pre code` resets that
+ * back to a fixed size, since a code block isn't nested inside prose sized
+ * text the same way.
+ */
+code {
+	font-family: var(--font-mono);
+	font-size: 0.875em;
+	background: var(--muted);
+	padding: 0.15em 0.4em;
+	border-radius: var(--radius);
+}
+pre {
+	margin: 1.5rem 0;
+	padding: 1rem;
+	background: var(--muted);
+	border-radius: var(--radius);
+	overflow-x: auto;
+	line-height: var(--leading-normal);
+}
+pre code {
+	background: none;
+	padding: 0;
+	border-radius: 0;
+	font-size: var(--text-sm);
+}
+
+/*
+ * rehype-highlight (wired up in parse.ts, via lowlight — no DOM, stays
+ * synchronous, unlike Shiki) emits plain `hljs-*` classes, not inline
+ * colors — themed here against this file's own OKLCH tokens rather than an
+ * imported highlight.js theme, so highlighted code respects light/dark the
+ * same way everything else in this file does. --chart-1..5 are a neutral
+ * lightness ramp (not distinct hues, by design — see their definitions
+ * above), so weight/italic carry more of the visual distinction here than
+ * hue does.
+ */
+.hljs-comment,
+.hljs-quote {
+	color: var(--muted-foreground);
+	font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-type {
+	color: var(--chart-5);
+	font-weight: 600;
+}
+.hljs-string,
+.hljs-attr,
+.hljs-template-tag,
+.hljs-template-variable {
+	color: var(--chart-2);
+}
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+	color: var(--chart-3);
+}
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+	color: var(--chart-4);
+	font-weight: 600;
+}
+.hljs-variable,
+.hljs-attribute,
+.hljs-built_in,
+.hljs-builtin-name {
+	color: var(--chart-4);
+}
+.hljs-deletion {
+	color: var(--destructive);
+}
+.hljs-addition {
+	color: var(--chart-2);
+}
+.hljs-emphasis {
+	font-style: italic;
+}
+.hljs-strong {
+	font-weight: 700;
+}
