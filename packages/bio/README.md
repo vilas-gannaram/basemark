@@ -4,7 +4,7 @@ Domain components for bioinformatics authors. See [ARCHITECTURE.md](../../ARCHIT
 
 ## Status vs. the original plan
 
-The original plan (below) had exactly one Tier-2 idea for genomic-locus plots: `::locus{chr start end}`. What actually got built went deep on just that one idea instead of touching anything else on the list — it became a suite of six registered LocusZoom-family directives (plus a seventh that's built but not wired in by default), none of them literally named `::locus`:
+The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr start end}`. What got built instead is a suite of six registered LocusZoom-family directives (plus a seventh, built but not wired in by default):
 
 - `::locuszoom-assoc{chrom start end}` — GWAS association plot
 - `::locuszoom-gwas-catalog{chrom start end}` — + GWAS Catalog annotations

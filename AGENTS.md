@@ -1,40 +1,39 @@
-Guidance for AI coding agents working in this repository. See [README.md](README.md) for what Basemark is and the package layout, [ARCHITECTURE.md](ARCHITECTURE.md) for the full technical design spec, and [VISION.md](VISION.md) for the intended consumption paths (direct library use, Claude Skills authoring, CLI-rendered shareable HTML) — this file only covers what changes how you should work here.
+Guidance for AI agents working in this repo. See [README.md](README.md) for what Basemark is, [ARCHITECTURE.md](ARCHITECTURE.md) for the full design spec, [VISION.md](VISION.md) for who consumes it. This file is just what changes how you work here.
 
 ## Architecture decisions
 
-Check new work against these before writing code.
+- Authoring syntax is `remark-directive`. Default to leaf directives (`::name{attrs}`); use container directives (`:::name...:::`) only for real child content. ARCH §3.
+- Tiering: default new components to Tier 1/2 (short identifier in, component fetches/derives the rest). Tier 4 (raw data blob) is an escape hatch, not the default. ARCH §2.
+- Web Components are the default render target for `bio`/`chem`/`common`. Native framework registration (`{ type: 'react', component: X }`) is only for app-local, non-portable components. ARCH §6.
+- `registry.ts`'s `ComponentDefinition` is behind the full manifest spec (no `mimetypes`/`version` yet). Read the file directly — it moves.
 
-- **Authoring syntax is `remark-directive`**, not raw HTML or markdown-it. Default new components to **leaf directives** (`::name{attrs}`); reach for container directives (`:::name{attrs}...:::`) only when there's real child content — see ARCH §3 for why.
-- **Tiering model**: default new components to Tier 1 or Tier 2. Never make an author supply a raw data blob (Tier 4) except as an explicit escape hatch — see ARCH §2.
-- **Web Components are the default render target** for anything published/shared (`bio`, `chem`, `common`). Native framework registration (`{ type: 'react', component: X }`) is an escape hatch for app-local, non-portable components only — see ARCH §6.
-- **Registry is behind the manifest spec** — `packages/core/src/registry.ts`'s `ComponentDefinition` doesn't yet include `mimetypes` or `version` from the full contract (ARCH §5); don't assume that validation exists. Read `registry.ts` directly rather than trusting a shape described here — it keeps moving.
+## Implementation patterns
 
-## Implementation patterns to follow
+- **React wrapping is generic, not per-component.** `packages/react`'s `MarkdownRenderer` wraps every custom element via `@lit/react`'s `createComponent()`. Extend the generic wrapper, don't hand-write per-component React versions.
+- **Never declare a custom element class at module scope.** `class X extends HTMLElement` touches `HTMLElement` the moment the file loads — breaks any DOM-less import (Node tests, the CLI under Bun). Declare the class *inside* its `register*` function, behind `typeof HTMLElement !== 'undefined'`. See `core/error-element.ts` for the pattern; every `common`/`bio` component follows it.
+- **`bio`'s vendor libraries need a dynamic import too, not just the guard.** `3dmol`/`protvista-uniprot`/`locuszoom` crash on load outside a browser regardless of any guard around your own class. Defer with `await import(...)` inside the same guard — makes the `register*` function `async`.
 
-- **Custom elements from React render via a generic wrapper, not per-component code.** `packages/react`'s `MarkdownRenderer` wraps every resolved custom element with `@lit/react`'s `createComponent()` (looked up via `customElements.get(tagName)`), so it mounts as a real React component rather than a bare host tag. This works for any custom element regardless of how it was authored (no Lit dependency needed in the component itself) — don't write bespoke per-component React wrappers or reimplement a component's logic natively in React; extend the generic wrapper instead.
-- **A custom element class must never be declared at module scope, anywhere in the repo.** `class X extends HTMLElement` evaluates `HTMLElement` the instant the class statement runs, not on first instantiation. `packages/core`'s `error-element.ts`'s `registerErrorComponent()` defines its class *inside* the function, after a `typeof HTMLElement === 'undefined'` guard, specifically so `parse.ts` (which calls it) stays importable and callable from a Node-only test — and every component in `@basemark/common` (`card.ts`, `button.ts`, etc.) follows the same shape, guarding its class inside its `register*` function, because `@basemark/cli` needs to `import('@basemark/common')` under Bun (no browser) just to read registry metadata (tag/schema). `@basemark/bio` needed one step further: its files also import heavy vendor libraries (`3dmol`, `protvista-uniprot`, `locuszoom`) at module scope, and each library itself crashes on load outside a browser regardless of any guard around a class declaration — so each vendor import had to become a *dynamic* `await import(...)` inside the same DOM guard, which makes every `register*` function in `@basemark/bio` `async` (see `packages/cli/README.md`). Any future custom element, in any package, needs at minimum the class-declaration guard from the start — and the dynamic-import version too, if it wraps a vendor library that itself isn't safe to import outside a browser.
+## Pitfalls already hit
 
-## Pitfalls already hit once
-
-- **`unified`'s `processor.runSync(tree)` silently drops the source text if you don't pass the same `VFile` you parsed with.** `parse.ts` used to call `processor.parse(source)` then `processor.runSync(mdastTree)` with no second argument — `runSync` then creates a fresh, valueless `VFile` of its own, so any plugin reading `file.value` (as `resolveDirectives` does, to slice out a directive's raw source) silently gets `undefined`. Construct one `VFile` and pass it to both `parse()` and `runSync(tree, file)`. This went unnoticed for a while because no test asserted on the `source` property's actual content — if you add a plugin that reads `file.value`, add a test that checks it's non-empty, not just that it exists.
-- **The root `.gitignore` originally hid the whole `packages/` directory.** It was generated from a generic template and contained a NuGet rule (`**/[Pp]ackages/*`) that silently excluded every source package from git. It's now commented out — do not re-add a bare `packages/*` ignore rule.
-- **`Bun.build()` can silently split one entry point into multiple output chunks — grab all of `result.outputs`, not just `outputs[0]`.** `packages/cli/scripts/bundle-runtime.ts` bundles `src/runtime/bio.ts`, which dynamically imports `locuszoom/dist/locuszoom.css` — a real `.css` import, which Bun's bundler extracts into its own `kind: 'asset'` output chunk, separate from the JS entry-point chunk. The original script only wrote `outputs[0]`, so that CSS was silently dropped: every `locuszoom-*` component still mounted and resolved correctly (no error, no crash), it just rendered with zero toolbar/panel styling. No test caught it because nothing asserted on the *style* of a render, only its structure — if a future entry point imports another real asset (an image, another stylesheet), iterate every output, not just the first.
+- `unified`'s `runSync(tree)` drops the source text unless you pass the same `VFile` you parsed with. Always `runSync(tree, file)`.
+- Don't re-add a bare `packages/*` rule to `.gitignore` — an old NuGet template rule once hid the whole `packages/` dir from git.
+- `Bun.build()` can split one entry point into multiple output chunks (e.g. a real `.css` import becomes its own asset chunk). Write every `result.outputs` entry, not just `outputs[0]` — see `packages/cli/scripts/bundle-runtime.ts`.
 
 ## Tooling
 
-- **Formatting is enforced by Prettier, not hand-applied or debated.** A Husky `pre-commit` hook runs `lint-staged` (Prettier then ESLint `--fix`) on staged files — see `.prettierrc.json`. Don't add stylistic rules to `configs/eslint-config` (it ends with `eslint-config-prettier` specifically to prevent that conflict), and don't hand-format code to "fix" something Prettier would just rewrite on commit.
+Prettier + ESLint run via a Husky pre-commit hook (`lint-staged`). Don't hand-format or add stylistic ESLint rules — Prettier owns that.
 
 ## Status
 
-Pre-alpha, but the core pipeline works end-to-end:
+Pre-alpha, core pipeline works end-to-end:
 
-- **`@basemark/core`** — parses `remark-directive` markdown into a hast tree, validates props against each component's schema, and fails visibly via a registered `basemark-error` component (including for unclosed containers, which would otherwise silently swallow the rest of the document). Also auto-generates an AI-facing component prompt from the registry, and renders straight to real DOM with no framework via `renderMarkdown()` (built on `hast-util-to-dom`).
-- **`@basemark/bio`** — first real Tier-2 component: `::locuszoom-assoc{chrom start end}`, wrapping LocusZoom.js.
-- **`@basemark/common`** — first real components: `card`/`columns`/`tabs`, proving out the container-directive/Shadow-DOM-slot pattern (see `packages/common/README.md`).
-- **`@basemark/react`** — renders the hast tree; every resolved custom element is wrapped generically via `@lit/react`'s `createComponent` (not per-component code), so it mounts as a real React component, not a bare host tag.
-- **`@basemark/cli`** — `basemark render <input.md> [-o out.html]` resolves a markdown(+directives) file to one self-contained HTML file (core's parse + `hast-util-to-html`, a registry built from `@basemark/common` + `@basemark/bio`, a build-time-bundled component runtime inlined as one or more `<script>` tags, `theme.css` inlined as a `<style>`). Ships as a real standalone binary via `bun build --compile` — see `packages/cli/README.md` for how that's made to work (component-runtime bundling has to happen at CLI build time, not per-render, because the compiled binary's virtual filesystem can't be bundled from at runtime). `@basemark/bio` is fully wired in: every one of its `register*` functions is `async` and dynamically `import()`s its vendor library (`3dmol`/`protvista-uniprot`/`locuszoom`) behind the same DOM guard `@basemark/common` uses — the same trick doesn't work for `bio` with a plain guard alone, since those libraries crash on load outside a browser regardless of what wraps the call site. The CLI's runtime bundle is split per domain (`base`/`common`/`bio`) and only inlines what a given document's resolved directives actually use, so a `bio`-free document doesn't ship `bio`'s ~5MB of vendor JS. The rendered body is wrapped in a max-width container with `theme.css`'s `--background`/`--foreground`/`--font-sans` applied to `<body>` (nothing did that before), and links the same Google Fonts `Onest` stylesheet `examples/vanilla`/`examples/react` use — a deliberate, documented exception to "self-contained" (falls back to the system-font stack if that request fails).
-- **`examples/react`** and **`examples/vanilla`** exercise the React and no-framework render paths respectively, in a browser.
+- **`@basemark/core`** — parses `remark-directive` markdown to hast, validates props, fails visibly via `basemark-error`. Renders to real DOM (`renderMarkdown()`) or a plain string (`renderMarkdownToHtml()`).
+- **`@basemark/bio`** — 8 components (`structure`, `protvista`, `locuszoom-*`), wrapping 3Dmol.js/protvista-uniprot/LocusZoom.js.
+- **`@basemark/common`** — 12 components (`card`, `button`, `tabs`, etc.) — see `packages/common/README.md`.
+- **`@basemark/react`** — mounts the hast tree as real React components.
+- **`@basemark/cli`** — `basemark render doc.md -o doc.html`, one self-contained HTML file. Ships as a standalone binary (`bun build --compile`). Splits its component runtime per domain so a doc only pays for what it uses — see `packages/cli/README.md`.
+- **`examples/react`** / **`examples/vanilla`** — the two render paths, live in a browser.
 
-`packages/chem`, `packages/svelte`, `apps/docs` are still stubs — see `packages/bio`, `packages/common`, `packages/react`, and the `examples/*` packages for the patterns to extend.
+`packages/chem`, `packages/svelte`, `apps/docs` are still stubs.
 
-Open design questions: ARCHITECTURE.md §10. Open questions specific to the consumption-paths vision: VISION.md.
+Open questions: ARCHITECTURE.md §10, VISION.md.
