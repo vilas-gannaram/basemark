@@ -1,4 +1,3 @@
-import LocusZoom from 'locuszoom';
 import type { ComponentRegistry } from '@basemark/core';
 import { createLocusZoomElement, LOCUSZOOM_API_BASE } from './shared';
 
@@ -16,28 +15,37 @@ function parseVariant(variant: string): { chrom: string; position: number } {
 	return { chrom: match[1], position: Number(match[2]) };
 }
 
-// Verified against locuszoom@0.14.0's examples/phewas_scatter.html: centered
-// on a single variant (not a region), with a fixed +/-250kb window — narrower
-// scope than locuszoom-assoc/gwas-catalog, which take an explicit region.
-const PhewasElement = createLocusZoomElement({
-	observedAttrs: OBSERVED_ATTRS,
-	buildDataSources: () =>
-		new LocusZoom.DataSources()
-			.add('phewas', ['PheWASLZ', { url: `${LOCUSZOOM_API_BASE}statistic/phewas/`, build: ['GRCh37'] }])
-			.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
-			.add('constraint', ['GeneConstraintLZ', { url: 'https://gnomad.broadinstitute.org/api/', build: 'GRCh37' }]),
-	buildLayout: (attrs) => {
-		const { chrom, position } = parseVariant(attrs.variant);
-		return LocusZoom.Layouts.get('plot', 'standard_phewas', {
-			state: { variant: attrs.variant, chr: chrom, start: position - WINDOW_BP, end: position + WINDOW_BP },
+// registerPhewas is async — see shared.ts's createLocusZoomElement comment.
+// The element itself is built here, inside the guarded function, rather than
+// at module scope (as it used to be): its buildDataSources/buildLayout need a
+// real `LocusZoom` value, which only exists after createLocusZoomElement's
+// own dynamic import resolves.
+export async function registerPhewas(registry: ComponentRegistry): Promise<void> {
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		// Verified against locuszoom@0.14.0's examples/phewas_scatter.html:
+		// centered on a single variant (not a region), with a fixed +/-250kb
+		// window — narrower scope than locuszoom-assoc/gwas-catalog, which take
+		// an explicit region.
+		const PhewasElement = await createLocusZoomElement({
+			observedAttrs: OBSERVED_ATTRS,
+			buildDataSources: (LocusZoom) =>
+				new LocusZoom.DataSources()
+					.add('phewas', ['PheWASLZ', { url: `${LOCUSZOOM_API_BASE}statistic/phewas/`, build: ['GRCh37'] }])
+					.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
+					.add('constraint', ['GeneConstraintLZ', { url: 'https://gnomad.broadinstitute.org/api/', build: 'GRCh37' }]),
+			buildLayout: (LocusZoom, attrs) => {
+				const { chrom, position } = parseVariant(attrs.variant);
+				return LocusZoom.Layouts.get('plot', 'standard_phewas', {
+					state: { variant: attrs.variant, chr: chrom, start: position - WINDOW_BP, end: position + WINDOW_BP },
+				});
+			},
 		});
-	},
-});
 
-export function registerPhewas(registry: ComponentRegistry): void {
-	if (!customElements.get(LOCUSZOOM_PHEWAS_TAG)) {
-		customElements.define(LOCUSZOOM_PHEWAS_TAG, PhewasElement);
+		if (!customElements.get(LOCUSZOOM_PHEWAS_TAG)) {
+			customElements.define(LOCUSZOOM_PHEWAS_TAG, PhewasElement);
+		}
 	}
+
 	registry.register('locuszoom-phewas', {
 		tag: LOCUSZOOM_PHEWAS_TAG,
 		domain: 'bio',

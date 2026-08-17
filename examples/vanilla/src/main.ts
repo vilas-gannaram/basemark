@@ -13,7 +13,9 @@ import labProtocol from '../content/lab-protocol.md?raw';
 import componentGallery from '../content/component-gallery.md?raw';
 
 const registry = createRegistry();
-registerBioComponents(registry);
+// registerBioComponents is async — see examples/react/src/main.tsx's comment
+// for why this needs a top-level await before any renderMarkdown() call.
+await registerBioComponents(registry);
 registerCommonComponents(registry);
 
 interface Page {

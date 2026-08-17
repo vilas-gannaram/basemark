@@ -1,38 +1,50 @@
-import LocusZoom from 'locuszoom';
-import installCredibleSets from 'locuszoom/esm/ext/lz-credible-sets';
 import type { ComponentRegistry } from '@basemark/core';
 import { createLocusZoomElement, LOCUSZOOM_API_BASE } from './shared';
-
-LocusZoom.use(installCredibleSets);
 
 export const LOCUSZOOM_CREDIBLE_SETS_TAG = 'basemark-locuszoom-credible-sets';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// Verified against locuszoom@0.14.0's examples/ext/credible_sets.html:
-// standard association+LD+genes+recomb+constraint, plus a `credset` source
-// (CredibleSetLZ, 95% credible set threshold) via the association_credible_set
-// layout, which highlights/labels variants in the credible set.
-const CredibleSetsElement = createLocusZoomElement({
-	observedAttrs: OBSERVED_ATTRS,
-	buildDataSources: () =>
-		new LocusZoom.DataSources()
-			.add('assoc', ['AssociationLZ', { url: `${LOCUSZOOM_API_BASE}statistic/single/`, source: 45 }])
-			.add('credset', ['CredibleSetLZ', { threshold: 0.95, significance_threshold: 7.301 }])
-			.add('ld', ['LDServer', { url: 'https://portaldev.sph.umich.edu/ld/', source: '1000G', build: 'GRCh37', population: 'ALL' }])
-			.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
-			.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
-			.add('constraint', ['GeneConstraintLZ', { url: 'https://gnomad.broadinstitute.org/api/', build: 'GRCh37' }]),
-	buildLayout: (attrs) =>
-		LocusZoom.Layouts.get('plot', 'association_credible_set', {
-			state: { chr: attrs.chrom, start: Number(attrs.start), end: Number(attrs.end) },
-		}),
-});
+// registerCredibleSets is async — see shared.ts's createLocusZoomElement
+// comment. The element itself (and the LocusZoom.use() plugin install below,
+// formerly a module-scope side effect) is built here, inside the guarded
+// function, rather than at module scope: both need a real `LocusZoom` value,
+// which only exists after a dynamic import resolves — `locuszoom` and its ext
+// plugins can't be plain top-level imports either, same problem as
+// 'locuszoom' itself (see shared.ts).
+export async function registerCredibleSets(registry: ComponentRegistry): Promise<void> {
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		const [{ default: LocusZoom }, { default: installCredibleSets }] = await Promise.all([
+			import('locuszoom'),
+			import('locuszoom/esm/ext/lz-credible-sets'),
+		]);
+		LocusZoom.use(installCredibleSets);
 
-export function registerCredibleSets(registry: ComponentRegistry): void {
-	if (!customElements.get(LOCUSZOOM_CREDIBLE_SETS_TAG)) {
-		customElements.define(LOCUSZOOM_CREDIBLE_SETS_TAG, CredibleSetsElement);
+		// Verified against locuszoom@0.14.0's examples/ext/credible_sets.html:
+		// standard association+LD+genes+recomb+constraint, plus a `credset` source
+		// (CredibleSetLZ, 95% credible set threshold) via the association_credible_set
+		// layout, which highlights/labels variants in the credible set.
+		const CredibleSetsElement = await createLocusZoomElement({
+			observedAttrs: OBSERVED_ATTRS,
+			buildDataSources: () =>
+				new LocusZoom.DataSources()
+					.add('assoc', ['AssociationLZ', { url: `${LOCUSZOOM_API_BASE}statistic/single/`, source: 45 }])
+					.add('credset', ['CredibleSetLZ', { threshold: 0.95, significance_threshold: 7.301 }])
+					.add('ld', ['LDServer', { url: 'https://portaldev.sph.umich.edu/ld/', source: '1000G', build: 'GRCh37', population: 'ALL' }])
+					.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
+					.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
+					.add('constraint', ['GeneConstraintLZ', { url: 'https://gnomad.broadinstitute.org/api/', build: 'GRCh37' }]),
+			buildLayout: (_LocusZoom, attrs) =>
+				LocusZoom.Layouts.get('plot', 'association_credible_set', {
+					state: { chr: attrs.chrom, start: Number(attrs.start), end: Number(attrs.end) },
+				}),
+		});
+
+		if (!customElements.get(LOCUSZOOM_CREDIBLE_SETS_TAG)) {
+			customElements.define(LOCUSZOOM_CREDIBLE_SETS_TAG, CredibleSetsElement);
+		}
 	}
+
 	registry.register('locuszoom-credible-sets', {
 		tag: LOCUSZOOM_CREDIBLE_SETS_TAG,
 		domain: 'bio',

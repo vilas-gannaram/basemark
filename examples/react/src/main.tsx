@@ -19,7 +19,14 @@ import labProtocol from '../content/lab-protocol.md?raw';
 import componentGallery from '../content/component-gallery.md?raw';
 
 const registry = createRegistry();
-registerBioComponents(registry);
+// registerBioComponents is async (see packages/bio/src/index.ts) — its
+// components' vendor libraries (3Dmol.js, protvista-uniprot, locuszoom) are
+// dynamically imported, deferred until this call, rather than at module
+// scope. Top-level await blocks the initial render until customElements.
+// define() has actually run for each one, so MarkdownRenderer's @lit/react
+// wrapper (which looks up customElements.get(tagName)) never races a bio tag
+// that isn't defined yet.
+await registerBioComponents(registry);
 registerCommonComponents(registry);
 
 // ARCHITECTURE.md §6/§10's native registration escape hatch: an app-local

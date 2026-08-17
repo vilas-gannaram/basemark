@@ -1,40 +1,52 @@
-import LocusZoom from 'locuszoom';
-import installIntervalsTrack from 'locuszoom/esm/ext/lz-intervals-track';
 import type { ComponentRegistry } from '@basemark/core';
 import { createLocusZoomElement, LOCUSZOOM_API_BASE } from './shared';
-
-LocusZoom.use(installIntervalsTrack);
 
 export const LOCUSZOOM_INTERVALS_TAG = 'basemark-locuszoom-intervals';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// Verified against locuszoom@0.14.0's examples/ext/interval_annotations.html:
-// standard association+LD+genes, plus an `intervals` track (IntervalLZ,
-// source 19) via the interval_association layout. `constraint` isn't in the
-// demo's own data sources, but the installed version's default genes data
-// layer requires it (throws "Item not found: constraint" without it) — likely
-// version drift in the packaged example vs. the library version installed here.
-const IntervalsElement = createLocusZoomElement({
-	observedAttrs: OBSERVED_ATTRS,
-	buildDataSources: () =>
-		new LocusZoom.DataSources()
-			.add('assoc', ['AssociationLZ', { url: `${LOCUSZOOM_API_BASE}statistic/single/`, source: 45 }])
-			.add('ld', ['LDServer', { url: 'https://portaldev.sph.umich.edu/ld/', source: '1000G', build: 'GRCh37', population: 'ALL' }])
-			.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
-			.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
-			.add('intervals', ['IntervalLZ', { url: `${LOCUSZOOM_API_BASE}annotation/intervals/results/`, source: 19 }])
-			.add('constraint', ['GeneConstraintLZ', { url: 'https://gnomad.broadinstitute.org/api/', build: 'GRCh37' }]),
-	buildLayout: (attrs) =>
-		LocusZoom.Layouts.get('plot', 'interval_association', {
-			state: { chr: attrs.chrom, start: Number(attrs.start), end: Number(attrs.end) },
-		}),
-});
+// registerIntervals is async — see shared.ts's createLocusZoomElement
+// comment. The element itself (and the LocusZoom.use() plugin install below,
+// formerly a module-scope side effect) is built here, inside the guarded
+// function, rather than at module scope: both need a real `LocusZoom` value,
+// which only exists after a dynamic import resolves — `locuszoom` and its ext
+// plugins can't be plain top-level imports either, same problem as
+// 'locuszoom' itself (see shared.ts).
+export async function registerIntervals(registry: ComponentRegistry): Promise<void> {
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		const [{ default: LocusZoom }, { default: installIntervalsTrack }] = await Promise.all([
+			import('locuszoom'),
+			import('locuszoom/esm/ext/lz-intervals-track'),
+		]);
+		LocusZoom.use(installIntervalsTrack);
 
-export function registerIntervals(registry: ComponentRegistry): void {
-	if (!customElements.get(LOCUSZOOM_INTERVALS_TAG)) {
-		customElements.define(LOCUSZOOM_INTERVALS_TAG, IntervalsElement);
+		// Verified against locuszoom@0.14.0's examples/ext/interval_annotations.html:
+		// standard association+LD+genes, plus an `intervals` track (IntervalLZ,
+		// source 19) via the interval_association layout. `constraint` isn't in the
+		// demo's own data sources, but the installed version's default genes data
+		// layer requires it (throws "Item not found: constraint" without it) — likely
+		// version drift in the packaged example vs. the library version installed here.
+		const IntervalsElement = await createLocusZoomElement({
+			observedAttrs: OBSERVED_ATTRS,
+			buildDataSources: () =>
+				new LocusZoom.DataSources()
+					.add('assoc', ['AssociationLZ', { url: `${LOCUSZOOM_API_BASE}statistic/single/`, source: 45 }])
+					.add('ld', ['LDServer', { url: 'https://portaldev.sph.umich.edu/ld/', source: '1000G', build: 'GRCh37', population: 'ALL' }])
+					.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
+					.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
+					.add('intervals', ['IntervalLZ', { url: `${LOCUSZOOM_API_BASE}annotation/intervals/results/`, source: 19 }])
+					.add('constraint', ['GeneConstraintLZ', { url: 'https://gnomad.broadinstitute.org/api/', build: 'GRCh37' }]),
+			buildLayout: (_LocusZoom, attrs) =>
+				LocusZoom.Layouts.get('plot', 'interval_association', {
+					state: { chr: attrs.chrom, start: Number(attrs.start), end: Number(attrs.end) },
+				}),
+		});
+
+		if (!customElements.get(LOCUSZOOM_INTERVALS_TAG)) {
+			customElements.define(LOCUSZOOM_INTERVALS_TAG, IntervalsElement);
+		}
 	}
+
 	registry.register('locuszoom-intervals', {
 		tag: LOCUSZOOM_INTERVALS_TAG,
 		domain: 'bio',
