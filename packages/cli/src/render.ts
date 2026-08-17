@@ -81,7 +81,11 @@ function usedDomains(hast: HastRoot, registry: ComponentRegistry): Set<string> {
 // or framework runtime needed. "Self-contained" means the component runtime
 // and theme are inlined, not linked, so the output has no external file
 // dependencies — but only for the domain(s) this specific document actually
-// resolves, not every domain the CLI knows how to render.
+// resolves, not every domain the CLI knows how to render. One deliberate
+// exception: the Onest Google Font link below is a real network dependency
+// (falls back to theme.css's system-font stack if that request fails) —
+// matches examples/vanilla/examples/react's own look rather than embedding a
+// base64 font file into every single output.
 export async function renderToHtml(source: string): Promise<string> {
 	const registry = await buildRegistry();
 	const hast = parseMarkdown(source, registry);
@@ -100,8 +104,22 @@ export async function renderToHtml(source: string): Promise<string> {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(deriveTitle(source))}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>${themeCss}</style>${runtimeCss ? `\n<style>${runtimeCss}</style>` : ''}
 <style>
+	/* Matches examples/vanilla/examples/react's own override — this is a
+	 * network dependency (fonts.googleapis.com), which means the output isn't
+	 * fully self-contained/offline-safe the way the rest of this file's markup
+	 * and scripts are; the font link above is the one deliberate exception.
+	 * Falls back to theme.css's system-font stack if that request fails. */
+	html:root {
+		--font-sans: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
+	h1, h2, h3, h4, h5, h6 {
+		letter-spacing: -0.02em;
+	}
 	body {
 		margin: 0;
 		background: var(--background);
