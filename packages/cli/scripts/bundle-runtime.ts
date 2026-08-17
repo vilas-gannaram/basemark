@@ -10,7 +10,6 @@ const ENTRIES = ['base', 'common', 'bio'] as const;
 
 for (const name of ENTRIES) {
 	const entryPoint = new URL(`../src/runtime/${name}.ts`, import.meta.url).pathname;
-	const outputPath = new URL(`../src/generated/${name}.runtime.js`, import.meta.url).pathname;
 
 	const result = await Bun.build({
 		entrypoints: [entryPoint],
@@ -24,6 +23,19 @@ for (const name of ENTRIES) {
 		throw new Error(`Failed to bundle ${name} runtime:\n${messages}`);
 	}
 
-	await Bun.write(outputPath, await result.outputs[0]!.text());
-	console.log(`Wrote ${outputPath}`);
+	// bio.ts's `await import('locuszoom/dist/locuszoom.css')` makes Bun's
+	// bundler emit a SEPARATE `kind: 'asset'` output chunk alongside the JS
+	// entry-point chunk — writing only outputs[0] (this file's original
+	// version) silently dropped that CSS, leaving LocusZoom's own toolbar/
+	// panel styling missing from every rendered document (confirmed: the
+	// plots resolve and mount, but render unstyled). base.ts/common.ts never
+	// produce a CSS chunk (no real .css import — common's shadow-DOM styles
+	// are template-literal strings in JS, not `.css` imports), so this loop
+	// is a no-op extra step for them, not a special case per entry.
+	for (const output of result.outputs) {
+		const extension = output.path.endsWith('.css') ? 'css' : 'js';
+		const outputPath = new URL(`../src/generated/${name}.runtime.${extension}`, import.meta.url).pathname;
+		await Bun.write(outputPath, await output.text());
+		console.log(`Wrote ${outputPath}`);
+	}
 }

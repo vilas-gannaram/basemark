@@ -26,10 +26,23 @@ import baseRuntimeJs from './generated/base.runtime.js' with { type: 'text' };
 import commonRuntimeJs from './generated/common.runtime.js' with { type: 'text' };
 // @ts-expect-error -- no .d.ts for the text-loader import form
 import bioRuntimeJs from './generated/bio.runtime.js' with { type: 'text' };
+// bio.ts's `await import('locuszoom/dist/locuszoom.css')` makes Bun's
+// bundler emit LocusZoom's real stylesheet as its own output chunk, separate
+// from bio.runtime.js — without inlining it too, every locuszoom-* component
+// mounts and resolves but renders with no toolbar/panel styling at all (a
+// real bug this repo shipped once: only outputs[0] was written, silently
+// dropping this file — see bundle-runtime.ts's comment). base.ts/common.ts
+// have no CSS counterpart (no real .css import in either).
+// @ts-expect-error -- no .d.ts for the text-loader import form
+import bioRuntimeCss from './generated/bio.runtime.css' with { type: 'text' };
 
 const DOMAIN_RUNTIME: Record<string, string> = {
 	common: commonRuntimeJs,
 	bio: bioRuntimeJs,
+};
+
+const DOMAIN_CSS: Record<string, string> = {
+	bio: bioRuntimeCss,
 };
 
 // Falls back to the source's first ATX heading (`# Title`), then a fixed
@@ -74,7 +87,12 @@ export async function renderToHtml(source: string): Promise<string> {
 	const hast = parseMarkdown(source, registry);
 	const bodyHtml = toHtml(hast);
 
-	const runtimeJs = [baseRuntimeJs, ...[...usedDomains(hast, registry)].map((domain) => DOMAIN_RUNTIME[domain])].join('\n');
+	const domains = usedDomains(hast, registry);
+	const runtimeJs = [baseRuntimeJs, ...[...domains].map((domain) => DOMAIN_RUNTIME[domain])].join('\n');
+	const runtimeCss = [...domains]
+		.map((domain) => DOMAIN_CSS[domain])
+		.filter(Boolean)
+		.join('\n');
 
 	return `<!doctype html>
 <html lang="en">
@@ -82,7 +100,7 @@ export async function renderToHtml(source: string): Promise<string> {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(deriveTitle(source))}</title>
-<style>${themeCss}</style>
+<style>${themeCss}</style>${runtimeCss ? `\n<style>${runtimeCss}</style>` : ''}
 </head>
 <body>
 ${bodyHtml}
