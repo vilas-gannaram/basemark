@@ -1,6 +1,5 @@
-import LocusZoom from 'locuszoom';
 import type { ComponentRegistry } from '@basemark/core';
-import { createLocusZoomElement, LOCUSZOOM_API_BASE } from './shared';
+import { createLocusZoomElement, LOCUSZOOM_API_BASE, type LocusZoomStatic } from './shared';
 
 export const LOCUSZOOM_MULTI_PHENO_TAG = 'basemark-locuszoom-multi-pheno';
 
@@ -19,7 +18,13 @@ const PHENOTYPES = [
 	{ namespace: 'cholesterol', title: 'Total cholesterol meta-analysis', color: 'rgb(53, 126, 189)', studyId: 30 },
 ] as const;
 
-function buildDataSources() {
+// Both take `LocusZoom` as a parameter now, rather than closing over a
+// module-scope import — see shared.ts's createLocusZoomElement comment for
+// why this file can no longer import 'locuszoom' at its own top level. Stay
+// as plain module-scope functions (unlike the element construction below,
+// which does need to move inside registerMultiPheno): neither runs until
+// called from render(), so there's no crash risk keeping them here.
+function buildDataSources(LocusZoom: LocusZoomStatic) {
 	const sources = new LocusZoom.DataSources()
 		.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
 		.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
@@ -30,7 +35,7 @@ function buildDataSources() {
 	return sources;
 }
 
-function buildLayout(attrs: Record<(typeof OBSERVED_ATTRS)[number], string>): Record<string, unknown> {
+function buildLayout(LocusZoom: LocusZoomStatic, attrs: Record<(typeof OBSERVED_ATTRS)[number], string>): Record<string, unknown> {
 	const associationPanel = LocusZoom.Layouts.get('panel', 'association', {
 		data_layers: [
 			LocusZoom.Layouts.get('data_layer', 'significance', { name: 'Line of GWAS Significance' }),
@@ -65,16 +70,24 @@ function buildLayout(attrs: Record<(typeof OBSERVED_ATTRS)[number], string>): Re
 	};
 }
 
-const MultiPhenoElement = createLocusZoomElement({
-	observedAttrs: OBSERVED_ATTRS,
-	buildDataSources,
-	buildLayout,
-});
+// registerMultiPheno is async — see shared.ts's createLocusZoomElement
+// comment. The element itself is built here, inside the guarded function,
+// rather than at module scope (as it used to be): createLocusZoomElement
+// needs a real `LocusZoom` value, which only exists after its own dynamic
+// import resolves.
+export async function registerMultiPheno(registry: ComponentRegistry): Promise<void> {
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		const MultiPhenoElement = await createLocusZoomElement({
+			observedAttrs: OBSERVED_ATTRS,
+			buildDataSources,
+			buildLayout,
+		});
 
-export function registerMultiPheno(registry: ComponentRegistry): void {
-	if (!customElements.get(LOCUSZOOM_MULTI_PHENO_TAG)) {
-		customElements.define(LOCUSZOOM_MULTI_PHENO_TAG, MultiPhenoElement);
+		if (!customElements.get(LOCUSZOOM_MULTI_PHENO_TAG)) {
+			customElements.define(LOCUSZOOM_MULTI_PHENO_TAG, MultiPhenoElement);
+		}
 	}
+
 	registry.register('locuszoom-multi-pheno', {
 		tag: LOCUSZOOM_MULTI_PHENO_TAG,
 		domain: 'bio',

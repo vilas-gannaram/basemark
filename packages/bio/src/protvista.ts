@@ -1,4 +1,10 @@
-import 'protvista-uniprot';
+// './protvista-uniprot' is an ambient .d.ts (declare module 'protvista-uniprot'
+// — see that file). This side-effect import is required, not just belt-and-
+// suspenders: a downstream consumer with its own separate `tsc` run (e.g.
+// examples/vanilla, whose tsconfig only globs its own "src") never discovers
+// an ambient declaration file that nothing actually imports — only this
+// package's own tsconfig happens to glob-include it directly.
+import './protvista-uniprot';
 import type { ComponentRegistry } from '@basemark/core';
 
 export const PROTVISTA_TAG = 'basemark-protvista';
@@ -39,35 +45,48 @@ const HOST_STYLE: Partial<CSSStyleDeclaration> = {
 // always sees `accession` already set — regardless of how/when our own
 // wrapper's attribute got set by whatever's rendering it (React, vanilla DOM,
 // etc.).
-class ProtvistaElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['accession'];
+// registerProtvista is async, unlike @basemark/common's register* functions
+// — protvista-uniprot (imported below) touches `HTMLElement` at its own
+// module scope, same problem AGENTS.md's guard note covers for a class
+// declared directly here, so it can't be a plain top-level import either.
+// Deferred to a dynamic import, awaited before ProtvistaElement is declared
+// (it calls `document.createElement('protvista-uniprot')` in render(),
+// which needs that tag already defined) and before customElements.define()
+// — both DOM-only operations, gated by the same guard as the class itself.
+export async function registerProtvista(registry: ComponentRegistry): Promise<void> {
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		await import('protvista-uniprot');
+
+		class ProtvistaElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['accession'];
+			}
+
+			connectedCallback(): void {
+				Object.assign(this.style, HOST_STYLE);
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const accession = this.getAttribute('accession');
+				if (!accession) return;
+
+				this.innerHTML = '';
+				const viewer = document.createElement('protvista-uniprot');
+				viewer.setAttribute('accession', accession);
+				this.appendChild(viewer);
+			}
+		}
+
+		if (!customElements.get(PROTVISTA_TAG)) {
+			customElements.define(PROTVISTA_TAG, ProtvistaElement);
+		}
 	}
 
-	connectedCallback(): void {
-		Object.assign(this.style, HOST_STYLE);
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const accession = this.getAttribute('accession');
-		if (!accession) return;
-
-		this.innerHTML = '';
-		const viewer = document.createElement('protvista-uniprot');
-		viewer.setAttribute('accession', accession);
-		this.appendChild(viewer);
-	}
-}
-
-export function registerProtvista(registry: ComponentRegistry): void {
-	if (!customElements.get(PROTVISTA_TAG)) {
-		customElements.define(PROTVISTA_TAG, ProtvistaElement);
-	}
 	registry.register('protvista', {
 		tag: PROTVISTA_TAG,
 		domain: 'bio',

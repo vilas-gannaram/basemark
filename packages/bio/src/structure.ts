@@ -1,5 +1,10 @@
+// './3dmol' is an ambient .d.ts (declare module '3dmol/build/3Dmol.es6.js'
+// — see that file). This side-effect import is required, not just belt-and-
+// suspenders: a downstream consumer with its own separate `tsc` run (e.g.
+// examples/vanilla, whose tsconfig only globs its own "src") never discovers
+// an ambient declaration file that nothing actually imports — only this
+// package's own tsconfig happens to glob-include it directly.
 import './3dmol';
-import { createViewer, download } from '3dmol/build/3Dmol.es6.js';
 import type { ComponentRegistry } from '@basemark/core';
 
 export const STRUCTURE_TAG = 'basemark-structure';
@@ -39,52 +44,64 @@ const STYLES = `
 // WebGL renderer with no chrome, and its own `download('pdb:{id}', ...)`
 // helper fetches straight from RCSB (with a bcif→pdb fallback built in), so
 // this stays Tier 1 — no fetch/parse logic needed on our side.
-class StructureElement extends HTMLElement {
-	static get observedAttributes(): string[] {
-		return ['pdbid'];
+// registerStructure is async, unlike @basemark/common's register* functions
+// — 3Dmol.js (imported below) touches `window` at its own module scope, same
+// problem AGENTS.md's guard note covers for a class declared directly here,
+// so it can't be a plain top-level import either. Deferred to a dynamic
+// import, awaited before StructureElement is declared (its render() closes
+// over createViewer/download) and before customElements.define() — both
+// DOM-only operations, gated by the same guard as the class itself.
+export async function registerStructure(registry: ComponentRegistry): Promise<void> {
+	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
+		const { createViewer, download } = await import('3dmol/build/3Dmol.es6.js');
+
+		class StructureElement extends HTMLElement {
+			static get observedAttributes(): string[] {
+				return ['pdbid'];
+			}
+
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+			}
+
+			connectedCallback(): void {
+				this.render();
+			}
+
+			attributeChangedCallback(): void {
+				if (this.isConnected) this.render();
+			}
+
+			private render(): void {
+				const pdbId = this.getAttribute('pdbid');
+				if (!pdbId) return;
+
+				const root = this.shadowRoot as ShadowRoot;
+				root.innerHTML = `<style>${STYLES}</style>`;
+
+				// 3Dmol.js sizes its canvas off the container element passed to
+				// createViewer, not an ancestor's — the :host rule above gives this
+				// element (and so `.viewer`'s 100%) an explicit height to size against.
+				const container = document.createElement('div');
+				container.className = 'viewer';
+				root.appendChild(container);
+
+				const viewer = createViewer(container, { backgroundColor: 'white' });
+				if (!viewer) return;
+				download(`pdb:${pdbId}`, viewer, {}, () => {
+					viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+					viewer.zoomTo();
+					viewer.render();
+				});
+			}
+		}
+
+		if (!customElements.get(STRUCTURE_TAG)) {
+			customElements.define(STRUCTURE_TAG, StructureElement);
+		}
 	}
 
-	constructor() {
-		super();
-		this.attachShadow({ mode: 'open' });
-	}
-
-	connectedCallback(): void {
-		this.render();
-	}
-
-	attributeChangedCallback(): void {
-		if (this.isConnected) this.render();
-	}
-
-	private render(): void {
-		const pdbId = this.getAttribute('pdbid');
-		if (!pdbId) return;
-
-		const root = this.shadowRoot as ShadowRoot;
-		root.innerHTML = `<style>${STYLES}</style>`;
-
-		// 3Dmol.js sizes its canvas off the container element passed to
-		// createViewer, not an ancestor's — the :host rule above gives this
-		// element (and so `.viewer`'s 100%) an explicit height to size against.
-		const container = document.createElement('div');
-		container.className = 'viewer';
-		root.appendChild(container);
-
-		const viewer = createViewer(container, { backgroundColor: 'white' });
-		if (!viewer) return;
-		download(`pdb:${pdbId}`, viewer, {}, () => {
-			viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
-			viewer.zoomTo();
-			viewer.render();
-		});
-	}
-}
-
-export function registerStructure(registry: ComponentRegistry): void {
-	if (!customElements.get(STRUCTURE_TAG)) {
-		customElements.define(STRUCTURE_TAG, StructureElement);
-	}
 	registry.register('structure', {
 		tag: STRUCTURE_TAG,
 		domain: 'bio',

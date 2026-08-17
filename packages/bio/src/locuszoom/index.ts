@@ -15,13 +15,21 @@ import { registerPhewas } from './phewas';
 // call registerTabix(registry) directly if you want it despite the crash.
 export { registerTabix } from './tabix';
 
-export function registerLocusZoomComponents(registry: ComponentRegistry): void {
-	registerAssoc(registry);
-	registerGwasCatalog(registry);
-	registerPhewas(registry);
-	registerIntervals(registry);
-	registerCredibleSets(registry);
-	registerMultiPheno(registry);
+// async — each of these is now async itself (see shared.ts's
+// createLocusZoomElement comment: 'locuszoom' can't be a top-level import
+// outside a browser, so building each element is deferred to a dynamic
+// import). Run in parallel, not sequentially, since none depend on another's
+// result — each just needs its own dynamic import of the same underlying
+// 'locuszoom' module (which the runtime module cache dedupes for free).
+export async function registerLocusZoomComponents(registry: ComponentRegistry): Promise<void> {
+	await Promise.all([
+		registerAssoc(registry),
+		registerGwasCatalog(registry),
+		registerPhewas(registry),
+		registerIntervals(registry),
+		registerCredibleSets(registry),
+		registerMultiPheno(registry),
+	]);
 }
 
 export { LOCUSZOOM_ASSOC_TAG } from './assoc';
