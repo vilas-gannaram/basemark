@@ -101,9 +101,24 @@ export async function renderToHtml(source: string): Promise<string> {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(deriveTitle(source))}</title>
 <style>${themeCss}</style>${runtimeCss ? `\n<style>${runtimeCss}</style>` : ''}
+<style>
+	body {
+		margin: 0;
+		background: var(--background);
+		color: var(--foreground);
+		font-family: var(--font-sans);
+	}
+	.basemark-doc {
+		max-width: 65rem;
+		margin: 0 auto;
+		padding: 2rem 1.5rem;
+	}
+</style>
 </head>
 <body>
+<div class="basemark-doc">
 ${bodyHtml}
+</div>
 <script>${runtimeJs}</script>
 </body>
 </html>
