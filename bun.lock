@@ -113,6 +113,7 @@
       },
       "dependencies": {
         "@basemark/bio": "workspace:*",
+        "@basemark/charts": "workspace:*",
         "@basemark/common": "workspace:*",
         "@basemark/core": "workspace:*",
         "hast-util-to-html": "^9.0.5",

@@ -25,7 +25,6 @@ Both normalize to the same `{x, y}` row shape (`chart.ts`'s `getLabelValueRows()
 
 - CSV parsing is a bare `,`-split — no quoted-field/embedded-comma support.
 - No raw ` ```echarts ` fence escape hatch — core has no fenced-code-block-to-component pipeline yet (same gap blocks Mermaid, see ARCHITECTURE.md §8/§4).
-- Not wired into `@basemark/cli` yet.
 - Bundle isn't split — pulls in all of `echarts`, not just the chart types actually used.
 - `radar-chart` is single-series only — no way to overlay multiple entities on the same axes yet.
 - Heatmap/treemap/sankey and other non-tabular shapes aren't built — they need a genuinely different data model (grid triples, nested/linked data) than the flat `{x, y}` rows every chart here uses.

@@ -1,6 +1,7 @@
 import { createRegistry, type ComponentRegistry } from '@basemark/core';
 import { registerCommonComponents } from '@basemark/common';
 import { registerBioComponents } from '@basemark/bio';
+import { registerChartsComponents } from '@basemark/charts';
 
 // The CLI's build-time registry — used by @basemark/core's parseMarkdown()
 // to resolve directive names to tags and validate props while running in
@@ -20,5 +21,6 @@ export async function buildRegistry(): Promise<ComponentRegistry> {
 	const registry = createRegistry();
 	registerCommonComponents(registry);
 	await registerBioComponents(registry);
+	registerChartsComponents(registry);
 	return registry;
 }

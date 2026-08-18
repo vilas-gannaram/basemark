@@ -6,7 +6,7 @@
 // document's resolved directives actually need (see its usedDomains()), so a
 // common-only document doesn't ship bio's much heavier vendor libraries
 // (3Dmol.js, protvista-uniprot, locuszoom) for nothing.
-const ENTRIES = ['base', 'common', 'bio'] as const;
+const ENTRIES = ['base', 'common', 'bio', 'charts'] as const;
 
 for (const name of ENTRIES) {
 	const entryPoint = new URL(`../src/runtime/${name}.ts`, import.meta.url).pathname;
