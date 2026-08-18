@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"@basemark/bio": "workspace:*",
+		"@basemark/charts": "workspace:*",
 		"@basemark/common": "workspace:*",
 		"@basemark/core": "workspace:*"
 	},

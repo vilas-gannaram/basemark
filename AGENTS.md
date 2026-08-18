@@ -30,6 +30,7 @@ Pre-alpha, core pipeline works end-to-end:
 - **`@basemark/core`** — parses `remark-directive` markdown to hast, validates props, fails visibly via `basemark-error`. Renders to real DOM (`renderMarkdown()`) or a plain string (`renderMarkdownToHtml()`).
 - **`@basemark/bio`** — 8 components (`structure`, `protvista`, `locuszoom-*`), wrapping 3Dmol.js/protvista-uniprot/LocusZoom.js.
 - **`@basemark/common`** — 12 components (`card`, `button`, `tabs`, etc.) — see `packages/common/README.md`.
+- **`@basemark/charts`** — `bar-chart`/`line-chart`/`scatter-chart`/`pie-chart`/`radar-chart`/`funnel-chart`/`gauge-chart` (ECharts), a separate package per ARCH §7's heavy-dependency flag — see `packages/charts/README.md`. Not wired into the CLI yet.
 - **`@basemark/react`** — mounts the hast tree as real React components.
 - **`@basemark/cli`** — `basemark render doc.md -o doc.html`, one self-contained HTML file. Ships as a standalone binary (`bun build --compile`). Splits its component runtime per domain so a doc only pays for what it uses — see `packages/cli/README.md`.
 - **`examples/react`** / **`examples/vanilla`** — the two render paths, live in a browser.
