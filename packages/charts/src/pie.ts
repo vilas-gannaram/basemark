@@ -3,7 +3,7 @@ import { createChartElement, defineChart, getLabelValueRows, type ChartRow } fro
 
 export const PIE_CHART_TAG = 'basemark-pie-chart';
 
-const OBSERVED_ATTRS = ['data', 'x', 'y', 'labels', 'values'] as const;
+const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
 // Donut, not a solid pie (radius: ['35%', '65%']) — the modern default for
 // this shape. `center: ['50%', '58%']` nudges the donut down from the
@@ -36,16 +36,15 @@ export function registerPieChart(registry: ComponentRegistry): void {
 		title: 'Pie Chart (donut)',
 		description:
 			'Renders a donut chart — proportions of a whole. Use this instead of bar-chart when the point is "what ' +
-			'share of the total" rather than "compare these values". Two ways to supply data — use whichever fits: (1) ' +
-			'`labels`+`values`, two comma-separated lists, for a handful of numbers you already have — e.g. ' +
-			'labels="Chrome,Safari,Firefox" values="65,19,8"; (2) `data`+`x`+`y`, a URL to a hosted .csv/.json file plus ' +
-			'the field names to plot.',
+			'share of the total" rather than "compare these values". `labels`+`values`, two comma-separated lists — ' +
+			'e.g. labels="Chrome,Safari,Firefox" values="65,19,8".',
 		schema: {
-			labels: { type: 'string', description: 'Comma-separated slice labels, e.g. "Chrome,Safari,Firefox". Pairs with `values`.' },
-			values: { type: 'string', description: 'Comma-separated numbers, e.g. "65,19,8". Pairs with `labels`.' },
-			data: { type: 'string', description: 'URL to a .csv (header row) or .json (array of objects) file. Pairs with `x`+`y`.' },
-			x: { type: 'string', description: 'Field name to use as the slice label. Only used with `data`.' },
-			y: { type: 'string', description: 'Field name to use as the slice value (numeric). Only used with `data`.' },
+			labels: {
+				type: 'string',
+				required: true,
+				description: 'Comma-separated slice labels, e.g. "Chrome,Safari,Firefox". Pairs with `values`.',
+			},
+			values: { type: 'string', required: true, description: 'Comma-separated numbers, e.g. "65,19,8". Pairs with `labels`.' },
 			title: { type: 'string', description: 'Optional chart title, centered in the donut.' },
 		},
 	});

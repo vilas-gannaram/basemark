@@ -6,27 +6,28 @@ import type { ComponentRegistry } from '@basemark/core';
 // the custom-element class itself needs the module-scope guard (AGENTS.md's
 // "custom element class must never be declared at module scope" rule).
 
-// Every chart type normalizes both its data sources — a hosted `data` URL
-// (Tier 2) or inline comma-separated attrs (Tier 3, ARCHITECTURE.md §2) —
-// down to this one shape. buildOption() then never needs to know which mode
-// produced a row; only getRows() does.
+// Every chart type normalizes its inline comma-separated attrs (Tier 3,
+// ARCHITECTURE.md §2) down to this one shape. buildOption() then never needs
+// to know anything about attr parsing; only getRows() does.
+//
+// Deliberately no hosted-`data`-URL mode (Tier 2) — see this package's
+// README's "Why no hosted-file mode" for the reasoning. A dev embedding
+// Basemark who wants to plot an existing dataset extends this package with
+// their own chart type built on createChartElement, fetching however suits
+// their own auth/proxy setup, rather than this package doing a raw
+// client-side `fetch(url)` of a caller-supplied URL.
 export interface ChartRow {
 	x: string;
 	y: string;
 }
 
 export interface ChartElementConfig<A extends string> {
-	// Every attr this chart type might read — `data`/`title` plus whatever
-	// mode-specific attrs it supports (e.g. `x`/`y` for the URL mode,
-	// `labels`/`values` for the inline mode). All optional: which ones are
-	// actually required depends on which mode the author used, which getRows
-	// below decides — the registry schema (see bar.ts et al.) can't express
-	// that either/or itself, so it documents both combos instead.
+	// Every attr this chart type reads (besides `title`, handled separately).
 	observedAttrs: readonly A[];
-	// Resolves this document's actual data, however it was supplied. Throws
+	// Resolves this document's actual data from its inline attrs. Throws
 	// (with a message meant for the rendered error, not just a console log)
-	// if neither a valid `data` URL nor a valid inline combo was given.
-	getRows: (attrs: Partial<Record<A, string>>) => Promise<ChartRow[]> | ChartRow[];
+	// if the required attrs weren't given.
+	getRows: (attrs: Partial<Record<A, string>>) => ChartRow[];
 	// ECharts' own `EChartsOption` type is intentionally not used here — each
 	// guided directive only ever sets a handful of fields, and this stays a
 	// plain object so a future directive isn't fighting ECharts' full option
@@ -34,28 +35,6 @@ export interface ChartElementConfig<A extends string> {
 	// for gauge.ts, which has no tabular rows at all (a single value + min/max)
 	// — bar/line/scatter/pie/radar/funnel all ignore this third parameter.
 	buildOption: (rows: ChartRow[], title: string | null, attrs: Partial<Record<A, string>>) => Record<string, unknown>;
-}
-
-// Format is inferred from the URL's extension, not sniffed from
-// Content-Type — predictable for both a human and an AI author to reason
-// about from the `data` attribute alone. Only a bare `,`-split CSV parser —
-// no quoted-field/embedded-comma support (a known gap, see this package's
-// README) — real CSV parsing pulls in a dependency this simple case doesn't
-// need yet. Returns raw column-keyed rows — callers pick out the `x`/`y`
-// fields themselves (see bar.ts's getRows), since the field names are only
-// known to each chart type's own `x`/`y` attrs.
-export async function fetchRawRows(url: string): Promise<Record<string, string>[]> {
-	const response = await fetch(url);
-	if (url.endsWith('.csv')) {
-		const text = await response.text();
-		const [header, ...lines] = text.trim().split('\n');
-		const columns = header!.split(',').map((column) => column.trim());
-		return lines.map((line) => {
-			const values = line.split(',').map((value) => value.trim());
-			return Object.fromEntries(columns.map((column, index) => [column, values[index] ?? '']));
-		});
-	}
-	return response.json() as Promise<Record<string, string>[]>;
 }
 
 // Splits two parallel comma-separated lists (e.g. `labels`/`values` or
@@ -71,20 +50,12 @@ export function splitInlineLists(a: string, b: string): [string[], string[]] {
 // Shared by bar/line/pie/radar/funnel — every chart type where a category
 // label pairs with one numeric value. scatter.ts doesn't use this (both its
 // axes are numeric, no "label" concept — see its own xValues/yValues attrs).
-export async function getLabelValueRows(
-	chartName: string,
-	attrs: { data?: string; x?: string; y?: string; labels?: string; values?: string },
-): Promise<ChartRow[]> {
-	if (attrs.data) {
-		if (!attrs.x || !attrs.y) throw new Error(`${chartName}: \`data\` requires \`x\` and \`y\` (field names).`);
-		const rawRows = await fetchRawRows(attrs.data);
-		return rawRows.map((row) => ({ x: row[attrs.x!] ?? '', y: row[attrs.y!] ?? '' }));
-	}
+export function getLabelValueRows(chartName: string, attrs: { labels?: string; values?: string }): ChartRow[] {
 	if (attrs.labels && attrs.values) {
 		const [labels, values] = splitInlineLists(attrs.labels, attrs.values);
 		return labels.map((x, i) => ({ x, y: values[i] ?? '' }));
 	}
-	throw new Error(`${chartName}: needs either \`data\`+\`x\`+\`y\`, or \`labels\`+\`values\`.`);
+	throw new Error(`${chartName}: needs both \`labels\` and \`values\`.`);
 }
 
 // ECharts draws with its own default palette (blue) — it has no idea

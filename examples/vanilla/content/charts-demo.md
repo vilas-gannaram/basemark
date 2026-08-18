@@ -1,10 +1,6 @@
 # Charts demo
 
-`@basemark/charts`'s seven guided directives, each usable two ways: inline (a handful of numbers, no file needed) or from a hosted CSV/JSON file.
-
-## Inline — no file needed
-
-The shape an AI author reaches for when it has numbers on hand but nowhere to host them.
+`@basemark/charts`'s seven guided directives — inline comma-separated data only, the shape an AI author reaches for when it has numbers on hand but nowhere to host them. No hosted-file/URL mode — see `packages/charts/README.md`'s "Why no hosted-file mode".
 
 ::bar-chart{labels="Apple,Banana,Cherry,Mango,Grape" values="42,28,15,35,20" title="Favorite fruit — votes"}
 
@@ -19,16 +15,6 @@ The shape an AI author reaches for when it has numbers on hand but nowhere to ho
 ::funnel-chart{labels="Visitors,Signups,Trial,Paying" values="10000,3200,1400,420" title="Conversion funnel"}
 
 ::gauge-chart{value="87" title="Uptime %"}
-
-## From a hosted file
-
-CSV and JSON both work — format is inferred from the URL's extension.
-
-::line-chart{data="/data/monthly-revenue.csv" x="month" y="revenue" title="Monthly revenue (CSV)"}
-
-::scatter-chart{data="/data/height-weight.csv" x="height" y="weight" title="Height vs. weight (CSV)"}
-
-::bar-chart{data="/data/population.json" x="country" y="population" title="Population by country, millions (JSON)"}
 
 ## Charts compose with layout components
 

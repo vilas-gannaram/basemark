@@ -3,7 +3,7 @@ import { createChartElement, defineChart, getLabelValueRows, type ChartRow } fro
 
 export const FUNNEL_CHART_TAG = 'basemark-funnel-chart';
 
-const OBSERVED_ATTRS = ['data', 'x', 'y', 'labels', 'values'] as const;
+const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
 // Author supplies stages in whatever order makes sense to them (usually
 // widest-first, e.g. "Visitors,Signups,Paying") — ECharts' own default
@@ -34,19 +34,15 @@ export function registerFunnelChart(registry: ComponentRegistry): void {
 		description:
 			'Renders a funnel chart — a sequence of stages narrowing down (e.g. Visitors → Signups → Paying customers). ' +
 			'Use this instead of bar-chart when the point is drop-off between ordered stages, not comparing independent ' +
-			'categories. Stages render in the order given, not resorted by value. Two ways to supply data — use ' +
-			'whichever fits: (1) `labels`+`values`, two comma-separated lists, widest stage first — e.g. ' +
-			'labels="Visitors,Signups,Paying" values="1000,320,90"; (2) `data`+`x`+`y`, a URL to a hosted .csv/.json ' +
-			'file plus the field names to plot.',
+			'categories. Stages render in the order given, not resorted by value. `labels`+`values`, two comma-separated ' +
+			'lists, widest stage first — e.g. labels="Visitors,Signups,Paying" values="1000,320,90".',
 		schema: {
 			labels: {
 				type: 'string',
+				required: true,
 				description: 'Comma-separated stage names, widest first, e.g. "Visitors,Signups,Paying". Pairs with `values`.',
 			},
-			values: { type: 'string', description: 'Comma-separated numbers, e.g. "1000,320,90". Pairs with `labels`.' },
-			data: { type: 'string', description: 'URL to a .csv (header row) or .json (array of objects) file. Pairs with `x`+`y`.' },
-			x: { type: 'string', description: 'Field name to use as the stage name. Only used with `data`.' },
-			y: { type: 'string', description: 'Field name to use as the stage value (numeric). Only used with `data`.' },
+			values: { type: 'string', required: true, description: 'Comma-separated numbers, e.g. "1000,320,90". Pairs with `labels`.' },
 			title: { type: 'string', description: 'Optional chart title, centered above the funnel.' },
 		},
 	});
