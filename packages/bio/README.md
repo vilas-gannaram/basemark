@@ -14,6 +14,14 @@ await registerBioComponents(registry);
 renderMarkdown('::structure{pdbid="1cbs"}', registry);
 ```
 
+In React, use `@basemark/react`'s `MarkdownRenderer` instead of calling `renderMarkdown` directly (still `await` registration first):
+
+```tsx
+import { MarkdownRenderer } from '@basemark/react';
+
+<MarkdownRenderer source={'::structure{pdbid="1cbs"}'} registry={registry} />;
+```
+
 Each component below is a directive you write directly in Markdown, e.g. `::protvista{accession="P05067"}`.
 
 ## Components

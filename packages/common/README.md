@@ -14,6 +14,14 @@ registerCommonComponents(registry);
 renderMarkdown(':::card{title="Hello"}\nSome content.\n:::', registry);
 ```
 
+In React, use `@basemark/react`'s `MarkdownRenderer` instead of calling `renderMarkdown` directly:
+
+```tsx
+import { MarkdownRenderer } from '@basemark/react';
+
+<MarkdownRenderer source={':::card{title="Hello"}\nSome content.\n:::'} registry={registry} />;
+```
+
 ## Components
 
 ### Layout & containers

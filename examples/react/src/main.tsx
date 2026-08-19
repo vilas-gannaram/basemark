@@ -3,20 +3,18 @@ import { createRoot } from 'react-dom/client';
 import { createRegistry } from '@basemark/core';
 import { registerBioComponents } from '@basemark/bio';
 import { registerCommonComponents } from '@basemark/common';
+import { registerChartsComponents } from '@basemark/charts';
 import { MarkdownRenderer } from '@basemark/react';
 import '@basemark/core/theme.css';
 import { GeneChip } from './gene-chip';
 
 // Content lives in real .md files under content/, loaded as plain text via
 // Vite's `?raw` import (declared by vite/client's `declare module '*?raw'`)
-// — not JS string arrays. Mirrors examples/vanilla's content/ layout; the
-// bio-domain reports (gwas-variant-report, lab-protocol) are shared story
-// material, adapted only where the intro text names the render path.
-import architecture from '../content/architecture.md?raw';
-import phenomeWideScan from '../content/phenome-wide-scan.md?raw';
-import gwasVariantReport from '../content/gwas-variant-report.md?raw';
-import labProtocol from '../content/lab-protocol.md?raw';
-import componentGallery from '../content/component-gallery.md?raw';
+// — not JS string arrays. One file per pack, mirroring examples/vanilla's
+// content/ layout.
+import bio from '../content/bio.md?raw';
+import common from '../content/common.md?raw';
+import charts from '../content/charts.md?raw';
 
 const registry = createRegistry();
 // registerBioComponents is async (see packages/bio/src/index.ts) — its
@@ -28,6 +26,7 @@ const registry = createRegistry();
 // that isn't defined yet.
 await registerBioComponents(registry);
 registerCommonComponents(registry);
+registerChartsComponents(registry);
 
 // ARCHITECTURE.md §6/§10's native registration escape hatch: an app-local
 // React component (with its own useState, no customElements involved),
@@ -54,14 +53,12 @@ interface Page {
 }
 
 const PAGES: Page[] = [
-	{ slug: 'architecture', label: 'Architecture', source: architecture },
-	{ slug: 'phenome-wide-scan', label: 'Phenome-wide Scan', source: phenomeWideScan },
-	{ slug: 'gwas-report', label: 'GWAS Variant Report', source: gwasVariantReport },
-	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
-	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
+	{ slug: 'bio', label: 'Bio', source: bio },
+	{ slug: 'common', label: 'Common', source: common },
+	{ slug: 'charts', label: 'Charts', source: charts },
 ];
 
-// Hash-based routing — no router dependency needed for five static pages.
+// Hash-based routing — no router dependency needed for three static pages.
 // Falls back to the first page for an empty or unrecognized hash (first
 // load, or a stale/typo'd link).
 function activeSlug(): string {

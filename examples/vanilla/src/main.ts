@@ -8,11 +8,9 @@ import '@basemark/core/theme.css';
 // Vite's `?raw` import (declared by vite/client's `declare module '*?raw'`)
 // — not JS string arrays. Each is parsed fresh by renderMarkdown() per page
 // switch, same as the single-page version this replaced.
-import architecture from '../content/architecture.md?raw';
 import bio from '../content/bio.md?raw';
-import labProtocol from '../content/lab-protocol.md?raw';
-import componentGallery from '../content/component-gallery.md?raw';
-import chartsDemo from '../content/charts-demo.md?raw';
+import common from '../content/common.md?raw';
+import charts from '../content/charts.md?raw';
 
 const registry = createRegistry();
 // registerBioComponents is async — see examples/react/src/main.tsx's comment
@@ -28,11 +26,9 @@ interface Page {
 }
 
 const PAGES: Page[] = [
-	{ slug: 'architecture', label: 'Architecture', source: architecture },
 	{ slug: 'bio', label: 'Bio', source: bio },
-	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
-	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
-	{ slug: 'charts', label: 'Charts', source: chartsDemo },
+	{ slug: 'common', label: 'Common', source: common },
+	{ slug: 'charts', label: 'Charts', source: charts },
 ];
 
 // Passed as parameters, not closed over as module-scope consts — TS can't
