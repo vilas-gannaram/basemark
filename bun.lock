@@ -53,6 +53,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@basemark/bio": "workspace:*",
+        "@basemark/charts": "workspace:*",
         "@basemark/common": "workspace:*",
         "@basemark/core": "workspace:*",
         "@basemark/react": "workspace:*",

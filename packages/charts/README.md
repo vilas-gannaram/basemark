@@ -14,6 +14,14 @@ registerChartsComponents(registry);
 renderMarkdown('::bar-chart{labels="Jan,Feb,Mar" values="120,150,170"}', registry);
 ```
 
+In React, use `@basemark/react`'s `MarkdownRenderer` instead of calling `renderMarkdown` directly:
+
+```tsx
+import { MarkdownRenderer } from '@basemark/react';
+
+<MarkdownRenderer source={'::bar-chart{labels="Jan,Feb,Mar" values="120,150,170"}'} registry={registry} />;
+```
+
 Data goes straight in the directive as comma-separated lists — no file, no upload, no fetch:
 
 ```
