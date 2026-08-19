@@ -1,5 +1,5 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createChartElement, defineChart, getLabelValueRows, type ChartRow } from './chart';
+import { createChartElement, defineChart, getLabelValueRows, type IChartRow } from './chart';
 
 export const PIE_CHART_TAG = 'basemark-pie-chart';
 
@@ -7,7 +7,7 @@ const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
 // Donut, not solid — the modern default. center nudges it down from the
 // title (confirmed collision otherwise: label lines overlapping the title text).
-function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
+function buildOption(rows: IChartRow[], title: string | null): Record<string, unknown> {
 	return {
 		title: title ? { text: title, left: 'center', top: '2%' } : undefined,
 		tooltip: { trigger: 'item' },

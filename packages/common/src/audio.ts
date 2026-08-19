@@ -2,15 +2,9 @@ import type { ComponentRegistry } from '@basemark/core';
 
 export const AUDIO_TAG = 'basemark-audio';
 
-interface AudioEmbed {
-	provider: 'Spotify' | 'SoundCloud';
-	embedUrl: string;
-	height: number;
-}
-
 // Tier 0, same reasoning as video.ts. Spotify needs a (type, id) pair for its
 // /embed/ path; SoundCloud's player takes the original URL directly.
-function resolveEmbed(url: string): AudioEmbed | null {
+function resolveEmbed(url: string): IAudioEmbed | null {
 	const spotify = url.match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/(\w+)/);
 	if (spotify) {
 		return { provider: 'Spotify', embedUrl: `https://open.spotify.com/embed/${spotify[1]}/${spotify[2]}`, height: 152 };
@@ -114,4 +108,10 @@ export function registerAudio(registry: ComponentRegistry): void {
 			},
 		},
 	});
+}
+
+interface IAudioEmbed {
+	provider: 'Spotify' | 'SoundCloud';
+	embedUrl: string;
+	height: number;
 }

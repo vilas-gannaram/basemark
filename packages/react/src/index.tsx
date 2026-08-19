@@ -4,11 +4,6 @@ import type { RootContent } from 'hast';
 import { createComponent, type ReactWebComponent } from '@lit/react';
 import { NATIVE_COMPONENT_DATA_ATTR, NATIVE_COMPONENT_TAG, parseMarkdown, type ComponentRegistry } from '@basemark/core';
 
-export interface MarkdownRendererProps {
-	source: string;
-	registry: ComponentRegistry;
-}
-
 // React treats a hyphenated tag as a host element, not a component — this
 // wraps any custom element generically via @lit/react's createComponent, one factory for all of them.
 const wrapperCache = new Map<string, ReactWebComponent<HTMLElement> | null>();
@@ -49,7 +44,12 @@ function renderNode(node: RootContent, key: number, registry: ComponentRegistry)
 	return createElement(node.tagName, props, ...children);
 }
 
-export function MarkdownRenderer({ source, registry }: MarkdownRendererProps): ReactNode {
+export function MarkdownRenderer({ source, registry }: IMarkdownRendererProps): ReactNode {
 	const hast = parseMarkdown(source, registry);
 	return createElement(Fragment, null, ...hast.children.map((node, index) => renderNode(node, index, registry)));
+}
+
+export interface IMarkdownRendererProps {
+	source: string;
+	registry: ComponentRegistry;
 }

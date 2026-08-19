@@ -1,12 +1,6 @@
-import type { ComponentDefinition, ComponentRegistry, PropSchema } from './registry';
+import type { TComponentDefinition, ComponentRegistry, IPropSchema } from './registry';
 
-export interface SystemPromptOptions {
-	// Scope the index to one pack (e.g. "bio") instead of the whole registry —
-	// keeps the always-on prompt small as more packs get registered.
-	domain?: string;
-}
-
-function describeProp(name: string, schema: PropSchema): string {
+function describeProp(name: string, schema: IPropSchema): string {
 	const requirement = schema.required ? 'required' : 'optional';
 	const summary = `${name} (${schema.type}, ${requirement})`;
 	return schema.description ? `  - ${summary}: ${schema.description}` : `  - ${summary}`;
@@ -27,13 +21,13 @@ export function describeComponent(registry: ComponentRegistry, name: string): st
 	return `## ${definition.title} (::${name})\n${definition.description}\n\n::${name}{...}\n${props}`;
 }
 
-function indexLine(name: string, definition: ComponentDefinition): string {
+function indexLine(name: string, definition: TComponentDefinition): string {
 	return `::${name} — ${definition.title}`;
 }
 
 // Derives the AI-facing prompt from the registry itself, not hand-maintained
 // docs (ARCH §5). An index only — call describeComponent() for detail.
-export function generateSystemPrompt(registry: ComponentRegistry, options?: SystemPromptOptions): string {
+export function generateSystemPrompt(registry: ComponentRegistry, options?: ISystemPromptOptions): string {
 	const components = registry.list().filter(([, definition]) => !options?.domain || definition.domain === options.domain);
 	if (components.length === 0) return 'No components are registered.';
 
@@ -49,4 +43,10 @@ export function generateSystemPrompt(registry: ComponentRegistry, options?: Syst
 	const index = components.map(([name, definition]) => indexLine(name, definition)).join('\n');
 
 	return `${intro}\n\n${index}`;
+}
+
+export interface ISystemPromptOptions {
+	// Scope the index to one pack (e.g. "bio") instead of the whole registry —
+	// keeps the always-on prompt small as more packs get registered.
+	domain?: string;
 }

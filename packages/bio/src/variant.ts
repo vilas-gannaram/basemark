@@ -69,17 +69,6 @@ const STYLES = `
 	}
 `;
 
-interface RcvEntry {
-	clinical_significance?: string;
-	conditions?: { name?: string } | Array<{ name?: string }>;
-}
-
-interface VariantHit {
-	clinvar?: { rcv?: RcvEntry | RcvEntry[]; gene?: { symbol?: string }; hg38?: { start?: number } };
-	dbsnp?: { chrom?: string; ref?: string; alt?: string; hg19?: { start?: number } };
-	cadd?: { phred?: number };
-}
-
 function toArray<T>(value: T | T[] | undefined): T[] {
 	if (value == null) return [];
 	return Array.isArray(value) ? value : [value];
@@ -101,7 +90,7 @@ function escapeHtml(value: string): string {
 	return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function renderCard(rsid: string, hit: VariantHit, title: string | null): string {
+function renderCard(rsid: string, hit: IVariantHit, title: string | null): string {
 	const gene = hit.clinvar?.gene?.symbol;
 	const chrom = hit.dbsnp?.chrom;
 	const ref = hit.dbsnp?.ref;
@@ -183,7 +172,7 @@ export async function registerVariant(registry: ComponentRegistry): Promise<void
 					const url = `${MYVARIANT_QUERY_BASE}?q=${encodeURIComponent(`dbsnp.rsid:${rsid}`)}&fields=${FIELDS}`;
 					const response = await fetch(url);
 					if (!response.ok) throw new Error(`HTTP ${response.status}`);
-					const data = (await response.json()) as { hits?: VariantHit[] };
+					const data = (await response.json()) as { hits?: IVariantHit[] };
 					const hit = data.hits?.[0];
 					if (!hit) throw new Error('not found');
 					if (token !== this.renderToken) return;
@@ -225,4 +214,15 @@ export async function registerVariant(registry: ComponentRegistry): Promise<void
 			},
 		},
 	});
+}
+
+interface IRcvEntry {
+	clinical_significance?: string;
+	conditions?: { name?: string } | Array<{ name?: string }>;
+}
+
+interface IVariantHit {
+	clinvar?: { rcv?: IRcvEntry | IRcvEntry[]; gene?: { symbol?: string }; hg38?: { start?: number } };
+	dbsnp?: { chrom?: string; ref?: string; alt?: string; hg19?: { start?: number } };
+	cadd?: { phred?: number };
 }

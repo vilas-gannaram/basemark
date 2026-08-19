@@ -6,19 +6,13 @@ const LABEL_WIDTH_PX = 140;
 const TREE_WIDTH_PX = 360;
 const PADDING_PX = 12;
 
-interface TreeNode {
-	name: string;
-	length: number;
-	children: TreeNode[];
-}
-
 // Minimal recursive-descent Newick parser — (A:0.1,(B:0.2,C:0.3):0.4);
-function parseNewick(source: string): TreeNode {
+function parseNewick(source: string): ITreeNode {
 	const trimmed = source.trim().replace(/;\s*$/, '');
 	let pos = 0;
 
-	function parseNode(): TreeNode {
-		let children: TreeNode[] = [];
+	function parseNode(): ITreeNode {
+		let children: ITreeNode[] = [];
 		if (trimmed[pos] === '(') {
 			pos++;
 			children = [parseNode()];
@@ -52,17 +46,11 @@ function parseNewick(source: string): TreeNode {
 	return parseNode();
 }
 
-interface LaidOutNode extends TreeNode {
-	x: number;
-	y: number;
-	children: LaidOutNode[];
-}
-
 // Rectangular cladogram: x from cumulative branch length, y from leaf order.
-function layout(node: TreeNode): { root: LaidOutNode; leafCount: number } {
+function layout(node: ITreeNode): { root: ILaidOutNode; leafCount: number } {
 	let nextLeafY = 0;
 
-	function place(n: TreeNode, x: number): LaidOutNode {
+	function place(n: ITreeNode, x: number): ILaidOutNode {
 		if (n.children.length === 0) {
 			const y = nextLeafY;
 			nextLeafY++;
@@ -77,11 +65,11 @@ function layout(node: TreeNode): { root: LaidOutNode; leafCount: number } {
 	return { root, leafCount: nextLeafY };
 }
 
-function maxX(node: LaidOutNode): number {
+function maxX(node: ILaidOutNode): number {
 	return node.children.length === 0 ? node.x : Math.max(node.x, ...node.children.map(maxX));
 }
 
-function renderEdges(node: LaidOutNode, scaleX: number): string {
+function renderEdges(node: ILaidOutNode, scaleX: number): string {
 	let svg = '';
 	for (const child of node.children) {
 		const x0 = node.x * scaleX;
@@ -95,7 +83,7 @@ function renderEdges(node: LaidOutNode, scaleX: number): string {
 	return svg;
 }
 
-function renderLabels(node: LaidOutNode, scaleX: number): string {
+function renderLabels(node: ILaidOutNode, scaleX: number): string {
 	let svg = '';
 	if (node.children.length === 0 && node.name) {
 		const x = node.x * scaleX + 6;
@@ -200,4 +188,16 @@ export async function registerNewick(registry: ComponentRegistry): Promise<void>
 			},
 		},
 	});
+}
+
+interface ITreeNode {
+	name: string;
+	length: number;
+	children: ITreeNode[];
+}
+
+interface ILaidOutNode extends ITreeNode {
+	x: number;
+	y: number;
+	children: ILaidOutNode[];
 }

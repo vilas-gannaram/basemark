@@ -1,19 +1,18 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createChartElement, defineChart, type ChartRow } from './chart';
+import { createChartElement, defineChart, type IChartRow } from './chart';
 
 export const GAUGE_CHART_TAG = 'basemark-gauge-chart';
 
 const OBSERVED_ATTRS = ['value', 'min', 'max'] as const;
-type Attrs = Partial<Record<(typeof OBSERVED_ATTRS)[number], string>>;
 
 // No tabular rows — a gauge is one number against a range. getRows() only
 // validates `value` is present; buildOption reads `attrs` directly instead.
-function getRows(attrs: Attrs): ChartRow[] {
+function getRows(attrs: TAttrs): IChartRow[] {
 	if (!attrs.value) throw new Error('gauge-chart: `value` is required.');
 	return [];
 }
 
-function buildOption(_rows: ChartRow[], title: string | null, attrs: Attrs): Record<string, unknown> {
+function buildOption(_rows: IChartRow[], title: string | null, attrs: TAttrs): Record<string, unknown> {
 	return {
 		title: title ? { text: title } : undefined,
 		series: [
@@ -45,3 +44,5 @@ export function registerGaugeChart(registry: ComponentRegistry): void {
 		},
 	});
 }
+
+type TAttrs = Partial<Record<(typeof OBSERVED_ATTRS)[number], string>>;

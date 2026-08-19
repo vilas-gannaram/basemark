@@ -23,18 +23,6 @@ function ensureOverrideStyles(): void {
 	document.head.appendChild(style);
 }
 
-// Type query, not a runtime import — `import type` can't resolve locuszoom's
-// value-typed default export (TS2749), and this form triggers no module-scope crash outside a browser.
-export type LocusZoomStatic = (typeof import('locuszoom'))['default'];
-type LocusZoomDataSources = InstanceType<LocusZoomStatic['DataSources']>;
-
-export interface LocusZoomElementConfig<A extends string> {
-	observedAttrs: readonly A[];
-	// Take `LocusZoom` as a parameter, not a module-scope import — see createLocusZoomElement below.
-	buildDataSources: (LocusZoom: LocusZoomStatic) => LocusZoomDataSources;
-	buildLayout: (LocusZoom: LocusZoomStatic, attrs: Record<A, string>) => Record<string, unknown>;
-}
-
 let plotIdCounter = 0;
 
 // Light DOM, NOT shadow root — LocusZoom.populate() looks up its container
@@ -43,7 +31,7 @@ let plotIdCounter = 0;
 //
 // async — `locuszoom`/its CSS touch `window`/`d3` at module scope (confirmed
 // crash under plain Bun), so both are dynamically imported and awaited first.
-export async function createLocusZoomElement<A extends string>(config: LocusZoomElementConfig<A>): Promise<CustomElementConstructor> {
+export async function createLocusZoomElement<A extends string>(config: ILocusZoomElementConfig<A>): Promise<CustomElementConstructor> {
 	const { default: LocusZoom } = await import('locuszoom');
 	await import('locuszoom/dist/locuszoom.css');
 
@@ -102,4 +90,16 @@ export async function createLocusZoomElement<A extends string>(config: LocusZoom
 			this.resizeObserver.observe(container);
 		}
 	};
+}
+
+// Type query, not a runtime import — `import type` can't resolve locuszoom's
+// value-typed default export (TS2749), and this form triggers no module-scope crash outside a browser.
+export type TLocusZoomStatic = (typeof import('locuszoom'))['default'];
+type TLocusZoomDataSources = InstanceType<TLocusZoomStatic['DataSources']>;
+
+export interface ILocusZoomElementConfig<A extends string> {
+	observedAttrs: readonly A[];
+	// Take `LocusZoom` as a parameter, not a module-scope import — see createLocusZoomElement below.
+	buildDataSources: (LocusZoom: TLocusZoomStatic) => TLocusZoomDataSources;
+	buildLayout: (LocusZoom: TLocusZoomStatic, attrs: Record<A, string>) => Record<string, unknown>;
 }

@@ -1,5 +1,5 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createChartElement, defineChart, getLabelValueRows, type ChartRow } from './chart';
+import { createChartElement, defineChart, getLabelValueRows, type IChartRow } from './chart';
 
 export const RADAR_CHART_TAG = 'basemark-radar-chart';
 
@@ -7,7 +7,7 @@ const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
 // Single series only, v1 — one entity across several dimensions, not
 // multiple overlaid. Axis max is the largest value * 1.2, not a fixed 100 (units are arbitrary, not always %).
-function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
+function buildOption(rows: IChartRow[], title: string | null): Record<string, unknown> {
 	const values = rows.map((row) => Number(row.y));
 	const max = Math.max(...values, 1) * 1.2;
 

@@ -1,15 +1,14 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createChartElement, defineChart, splitInlineLists, type ChartRow } from './chart';
+import { createChartElement, defineChart, splitInlineLists, type IChartRow } from './chart';
 
 export const SCATTER_CHART_TAG = 'basemark-scatter-chart';
 
 const OBSERVED_ATTRS = ['xValues', 'yValues'] as const;
-type Attrs = Partial<Record<(typeof OBSERVED_ATTRS)[number], string>>;
 
 // Same inline-only shape as bar.ts/line.ts, but the attrs are named
 // `xValues`/`yValues` instead of `labels`/`values` — there's no "label"
 // concept for a scatter plot, both axes are numeric.
-function getRows(attrs: Attrs): ChartRow[] {
+function getRows(attrs: TAttrs): IChartRow[] {
 	if (attrs.xValues && attrs.yValues) {
 		const [xs, ys] = splitInlineLists(attrs.xValues, attrs.yValues);
 		return xs.map((x, i) => ({ x, y: ys[i] ?? '' }));
@@ -20,7 +19,7 @@ function getRows(attrs: Attrs): ChartRow[] {
 // Unlike bar/line, both axes are numeric — no category axis, since a
 // scatter plot is about the relationship between two measured values, not a
 // value keyed by a label.
-function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
+function buildOption(rows: IChartRow[], title: string | null): Record<string, unknown> {
 	return {
 		title: title ? { text: title } : undefined,
 		tooltip: {},
@@ -55,3 +54,5 @@ export function registerScatterChart(registry: ComponentRegistry): void {
 		},
 	});
 }
+
+type TAttrs = Partial<Record<(typeof OBSERVED_ATTRS)[number], string>>;

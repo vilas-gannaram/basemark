@@ -1,18 +1,12 @@
 import { useState, type ReactElement, type ReactNode } from 'react';
 
-export interface GeneChipProps {
-	full?: string;
-	chrom?: string;
-	children?: ReactNode;
-}
-
 // App-local only (ARCHITECTURE.md §6's native registration escape hatch)
 // — a real React component with its own state, registered as `type: 'react'`
 // instead of a customElements tag. There's nothing here a Web Component
 // couldn't also do; the point is proving the escape hatch itself works, for a
 // component an app author already has React context/state for and doesn't
 // want to round-trip through a custom element to use.
-export function GeneChip({ full, chrom, children }: GeneChipProps): ReactElement {
+export function GeneChip({ full, chrom, children }: IGeneChipProps): ReactElement {
 	const [expanded, setExpanded] = useState(false);
 
 	return (
@@ -43,4 +37,10 @@ export function GeneChip({ full, chrom, children }: GeneChipProps): ReactElement
 			)}
 		</span>
 	);
+}
+
+export interface IGeneChipProps {
+	full?: string;
+	chrom?: string;
+	children?: ReactNode;
 }
