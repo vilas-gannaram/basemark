@@ -40,7 +40,21 @@ A registry with nothing registered isn't an error — an unregistered directive 
 
 ## AI-facing prompts, generated not hand-written
 
-`generateSystemPrompt(registry)` turns whatever's registered into an index an AI author can read directly — one line per component, no separate doc to keep in sync. `describeComponent(registry, name)` expands one entry to its full prop list on demand. Both come straight from the same registry your app renders with, so the prompt can never drift from what's actually available.
+`generateSystemPrompt(registry)` turns whatever's registered into an index an AI author can read directly — one line per component, no separate doc to keep in sync. `describeComponent(registry, name)` expands one entry to its full prop list on demand. Both come straight from the same registry your app renders with, so the prompt can never drift from what's actually available — and both are scoped to whatever packs *you* registered, not all of Basemark:
+
+```ts
+import { createRegistry, generateSystemPrompt, describeComponent } from '@basemark/core';
+import { registerBioComponents } from '@basemark/bio';
+
+const registry = createRegistry();
+await registerBioComponents(registry);
+
+generateSystemPrompt(registry);                    // index of every registered component
+generateSystemPrompt(registry, { domain: 'bio' });  // scoped to one pack, if you registered several
+describeComponent(registry, 'structure');           // one component's full prop list, on demand
+```
+
+This is what a Claude Skill (or any other AI-authoring surface) reaches for instead of a hand-maintained component list — see [the introduction](/) for that consumption path.
 
 ## Rendering
 
