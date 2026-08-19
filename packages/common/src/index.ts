@@ -25,7 +25,6 @@ export * from './popover';
 export * from './video';
 export * from './audio';
 
-// TODO: register chart/map/katex web components once implemented.
 export function registerCommonComponents(registry: ComponentRegistry): void {
 	registerCard(registry);
 	registerColumns(registry);

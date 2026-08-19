@@ -25,11 +25,7 @@ const ACCORDION_STYLES = `
 `;
 
 export function registerAccordion(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so
-	// registerAccordion() stays importable from a DOM-less consumer (e.g.
-	// @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		// basemark-accordion-item is a near-inert shell, same division of labor
 		// as tabs.ts's tab-panel: the item owns its own trigger button +

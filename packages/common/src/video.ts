@@ -57,10 +57,7 @@ const STYLES = `
 `;
 
 export function registerVideo(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so registerVideo()
-	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		class VideoElement extends HTMLElement {
 			static get observedAttributes(): string[] {

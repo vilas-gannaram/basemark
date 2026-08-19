@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { defineConfig } from 'astro/config';
 
 // GitHub Pages project-site path — must match the repo name's exact casing.

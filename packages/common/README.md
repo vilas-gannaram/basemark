@@ -37,7 +37,6 @@ Self-hosted `<video>`/`<audio>` and other providers (X, Bluesky, oEmbed) are out
 ## Not built yet
 
 - [ ] Mermaid family (`<mermaid-diagram>` + `::gantt`/`::flowchart`/etc. translators)
-- [ ] Vega-Lite/Plotly charts
 - [ ] KaTeX
 - [ ] Sortable tables (plain GFM tables render; sort/filter doesn't)
 - [ ] Maps (MapLibre/Leaflet)
@@ -46,4 +45,4 @@ Self-hosted `<video>`/`<audio>` and other providers (X, Bluesky, oEmbed) are out
 
 ---
 
-Bio components (`protvista`, `structure`, `locuszoom-*`) are a separate package — see `packages/bio`.
+Bio components (`protvista`, `structure`, `locuszoom-*`) are a separate package — see `packages/bio`. Charts (`bar-chart`, `line-chart`, etc., ECharts) are also a separate package, not part of this list — see `packages/charts`.

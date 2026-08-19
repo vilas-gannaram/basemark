@@ -100,7 +100,7 @@ The AI-facing system prompt is auto-generated from the registry, not hand-mainta
 
 ## 6. Rendering: Web Components default, escape hatch for app-local
 
-**Default:** directives resolve to custom elements (`<structure-viewer>`). Any framework consumes them as plain tags — React via a wrapper, Svelte/Solid/Lit natively. Published packages (`bio`/`chem`/`common`) must target this.
+**Default:** directives resolve to custom elements (`<structure-viewer>`). Any framework consumes them as plain tags — React via a wrapper, Svelte/Solid/Lit natively. Published packages (`bio`/`chem`/`common`/`charts`) must target this.
 
 **Escape hatch:** `{ type: 'react', component: X }` skips the custom-element boundary — only renders in that one framework, no portability. App-local components only, never package components.
 
@@ -120,7 +120,7 @@ Natively-registered React/Svelte components can't use slotting — the framework
 
 Everything depends on core; core depends on nothing framework-specific.
 
-> **Flag:** `registerCommonComponents()` eagerly registers everything in `common`, so a `card`-only consumer still pays for it. Fine for the current shadcn-ui set, but §8's unbuilt heavy components (Mermaid, Vega-Lite/Plotly, MapLibre/Leaflet) should each be their own package (`@basemark/diagrams` etc.), not added to `common`. KaTeX/citations/JSON-viewers are probably light enough to stay.
+> **Flag:** `registerCommonComponents()` eagerly registers everything in `common`, so a `card`-only consumer still pays for it. Fine for the current shadcn-ui set, but §8's unbuilt heavy components (Mermaid, MapLibre/Leaflet) should each be their own package (`@basemark/diagrams` etc.), not added to `common` — `@basemark/charts` (ECharts) is the first proof of this pattern, split out on exactly this reasoning. KaTeX/citations/JSON-viewers are probably light enough to stay.
 
 - **`@basemark/core`** — parse, transform, registry, data resolver. Pure logic, no DOM. Must stay small and stable.
 - **`@basemark/react` / `@basemark/svelte`** — mount core's hast tree per-framework.
@@ -130,13 +130,13 @@ Everything depends on core; core depends on nothing framework-specific.
 
 ## 8. Component catalog
 
-**Bio/chem — Tier 1:** `::protvista{accession}` (UniProt), `::structure{pdbId}` (Mol*/3Dmol), `::molecule{cid}` (RDKit.js), `::variant{rsid}`, `::pathway{keggId}`, `::gene{ensembl}`, `::citation{doi}`
+**Bio/chem — Tier 1:** `::protvista{accession}` (UniProt), `::structure{pdbid}` (Mol*/3Dmol), `::molecule{cid}` (RDKit.js), `::variant{rsid}`, `::pathway{keggId}`, `::gene{ensembl}`, `::citation{doi}`
 
 **Bio/chem — Tier 2:** `::locus{chr start end}` (LocusZoom), `::genome-browser{locus}` (IGV.js), `::interaction-network{gene}`
 
 **Bio/chem — Tier 3:** ` ```smiles ` (RDKit.js), ` ```fasta `, ` ```newick `
 
-**General-purpose (`common`):** Mermaid family, Vega-Lite/Plotly, KaTeX, sortable tables, maps, citations, JSON/tree viewers, media embeds.
+**General-purpose (`common`):** Mermaid family, KaTeX, sortable tables, maps, citations, JSON/tree viewers, media embeds. Charts are `@basemark/charts` (ECharts), a separate package per §7's flag — not `common`.
 
 **Layout (`common`):** `:::card`, `:::columns`, `:::tabs`/`:::tab-panel` — see §6 and `packages/common/README.md`. All three zero the margin a nested component would otherwise add.
 
