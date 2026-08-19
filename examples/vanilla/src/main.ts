@@ -1,6 +1,7 @@
 import { createRegistry, renderMarkdown } from '@basemark/core';
 import { registerBioComponents } from '@basemark/bio';
 import { registerCommonComponents } from '@basemark/common';
+import { registerChartsComponents } from '@basemark/charts';
 import '@basemark/core/theme.css';
 
 // Content lives in real .md files under content/, loaded as plain text via
@@ -11,12 +12,14 @@ import architecture from '../content/architecture.md?raw';
 import gwasVariantReport from '../content/gwas-variant-report.md?raw';
 import labProtocol from '../content/lab-protocol.md?raw';
 import componentGallery from '../content/component-gallery.md?raw';
+import chartsDemo from '../content/charts-demo.md?raw';
 
 const registry = createRegistry();
 // registerBioComponents is async — see examples/react/src/main.tsx's comment
 // for why this needs a top-level await before any renderMarkdown() call.
 await registerBioComponents(registry);
 registerCommonComponents(registry);
+registerChartsComponents(registry);
 
 interface Page {
 	slug: string;
@@ -29,6 +32,7 @@ const PAGES: Page[] = [
 	{ slug: 'gwas-report', label: 'GWAS Variant Report', source: gwasVariantReport },
 	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
 	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
+	{ slug: 'charts', label: 'Charts', source: chartsDemo },
 ];
 
 // Passed as parameters, not closed over as module-scope consts — TS can't

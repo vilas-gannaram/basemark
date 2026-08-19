@@ -26,6 +26,8 @@ import baseRuntimeJs from './generated/base.runtime.js' with { type: 'text' };
 import commonRuntimeJs from './generated/common.runtime.js' with { type: 'text' };
 // @ts-expect-error -- no .d.ts for the text-loader import form
 import bioRuntimeJs from './generated/bio.runtime.js' with { type: 'text' };
+// @ts-expect-error -- no .d.ts for the text-loader import form
+import chartsRuntimeJs from './generated/charts.runtime.js' with { type: 'text' };
 // bio.ts's `await import('locuszoom/dist/locuszoom.css')` makes Bun's
 // bundler emit LocusZoom's real stylesheet as its own output chunk, separate
 // from bio.runtime.js — without inlining it too, every locuszoom-* component
@@ -39,6 +41,7 @@ import bioRuntimeCss from './generated/bio.runtime.css' with { type: 'text' };
 const DOMAIN_RUNTIME: Record<string, string> = {
 	common: commonRuntimeJs,
 	bio: bioRuntimeJs,
+	charts: chartsRuntimeJs,
 };
 
 const DOMAIN_CSS: Record<string, string> = {

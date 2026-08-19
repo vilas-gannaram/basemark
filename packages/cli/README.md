@@ -22,10 +22,11 @@ bun run build            # writes dist/basemark
 
 ## What gets resolved
 
-`render` builds a registry from `@basemark/core` + `@basemark/common` + `@basemark/bio`.
+`render` builds a registry from `@basemark/core` + `@basemark/common` + `@basemark/bio` + `@basemark/charts`.
 
 - **`common`'s 12 components** are fully wired — each custom-element class is declared *inside* its `register*` function behind a `typeof HTMLElement` guard, so importing the package under Bun (no browser) is safe.
 - **`bio`'s 8 components** go one step further — their vendor libraries (`3dmol`, `protvista-uniprot`, `locuszoom`) crash on load outside a browser regardless of any guard, so they're dynamically `import()`ed instead, making every `register*` function `async`.
+- **`charts`' 7 components** (ECharts) follow the same guard as `common` — `echarts` imports cleanly under Bun with no DOM, so no dynamic `import()` is needed.
 - **`chem`** is an empty stub.
 
 Any resolution failure (unknown directive, bad prop, unclosed `:::`) renders a visible `basemark-error` banner — never a silent drop.
@@ -42,11 +43,11 @@ The "component runtime" is separate: browser-side JS that calls every `register*
 
 ### Runtime bundling: pre-built, split per domain, inlined per document
 
-The runtime is bundled **at CLI build time**, not per-render — `scripts/bundle-runtime.ts` runs `Bun.build()` once per entry in `src/runtime/` (`base`, `common`, `bio`), writing each to `src/generated/`. `render.ts` pulls each in via a static text import, same as `theme.css`.
+The runtime is bundled **at CLI build time**, not per-render — `scripts/bundle-runtime.ts` runs `Bun.build()` once per entry in `src/runtime/` (`base`, `common`, `bio`, `charts`), writing each to `src/generated/`. `render.ts` pulls each in via a static text import, same as `theme.css`.
 
 Why build-time, not per-render: `bun build --compile`'s output runs from a virtual filesystem with no real files to bundle from — a per-render `Bun.build()` call worked under `bun run` but crashed inside the compiled binary. A static import, unlike a runtime call, is visible to Bun's compiler ahead of time and gets embedded as a string constant.
 
-Why three bundles, not one: `bio.runtime.js` is ~5MB (3Dmol.js/protvista-uniprot/locuszoom); `common.runtime.js` is ~30KB; `base.runtime.js` (just the error component, always inlined) is ~2KB. `render.ts`'s `usedDomains()` checks which domains a document's resolved tags actually belong to, and only inlines the bundles it needs — a `card`-only doc stays ~44KB, a `::protvista{}` doc picks up the 5MB `bio` bundle but nothing else.
+Why four bundles, not one: `bio.runtime.js` is ~5MB (3Dmol.js/protvista-uniprot/locuszoom); `charts.runtime.js` (ECharts) is ~1.2MB; `common.runtime.js` is ~30KB; `base.runtime.js` (just the error component, always inlined) is ~2KB. `render.ts`'s `usedDomains()` checks which domains a document's resolved tags actually belong to, and only inlines the bundles it needs — a `card`-only doc stays small, a `::protvista{}` doc picks up the 5MB `bio` bundle but nothing else.
 
 ## Known gaps
 

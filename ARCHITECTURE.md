@@ -70,7 +70,7 @@ source:
 :::
 ```
 
-Security: client-side URL fetches are an SSRF risk — route through an allowlist/proxy; embedded data is the zero-trust default.
+Security: client-side URL fetches are an SSRF risk — route through an allowlist/proxy; embedded data is the zero-trust default. No allowlist/proxy resolver exists yet (§10), so no package should ship a raw client-side `fetch()` of a caller-supplied URL in the meantime — `@basemark/charts` dropped its own hosted-`data`-URL mode for exactly this reason (see its README's "Why no hosted-file mode"). A consumer that wants to plot/render an existing dataset extends the relevant package with their own component instead, fetching however fits their own auth/proxy setup.
 
 ---
 
