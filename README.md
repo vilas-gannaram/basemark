@@ -14,7 +14,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the technical design, and [VISION.md]
 - `packages/react` — framework binding: parses markdown, renders resolved custom elements as generically-wrapped React components
 - `packages/svelte` — framework binding (stub, mirrors react's pattern once needed)
 - `packages/cli` — build/render tooling; `basemark render` resolves a markdown(+directives) file to one self-contained HTML file (see `packages/cli/README.md`)
-- `apps/docs` — docs site (stub)
+- `apps/docs` — end-user docs site (Astro, static, GitHub Pages) — dogfoods `@basemark/core` to render its own docs (see `apps/docs/README.md`)
 - `examples/vanilla` — direct `@basemark/core` usage with no framework (Vite + `renderMarkdown()`)
 - `examples/react` — `@basemark/react` usage in the browser (Vite + React)
 - `configs/*` — shared eslint/tsconfig/vitest config, not published

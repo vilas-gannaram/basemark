@@ -1,0 +1,13 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { buildRegistry } from '../../lib/registry';
+import ComponentReference from '../../components/ComponentReference.astro';
+
+const registry = await buildRegistry();
+const components = registry.list().filter(([, definition]) => definition.domain === 'bio');
+---
+
+<DocsLayout title="Bio components">
+	<p>Domain components for bioinformatics authors, wrapping 3Dmol.js/ProtVista/LocusZoom.js.</p>
+	{components.map(([name, definition]) => <ComponentReference name={name} definition={definition} />)}
+</DocsLayout>

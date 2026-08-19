@@ -2,13 +2,23 @@
 	"name": "docs",
 	"version": "0.0.0",
 	"private": true,
-	"description": "Documentation site — dogfoods @basemark/core to render its own markdown docs. Stub.",
+	"description": "Documentation site — dogfoods @basemark/core to render its own markdown docs.",
+	"type": "module",
 	"scripts": {
-		"dev": "echo \"TODO: docs app not implemented yet\" && exit 0",
-		"build": "echo \"TODO: docs app not implemented yet\" && exit 0"
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"check-types": "astro check"
 	},
 	"dependencies": {
-		"@basemark/core": "workspace:*",
-		"@basemark/react": "workspace:*"
+		"@basemark/bio": "workspace:*",
+		"@basemark/charts": "workspace:*",
+		"@basemark/common": "workspace:*",
+		"@basemark/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.4",
+		"astro": "^5.3.0",
+		"typescript": "^5.9.3"
 	}
 }

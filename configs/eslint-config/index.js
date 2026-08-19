@@ -18,6 +18,6 @@ export default tseslint.config(
 		// see packages/cli/scripts/bundle-runtime.ts) but not eslint-ignored —
 		// postinstall regenerates it, and eslint then lints the minified output
 		// as source, throwing thousands of browser-global no-undef errors.
-		ignores: ['**/dist/**', '**/.next/**', '**/node_modules/**', '**/generated/**'],
+		ignores: ['**/dist/**', '**/.next/**', '**/node_modules/**', '**/generated/**', '**/.astro/**'],
 	},
 );

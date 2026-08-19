@@ -1,0 +1,16 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { buildRegistry } from '../../lib/registry';
+import ComponentReference from '../../components/ComponentReference.astro';
+
+// Data-driven, not hand-authored markdown — generated straight from the
+// registry so this page can't drift from what's actually registered (see
+// the plan's note on packages/bio/README.md's stale checklist).
+const registry = await buildRegistry();
+const components = registry.list().filter(([, definition]) => definition.domain === 'common');
+---
+
+<DocsLayout title="Common components">
+	<p>General-purpose and layout components — not domain-specific.</p>
+	{components.map(([name, definition]) => <ComponentReference name={name} definition={definition} />)}
+</DocsLayout>

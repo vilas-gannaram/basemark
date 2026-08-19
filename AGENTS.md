@@ -34,7 +34,8 @@ Pre-alpha, core pipeline works end-to-end:
 - **`@basemark/react`** — mounts the hast tree as real React components.
 - **`@basemark/cli`** — `basemark render doc.md -o doc.html`, one self-contained HTML file. Ships as a standalone binary (`bun build --compile`). Splits its component runtime per domain so a doc only pays for what it uses — see `packages/cli/README.md`.
 - **`examples/react`** / **`examples/vanilla`** — the two render paths, live in a browser.
+- **`apps/docs`** — end-user docs site (Astro, static, GitHub Pages). Dogfoods `@basemark/core`: narrative pages render real Basemark markdown via `renderMarkdownToHtml()`; component reference pages are generated straight from the registry, not hand-written — see `apps/docs/README.md`.
 
-`packages/chem`, `packages/svelte`, `apps/docs` are still stubs.
+`packages/chem`, `packages/svelte` are still stubs.
 
 Open questions: ARCHITECTURE.md §10, VISION.md.
