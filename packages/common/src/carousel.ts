@@ -2,10 +2,8 @@ import type { ComponentRegistry } from '@basemark/core';
 
 export const CAROUSEL_TAG = 'basemark-carousel';
 
-// Sliding itself is pure CSS (scroll-snap) — no swipe/autoplay/drag JS, which
-// a browser's native horizontal scroll (touchpad, touchscreen, shift+wheel)
-// already gives for free. The prev/next buttons are the only JS behavior,
-// just nudging scrollLeft by one track's width.
+// Sliding is pure CSS (scroll-snap) — native scroll gives swipe/drag for
+// free. prev/next buttons are the only JS, nudging scrollLeft.
 const STYLES = `
 	:host {
 		display: block;
@@ -70,10 +68,8 @@ const STYLES = `
 export function registerCarousel(registry: ComponentRegistry): void {
 	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// Each direct child block of the :::carousel::: container becomes one
-		// full-width slide — same "one child = one item" shape as
-		// columns.ts, just laid out as a horizontal snap track instead of a
-		// grid.
+		// Each direct child becomes one full-width slide — "one child = one
+		// item", same shape as columns.ts, as a snap track instead of a grid.
 		class CarouselElement extends HTMLElement {
 			constructor() {
 				super();

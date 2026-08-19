@@ -3,11 +3,8 @@ import type { ComponentRegistry } from '@basemark/core';
 export const TABS_TAG = 'basemark-tabs';
 export const TAB_PANEL_TAG = 'basemark-tab-panel';
 
-// No border/background of its own — unlike card, tabs is navigation chrome
-// for its content, not a callout box. It should read as part of the
-// surrounding page, same as columns; only the tab-strip's own
-// border-bottom (a functional divider between the buttons and the active
-// panel, not a wrapper box) and the selected-tab highlight carry any chrome.
+// No border/background of its own — navigation chrome, not a callout box.
+// Only the tab-strip's border-bottom and selected-tab highlight carry chrome.
 const TABS_STYLES = `
 	:host {
 		display: block;
@@ -43,26 +40,17 @@ const TABS_STYLES = `
 export function registerTabs(registry: ComponentRegistry): void {
 	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// basemark-tab-panel is a near-inert shell: no named slots, no JS
-		// behavior of its own. basemark-tabs owns all behavior (reading
-		// labels, building the tab strip, toggling visibility) via direct DOM
-		// access to its light-DOM children — legal even across the shadow
-		// boundary, since those children are still ordinary nodes physically
-		// owned by the light tree, not the panel's own shadow root.
+		// Near-inert shell — basemark-tabs owns all behavior via light-DOM access to its children.
 		class TabPanelElement extends HTMLElement {
 			constructor() {
 				super();
 				const root = this.attachShadow({ mode: 'open' });
-				// Same reasoning as card.ts: a nested bio component's own :host margin
-				// is redundant against tabs' .body padding — only the boundary margins
-				// need zeroing (!important to beat the child's own :host on specificity),
-				// margin between multiple slotted children is left alone.
+				// Same margin/border reasoning as card.ts.
 				root.innerHTML = `
 					<style>
 						:host([hidden]) { display: none; }
 						::slotted(:first-child) { margin-top: 0 !important; }
 						::slotted(:last-child) { margin-bottom: 0 !important; }
-						/* Same reasoning as card.ts: a panel is already the visual boundary. */
 						::slotted(*) { border: none !important; background: transparent !important; }
 					</style>
 					<slot></slot>
@@ -70,10 +58,7 @@ export function registerTabs(registry: ComponentRegistry): void {
 			}
 		}
 
-		// One default <slot> rather than named slots: named slots would
-		// require knowing the number of tabs statically, where reading each
-		// panel's `label` attribute off this.children (or assignedElements())
-		// handles an arbitrary, dynamic number of tabs with less machinery.
+		// One default <slot>, not named — handles a dynamic tab count (see ARCH §6).
 		class TabsElement extends HTMLElement {
 			private activeIndex = 0;
 

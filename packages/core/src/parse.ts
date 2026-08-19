@@ -15,25 +15,14 @@ import { registerErrorComponent } from './error-element';
 
 const DIRECTIVE_TYPES = ['leafDirective', 'containerDirective', 'textDirective'] as const;
 
-// Marker hName for a resolved `type: 'react'` (or any future non-web-component
-// escape hatch) definition — there's no real tag to emit, since it isn't a
-// customElements-registered element. Framework-agnostic here on purpose:
-// this module doesn't know which consumer (dom.ts, @basemark/react, ...) will
-// walk the resulting hast tree, so it leaves a neutral marker plus the
-// directive name in `data-basemark-component`, and each consumer decides for
-// itself what it's capable of doing with that — swap in the real component
-// (a framework binding that supports the escape hatch) or fail visibly (one
-// that doesn't, e.g. the plain-DOM path).
+// Marker hName for a resolved `type: 'react'` escape-hatch definition — no
+// real customElements tag to emit. Each consumer (dom.ts, @basemark/react)
+// decides for itself what to do with the marker + directive name.
 export const NATIVE_COMPONENT_TAG = 'basemark-native';
 export const NATIVE_COMPONENT_DATA_ATTR = 'data-basemark-component';
 
-// A container's closing fence (`:::`, or more colons for an outer container
-// wrapping a nested one — see micromark-extension-directive's readme) is its
-// own source line of nothing but colons. If remark-directive never found a
-// matching close, the container's raw span just runs into whatever ordinary
-// content follows instead — up to the end of its parent (document, list
-// item, blockquote, ...). There's no flag on the mdast node itself for this;
-// the raw text's last non-blank line is the only signal available.
+// remark-directive gives no flag for an unclosed container — the raw text's
+// last non-blank line (a bare closing-colon fence, or not) is the only signal.
 const CLOSING_FENCE_LINE = /^:{3,}\s*$/;
 
 function isUnclosedContainer(raw: string): boolean {
@@ -59,10 +48,8 @@ function markAsError(node: Directives, source: string, directive: string, messag
 	};
 }
 
-// Resolves directive nodes (`::name{...}`, `:::name{...}:::`, `:name[...]{...}`)
-// against the registry between mdast and hast, per ARCHITECTURE.md §4. Unknown
-// directives or failed prop validation become a `basemark-error` hast node
-// instead of failing silently (§3, mitigation #4: "fail visibly").
+// Resolves directive nodes against the registry between mdast and hast (ARCH
+// §4). Unknown directives/failed validation become basemark-error (§3).
 export const resolveDirectives: Plugin<[ComponentRegistry], MdastRoot> = (registry) => {
 	return (tree, file) => {
 		visit(
@@ -121,15 +108,11 @@ export const resolveDirectives: Plugin<[ComponentRegistry], MdastRoot> = (regist
 };
 
 export function parseMarkdown(source: string, registry: ComponentRegistry): HastRoot {
-	// Called here, not at module load — parseMarkdown is the only thing that
-	// ever produces a basemark-error node, and this file also needs to stay
-	// importable in non-DOM contexts (see registerErrorComponent's own guard).
+	// Called here, not at module load, so this file stays importable DOM-less.
 	registerErrorComponent();
 
-	// `plainText: ['mermaid']` is a placeholder for ARCHITECTURE.md §8's future
-	// Tier-4 escape hatch (raw ```mermaid fence → mermaid-diagram component,
-	// not implemented yet) — once that lands, its fenced blocks must bypass
-	// syntax highlighting rather than render as highlighted plain text.
+	// plainText: ['mermaid'] placeholder for ARCH §8's future raw-fence escape
+	// hatch — its blocks must bypass highlighting once that lands.
 	const processor = unified()
 		.use(remarkParse)
 		.use(remarkGfm)
@@ -138,12 +121,8 @@ export function parseMarkdown(source: string, registry: ComponentRegistry): Hast
 		.use(remarkRehype)
 		.use(rehypeHighlight, { plainText: ['mermaid'] });
 
-	// resolveDirectives reads the original source text back off `file.value`
-	// (to slice out each directive's raw source for error messages). Passing
-	// the same VFile to both parse() and runSync() is what makes that value
-	// actually present — runSync(tree) with no second argument creates a
-	// fresh, valueless VFile instead of reusing the one parse() made, which
-	// silently left `file.value` undefined for every plugin in the pipeline.
+	// Same VFile passed to both — runSync(tree) alone makes a fresh, valueless
+	// one, silently breaking resolveDirectives' raw-source slicing (AGENTS.md pitfall).
 	const file = new VFile(source);
 	const mdastTree = processor.parse(file);
 	return processor.runSync(mdastTree, file) as HastRoot;

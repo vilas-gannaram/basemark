@@ -9,13 +9,8 @@ export interface MarkdownRendererProps {
 	registry: ComponentRegistry;
 }
 
-// Every resolved directive becomes a registered custom element (ARCHITECTURE.md
-// §6), but React treats a bare hyphenated tag name as a host element, not a
-// component. This wraps any custom element generically — one factory here,
-// not one wrapper per component — via @lit/react's createComponent, which
-// works with any customElements-registered class regardless of how it was
-// authored. Plain markdown tags (p, a, strong, ...) are never registered
-// custom elements, so they fall through to a normal host element.
+// React treats a hyphenated tag as a host element, not a component — this
+// wraps any custom element generically via @lit/react's createComponent, one factory for all of them.
 const wrapperCache = new Map<string, ReactWebComponent<HTMLElement> | null>();
 
 function getWrappedComponent(tagName: string): ReactWebComponent<HTMLElement> | null {
@@ -27,12 +22,8 @@ function getWrappedComponent(tagName: string): ReactWebComponent<HTMLElement> | 
 	return component;
 }
 
-// The §6/§10 native escape hatch: parse.ts leaves a neutral NATIVE_COMPONENT_TAG
-// marker (it doesn't know which consumer will walk its output), carrying the
-// original directive name in NATIVE_COMPONENT_DATA_ATTR. This is the one
-// consumer that can actually honor it — swap the marker for the real
-// component the registry has on file, cast back from the `unknown` core keeps
-// it as (see registry.ts's NativeComponentDefinition).
+// §6/§10 escape hatch — parse.ts leaves a neutral marker; this is the one
+// consumer that can honor it, swapping it for the real registered component.
 function renderNativeComponent(node: RootContent & { type: 'element' }, key: number, registry: ComponentRegistry): ReactNode {
 	const { [NATIVE_COMPONENT_DATA_ATTR]: name, ...props } = node.properties as Record<string, unknown>;
 	const definition = registry.resolve(String(name));

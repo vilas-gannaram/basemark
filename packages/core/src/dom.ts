@@ -4,13 +4,8 @@ import type { Element as HastElement, Root as HastRoot } from 'hast';
 import type { ComponentRegistry } from './registry';
 import { NATIVE_COMPONENT_DATA_ATTR, NATIVE_COMPONENT_TAG, parseMarkdown } from './parse';
 
-// The plain-DOM path can't do anything with a `type: 'react'` (or any other
-// non-web-component) definition — there's no customElements tag to upgrade,
-// by design (ARCHITECTURE.md §6/§10's escape hatch is framework-native only).
-// Rather than silently rendering nothing, swap it for a basemark-error node —
-// same "fail visibly" contract as an unknown directive or unclosed container
-// (parse.ts), just caught here instead of at parse time, since parse.ts
-// itself doesn't know which consumer will walk its output.
+// Plain DOM can't upgrade a `type: 'react'` definition (ARCH §6/§10) — swap
+// it for basemark-error instead of silently rendering nothing.
 function rejectNativeComponents(hast: HastRoot): void {
 	visit(
 		hast,
@@ -30,21 +25,9 @@ function rejectNativeComponents(hast: HastRoot): void {
 	);
 }
 
-// The "no framework at all" consumption path (VISION.md: direct library use,
-// plain HTML). Unlike @basemark/react, this needs no per-tag wrapping —
-// resolved directives are already real customElements-registered tags
-// (ARCHITECTURE.md §6), so a plain browser upgrades them the moment they're
-// attached to the document; there's nothing framework-specific to bridge.
-// hast-util-to-dom (not a hand-rolled hast→DOM walk) handles the parts that
-// are easy to get subtly wrong — hast's `className` (an array) needing to
-// become a real `class` attribute, boolean attributes, SVG namespacing, etc.
-//
-// Kept as a separate entry point rather than folded into parseMarkdown()
-// itself: parseMarkdown's output (a hast tree) is useful on its own to
-// anything that walks it without touching a live DOM (e.g. @basemark/react,
-// or a future static-HTML serializer) — this one specifically produces real,
-// already-upgraded DOM nodes, so it's the thing that needs an actual
-// `document` to exist.
+// The no-framework consumption path (VISION.md). Needs no per-tag wrapping —
+// resolved tags are already real customElements, so a browser upgrades them
+// on attach. Separate from parseMarkdown() since only this needs a real `document`.
 export function renderMarkdown(source: string, registry: ComponentRegistry): DocumentFragment {
 	const hast = parseMarkdown(source, registry);
 	rejectNativeComponents(hast);

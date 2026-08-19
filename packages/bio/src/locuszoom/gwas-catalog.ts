@@ -5,17 +5,11 @@ export const LOCUSZOOM_GWAS_CATALOG_TAG = 'basemark-locuszoom-gwas-catalog';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// registerGwasCatalog is async — see shared.ts's createLocusZoomElement
-// comment. The element itself is built here, inside the guarded function,
-// rather than at module scope (as it used to be): its
-// buildDataSources/buildLayout need a real `LocusZoom` value, which only
-// exists after createLocusZoomElement's own dynamic import resolves.
+// async — see shared.ts's createLocusZoomElement. Built inside the guarded
+// function since buildDataSources/buildLayout need a real `LocusZoom` value.
 export async function registerGwasCatalog(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// Verified against locuszoom@0.14.0's examples/gwas_catalog.html: same
-		// region props as the plain association plot, plus a `catalog` data
-		// source (GwasCatalogLZ) and the `association_catalog` layout, which
-		// overlays catalog-matched hits as labels on top of the association track.
+		// Verified against locuszoom@0.14.0's examples/gwas_catalog.html.
 		const GwasCatalogElement = await createLocusZoomElement({
 			observedAttrs: OBSERVED_ATTRS,
 			buildDataSources: (LocusZoom) =>

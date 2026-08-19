@@ -7,11 +7,8 @@ interface VideoEmbed {
 	embedUrl: string;
 }
 
-// Tier 0 (ARCHITECTURE.md §2): the author writes nothing but a video page
-// URL; this resolves the provider and builds the actual embeddable iframe
-// src itself. Only the extracted ID (a restricted character class, never the
-// raw url) gets interpolated into embedUrl below, so there's no injection
-// risk from an attacker-controlled `url` attribute.
+// Tier 0 (ARCH §2) — resolves the provider from a plain page URL. Only the
+// extracted ID (restricted charset) is interpolated, never the raw url.
 function resolveEmbed(url: string): VideoEmbed | null {
 	const youtube = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
 	if (youtube) return { provider: 'YouTube', embedUrl: `https://www.youtube.com/embed/${youtube[1]}` };

@@ -47,17 +47,9 @@ const STYLES = `
 	}
 `;
 
-// Parse-time failures (parse.ts's markAsError — an unknown directive, a
-// failed prop validation, an unclosed container) all resolve to this tag.
-// Registered here rather than left for each renderer to remember, since a
-// fallback that itself requires manual setup defeats the point of it.
-//
-// The class is defined inside registerErrorComponent(), not at module scope
-// — `class X extends HTMLElement` evaluates `HTMLElement` the moment the
-// class statement runs, not on first instantiation. core.parseMarkdown()
-// (which calls this) needs to stay callable in a plain Node test environment
-// with no DOM at all, so nothing here can touch `HTMLElement` until the
-// guard below has already confirmed it exists.
+// Parse-time failures (parse.ts's markAsError) resolve to this tag.
+// Class declared inside the guard, not at module scope, so parseMarkdown()
+// stays callable with no DOM at all (see AGENTS.md's guard note — this file is that pattern's source).
 export function registerErrorComponent(): void {
 	if (typeof customElements === 'undefined' || typeof HTMLElement === 'undefined') return;
 	if (customElements.get(ERROR_TAG)) return;
@@ -95,10 +87,7 @@ export function registerErrorComponent(): void {
 				<div class="body"><slot></slot></div>
 			`;
 
-			// textContent, not string interpolation into innerHTML above —
-			// directive names and messages both ultimately come from
-			// author-supplied markdown (an attribute value, an unknown
-			// directive's own written name), so they're untrusted input.
+			// textContent, not interpolated into innerHTML above — directive/message come from untrusted author markdown.
 			(root.querySelector('.message') as HTMLElement).textContent = `"${directive}": ${message}`;
 			if (source) (root.querySelector('.source') as HTMLElement).textContent = source;
 		}

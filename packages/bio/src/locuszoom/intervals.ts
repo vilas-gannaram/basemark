@@ -5,13 +5,8 @@ export const LOCUSZOOM_INTERVALS_TAG = 'basemark-locuszoom-intervals';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// registerIntervals is async — see shared.ts's createLocusZoomElement
-// comment. The element itself (and the LocusZoom.use() plugin install below,
-// formerly a module-scope side effect) is built here, inside the guarded
-// function, rather than at module scope: both need a real `LocusZoom` value,
-// which only exists after a dynamic import resolves — `locuszoom` and its ext
-// plugins can't be plain top-level imports either, same problem as
-// 'locuszoom' itself (see shared.ts).
+// async — see shared.ts. Element + LocusZoom.use() plugin install both need
+// a real `LocusZoom` value, so both move inside the guarded function.
 export async function registerIntervals(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		const [{ default: LocusZoom }, { default: installIntervalsTrack }] = await Promise.all([
@@ -20,12 +15,8 @@ export async function registerIntervals(registry: ComponentRegistry): Promise<vo
 		]);
 		LocusZoom.use(installIntervalsTrack);
 
-		// Verified against locuszoom@0.14.0's examples/ext/interval_annotations.html:
-		// standard association+LD+genes, plus an `intervals` track (IntervalLZ,
-		// source 19) via the interval_association layout. `constraint` isn't in the
-		// demo's own data sources, but the installed version's default genes data
-		// layer requires it (throws "Item not found: constraint" without it) — likely
-		// version drift in the packaged example vs. the library version installed here.
+		// Verified against locuszoom@0.14.0's examples/ext/interval_annotations.html.
+		// `constraint` isn't in that demo but is required here — throws without it (version drift).
 		const IntervalsElement = await createLocusZoomElement({
 			observedAttrs: OBSERVED_ATTRS,
 			buildDataSources: () =>

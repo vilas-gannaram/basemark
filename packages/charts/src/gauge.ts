@@ -6,12 +6,8 @@ export const GAUGE_CHART_TAG = 'basemark-gauge-chart';
 const OBSERVED_ATTRS = ['value', 'min', 'max'] as const;
 type Attrs = Partial<Record<(typeof OBSERVED_ATTRS)[number], string>>;
 
-// No tabular rows at all, unlike every other chart type here — a gauge is
-// one number against a range, not a series. getRows() exists only to
-// validate `value` is present (via the same error-display path every other
-// chart type uses) and returns an empty array; buildOption reads `attrs`
-// directly instead (see chart.ts's ChartElementConfig comment on why
-// buildOption takes attrs as a third parameter).
+// No tabular rows — a gauge is one number against a range. getRows() only
+// validates `value` is present; buildOption reads `attrs` directly instead.
 function getRows(attrs: Attrs): ChartRow[] {
 	if (!attrs.value) throw new Error('gauge-chart: `value` is required.');
 	return [];

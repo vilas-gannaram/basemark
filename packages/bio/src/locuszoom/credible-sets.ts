@@ -5,13 +5,8 @@ export const LOCUSZOOM_CREDIBLE_SETS_TAG = 'basemark-locuszoom-credible-sets';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// registerCredibleSets is async — see shared.ts's createLocusZoomElement
-// comment. The element itself (and the LocusZoom.use() plugin install below,
-// formerly a module-scope side effect) is built here, inside the guarded
-// function, rather than at module scope: both need a real `LocusZoom` value,
-// which only exists after a dynamic import resolves — `locuszoom` and its ext
-// plugins can't be plain top-level imports either, same problem as
-// 'locuszoom' itself (see shared.ts).
+// async — see shared.ts. Element + LocusZoom.use() plugin install both need
+// a real `LocusZoom` value, so both move inside the guarded function.
 export async function registerCredibleSets(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		const [{ default: LocusZoom }, { default: installCredibleSets }] = await Promise.all([
@@ -20,10 +15,7 @@ export async function registerCredibleSets(registry: ComponentRegistry): Promise
 		]);
 		LocusZoom.use(installCredibleSets);
 
-		// Verified against locuszoom@0.14.0's examples/ext/credible_sets.html:
-		// standard association+LD+genes+recomb+constraint, plus a `credset` source
-		// (CredibleSetLZ, 95% credible set threshold) via the association_credible_set
-		// layout, which highlights/labels variants in the credible set.
+		// Verified against locuszoom@0.14.0's examples/ext/credible_sets.html.
 		const CredibleSetsElement = await createLocusZoomElement({
 			observedAttrs: OBSERVED_ATTRS,
 			buildDataSources: () =>

@@ -5,28 +5,15 @@ export const LOCUSZOOM_TABIX_TAG = 'basemark-locuszoom-tabix';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// Verified live: these are LocusZoom's own tabix-demo files (GIANT BMI
-// meta-analysis, an LD panel, and a chromatin accessibility BED track),
-// confirmed reachable with CORS + Range support via an in-browser fetch()
-// before wiring this up. Verified against
-// locuszoom@0.14.0's examples/ext/tabix_tracks.html.
+// LocusZoom's own tabix-demo files — confirmed reachable (CORS + Range) via
+// fetch() before wiring up. Verified against locuszoom@0.14.0's tabix_tracks.html.
 const TABIX_DEMO_BASE = 'https://locuszoom-web-demos.s3.us-east-2.amazonaws.com/tabix-demo/';
 
-// registerTabix is async — see shared.ts's createLocusZoomElement comment.
-// The element itself (and the LocusZoom.use() plugin installs / parser
-// construction below, formerly module-scope) is built here, inside the
-// guarded function, rather than at module scope: all of it needs a real
-// `LocusZoom`/ext-plugin value, which only exists after a dynamic import
-// resolves — 'locuszoom' and its ext plugins can't be plain top-level imports
-// either, same problem as 'locuszoom' itself (see shared.ts). NOT called by
-// registerLocusZoomComponents (see locuszoom/index.ts's comment on why) —
-// this file's structure is still kept consistent with its siblings.
+// async — see shared.ts. NOT called by registerLocusZoomComponents (see
+// locuszoom/index.ts) — kept structurally consistent with its siblings anyway.
 export async function registerTabix(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// Order matters: lz-parsers' UserTabixLD adapter is only registered if
-		// lz-tabix-source has already been installed; lz-intervals-track supplies
-		// the `bed_intervals` panel used below. Mirrors the script load order in
-		// examples/ext/tabix_tracks.html.
+		// Order matters — UserTabixLD needs lz-tabix-source installed first. Mirrors tabix_tracks.html's load order.
 		const [{ default: LocusZoom }, { default: installTabixSource }, parsers, { default: installIntervalsTrack }] = await Promise.all([
 			import('locuszoom'),
 			import('locuszoom/esm/ext/lz-tabix-source'),

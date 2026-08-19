@@ -5,12 +5,8 @@ export const PIE_CHART_TAG = 'basemark-pie-chart';
 
 const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
-// Donut, not a solid pie (radius: ['35%', '65%']) — the modern default for
-// this shape. `center: ['50%', '58%']` nudges the donut down from the
-// title, which otherwise sits directly above it with no headroom — ECharts'
-// default center is ['50%', '50%'], and a slice's label line can reach high
-// enough to collide with title text at the top of a fixed-height container
-// (confirmed: "Other"/"Edge" labels overlapping "Browser market share").
+// Donut, not solid — the modern default. center nudges it down from the
+// title (confirmed collision otherwise: label lines overlapping the title text).
 function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
 	return {
 		title: title ? { text: title, left: 'center', top: '2%' } : undefined,

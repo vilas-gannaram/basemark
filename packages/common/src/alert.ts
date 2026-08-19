@@ -4,10 +4,8 @@ export const ALERT_TAG = 'basemark-alert';
 
 const VARIANTS = ['default', 'destructive'] as const;
 
-// Container directive, not leaf — an alert's body is prose (possibly
-// multi-paragraph, possibly with nested inline directives), same reasoning
-// as card.ts. Structurally near-identical to card; the difference is
-// variant-driven coloring instead of neutral chrome.
+// Container, not leaf — body is prose, same reasoning as card.ts. Near-
+// identical structurally; the difference is variant-driven coloring.
 const STYLES = `
 	:host {
 		display: block;

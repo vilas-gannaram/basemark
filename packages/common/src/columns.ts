@@ -3,10 +3,8 @@ import type { ComponentRegistry } from '@basemark/core';
 export const COLUMNS_TAG = 'basemark-columns';
 const DEFAULT_COLS = 2;
 
-// Layout-only: no border/background, unlike card. `slot { display: contents }`
-// is load-bearing — without it the <slot> itself (not its assigned nodes)
-// would be the grid item, and every projected child would collapse into a
-// single cell instead of tiling across grid-template-columns.
+// Layout-only, no border/background. `slot { display: contents }` is load-
+// bearing — without it the <slot> itself, not its children, is the grid item.
 const STYLES = `
 	:host {
 		display: block;
@@ -20,33 +18,16 @@ const STYLES = `
 	slot {
 		display: contents;
 	}
-	/*
-	 * Grid items default to min-width: auto, which resolves to their content's
-	 * min-content size rather than 0. A child with a wide intrinsic size (e.g.
-	 * an <svg width="800"> from a bio plot component) would otherwise force its
-	 * 1fr track wider than its fair share, overflowing the grid instead of
-	 * shrinking the child to fit. min-width: 0 lets tracks actually honor
-	 * grid-template-columns; the child's own overflow handling (if any) takes
-	 * over from there.
-	 */
+	/* min-width: 0 overrides grid's default auto (= min-content size), which
+	 * would otherwise let a wide child (e.g. a bio plot's <svg>) force its
+	 * track wider than its fair share and overflow the grid. */
 	::slotted(*) {
 		min-width: 0;
 		min-height: 0;
-		/*
-		 * Cells sit side by side, not stacked — the grid's own gap is what
-		 * separates them, not a child's own vertical margin (e.g. bio
-		 * components' :host { margin: 1.5rem 0 }). !important is needed since
-		 * :host in the child's own shadow root otherwise outbeats ::slotted()
-		 * on specificity.
-		 */
+		/* Grid's own gap separates cells, not a child's :host margin — !important since :host outbeats ::slotted(). */
 		margin-top: 0 !important;
 		margin-bottom: 0 !important;
-		/*
-		 * A cell's own component (e.g. a locuszoom-* plot) drawing its own
-		 * border/background reads as a floating box misaligned against the
-		 * grid's gap-based separation — columns has no chrome of its own (see
-		 * the module comment), so a direct child shouldn't add any either.
-		 */
+		/* Columns has no chrome of its own — a child shouldn't add any either. */
 		border: none !important;
 		background: transparent !important;
 	}
@@ -55,10 +36,7 @@ const STYLES = `
 export function registerColumns(registry: ComponentRegistry): void {
 	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// Each direct child block of the :::columns::: container (a paragraph,
-		// a list, a nested directive, ...) becomes one grid cell. An author who
-		// wants multiple blocks in a single cell wraps them in a nested
-		// :::card:::.
+		// Each direct child block becomes one grid cell — multi-block cells need a nested :::card:::.
 		class ColumnsElement extends HTMLElement {
 			static get observedAttributes(): string[] {
 				return ['cols'];

@@ -4,10 +4,7 @@ export const SEPARATOR_TAG = 'basemark-separator';
 
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
-// Leaf directive — a plain divider line, no content. Purely a --border
-// token consumer; exists as a themeable alternative to a raw markdown `---`
-// thematic break for authors who want it to read as UI chrome rather than a
-// prose section break.
+// Leaf, no content — a themeable alternative to markdown `---` for authors who want UI chrome, not a prose break.
 const STYLES = `
 	:host {
 		display: block;
