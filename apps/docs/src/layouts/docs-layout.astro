@@ -51,6 +51,21 @@ const NAV = [
 		items: [{ href: '/cli', label: 'Overview' }],
 	},
 ];
+
+// Strips the configured `base` (only present in the built site, not `dev` —
+// see astro.config.mjs) so it compares against NAV's plain, base-less
+// hrefs, then drops any trailing slash so '/core' and '/core/' both match.
+// Strips the configured `base` (present in Astro.url.pathname for a built
+// site, not in dev — see astro.config.mjs) so it compares against NAV's
+// plain, base-less hrefs. import.meta.env.BASE_URL and Astro.url.pathname
+// disagree on trailing slash ('/Basemark' vs '/Basemark/core/'), so this
+// strips base as a prefix rather than naively .replace()-ing it in place —
+// a plain replace with '/' left a doubled '//core' (confirmed by building).
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) : Astro.url.pathname).replace(
+	/\/$/,
+	'',
+) || '/';
 ---
 
 <!doctype html>
@@ -86,7 +101,9 @@ const NAV = [
 								<ul>
 									{group.items.map((item) => (
 										<li>
-											<a href={item.href}>{item.label}</a>
+											<a href={item.href} class={item.href === currentPath ? 'active' : undefined}>
+												{item.label}
+											</a>
 										</li>
 									))}
 								</ul>

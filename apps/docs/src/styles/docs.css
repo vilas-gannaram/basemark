@@ -114,6 +114,12 @@ body {
 	color: var(--sidebar-accent-foreground);
 }
 
+.docs-sidebar a.active {
+	background: var(--sidebar-primary);
+	color: var(--sidebar-primary-foreground);
+	font-weight: 600;
+}
+
 .docs-content {
 	flex: 1;
 	min-width: 0;
