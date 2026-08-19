@@ -41,6 +41,9 @@ export function generateSystemPrompt(registry: ComponentRegistry, options?: Syst
 		'You can embed components in markdown using leaf directive syntax: ::name{attr="value" ...}',
 		'Below is an index of available components — only use ones listed here, do not invent new ones.',
 		'Before writing a directive, look up its full prop details.',
+		'Gotcha: outside of a directive\'s own attributes, a bare "word:word" in prose (a genomic coordinate like ' +
+			'chr10:114550452, a variant ID like 10:114758349_C/T, a timestamp) is misparsed as a directive and ' +
+			'fails to render — wrap it in backticks instead.',
 	].join('\n');
 
 	const index = components.map(([name, definition]) => indexLine(name, definition)).join('\n');

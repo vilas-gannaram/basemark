@@ -30,8 +30,8 @@ The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr star
 
 ## Tier 3 — inline literal
 
-- [ ] ` ```fasta ` fence — short sequence, feature-highlightable
-- [ ] ` ```newick ` fence — small phylogenetic tree (Phylotree.js, iTOL-style rendering)
+- [x] `::fasta{sequence="..." highlight="10-25"}` — short sequence, feature-highlightable (leaf directive, not a fence — see AGENTS.md)
+- [x] `::newick{tree="(A:0.1,(B:0.2,C:0.3):0.4);"}` — small phylogenetic tree, rendered as a hand-rolled rectangular cladogram (no vendor lib)
 
 ## Also mentioned, not yet tiered/formalized
 

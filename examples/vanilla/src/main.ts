@@ -9,11 +9,10 @@ import '@basemark/core/theme.css';
 // — not JS string arrays. Each is parsed fresh by renderMarkdown() per page
 // switch, same as the single-page version this replaced.
 import architecture from '../content/architecture.md?raw';
-import gwasVariantReport from '../content/gwas-variant-report.md?raw';
+import bio from '../content/bio.md?raw';
 import labProtocol from '../content/lab-protocol.md?raw';
 import componentGallery from '../content/component-gallery.md?raw';
 import chartsDemo from '../content/charts-demo.md?raw';
-import genomeBrowserDemo from '../content/genome-browser-demo.md?raw';
 
 const registry = createRegistry();
 // registerBioComponents is async — see examples/react/src/main.tsx's comment
@@ -30,11 +29,10 @@ interface Page {
 
 const PAGES: Page[] = [
 	{ slug: 'architecture', label: 'Architecture', source: architecture },
-	{ slug: 'gwas-report', label: 'GWAS Variant Report', source: gwasVariantReport },
+	{ slug: 'bio', label: 'Bio', source: bio },
 	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
 	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
 	{ slug: 'charts', label: 'Charts', source: chartsDemo },
-	{ slug: 'genome-browser', label: 'Genome Browser', source: genomeBrowserDemo },
 ];
 
 // Passed as parameters, not closed over as module-scope consts — TS can't
