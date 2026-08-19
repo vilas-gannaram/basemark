@@ -1,45 +1,67 @@
 # @basemark/bio
 
-Domain components for bioinformatics authors. See [ARCHITECTURE.md](../../ARCHITECTURE.md) §8 for the tiering rationale behind this catalog.
+Bioinformatics components for Markdown. Write a short identifier — an accession, a PDB ID, an rsID, a locus — and get back a real, interactive viewer: protein structures, sequence tracks, clinical variants, pathway maps, interaction networks, genome browsing, and more.
 
-## Status vs. the original plan
+## Usage
 
-The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr start end}`. What got built instead is a suite of six registered LocusZoom-family directives (plus a seventh, built but not wired in by default):
+```ts
+import { createRegistry, renderMarkdown } from '@basemark/core';
+import { registerBioComponents } from '@basemark/bio';
 
-- `::locuszoom-assoc{chrom start end}` — GWAS association plot
-- `::locuszoom-gwas-catalog{chrom start end}` — + GWAS Catalog annotations
-- `::locuszoom-phewas{variant}` — Phenome-wide association plot
-- `::locuszoom-intervals{chrom start end}` — + interval annotations
-- `::locuszoom-credible-sets{chrom start end}` — 95% credible set plot
-- `::locuszoom-multi-pheno{chrom start end}` — layered multi-phenotype plot
-- `::locuszoom-tabix{chrom start end}` — tabix-indexed files. Built, but **not** called from `registerLocusZoomComponents` — blocked by real bugs in `tabix-reader`'s vendored jszlib that only surface under ESM strict mode. Call `registerTabix(registry)` directly if you want it despite the crash risk; see `src/locuszoom/index.ts`.
+const registry = createRegistry();
+await registerBioComponents(registry);
 
-## Tier 1 — single ID
+renderMarkdown('::structure{pdbid="1cbs"}', registry);
+```
 
-- [x] `::protvista{accession="..."}` — UniProt sequence/domain/feature tracks (ProtVista/UniProt)
-- [x] `::structure{pdbid="..."}` — 3D protein structure (3Dmol.js)
-- [x] `::variant{rsid="..." title="..."}` — ClinVar/dbSNP variant card (gene, position, allele, clinical significance, associated conditions, CADD score), fetched from MyVariant.info's own REST API. `dbsnp` only carries hg19 coordinates; hg38 position is only shown when a ClinVar record supplies it
-- [ ] `::gene{ensembl="..."}` — Ensembl gene track
-- [x] `::pathway{keggid="..." title="..."}` — KEGG pathway diagram, rendered as a static image from KEGG's own REST API (`rest.kegg.jp`) — not the interactive KGML map, which is server-rendered HTML with its own JS (Reactome is the alternative source, not used here)
+Each component below is a directive you write directly in Markdown, e.g. `::protvista{accession="P05067"}`.
 
-## Tier 2 — composite key
+## Components
 
-- [x] `::locus{chr="7" start="..." end="..."}` — genomic region plot, the original LocusZoom idea → built as the `locuszoom-*` suite above instead of one generic `::locus` directive
-- [x] `::genome-browser{locus="chr7:..."}` — IGV.js embed. Only IGV.js's built-in reference genomes are supported (`genome="hg38"` etc.) — no custom track URLs (BAM/VCF/BED), same reasoning as `@basemark/charts` dropping its hosted-file mode: no client-side fetch of a caller-supplied URL until a real allowlist/proxy exists (ARCHITECTURE.md §4).
-- [x] `::interaction-network{gene="TP53,MDM2" species="9606" title="..."}` — protein-protein interaction network image via STRING's own REST API (`string-db.org`). `gene` takes one or several comma-separated identifiers; `species` is an NCBI taxonomy ID, defaults to human (9606)
+### Protein structure & sequence
 
-## Tier 3 — inline literal
+- `structure` — 3D protein structure from a PDB entry (3Dmol.js)
+- `protvista` — UniProt sequence, domain, and feature tracks (ProtVista)
 
-- [x] `::fasta{sequence="..." highlight="10-25"}` — short sequence, feature-highlightable (leaf directive, not a fence — see AGENTS.md)
-- [x] `::newick{tree="(A:0.1,(B:0.2,C:0.3):0.4);"}` — small phylogenetic tree, rendered as a hand-rolled rectangular cladogram (no vendor lib)
+### Variants & clinical genomics
 
-## Also mentioned, not yet tiered/formalized
+- `variant` — a ClinVar/dbSNP variant card from an rsID: gene, position, allele, clinical significance, associated conditions, and a CADD score
 
-- [ ] MSA (multiple sequence alignment) viewer — MSAViewer / AlignmentViewer 2
-- [ ] Whole-slide/microscopy imaging — OpenSeadragon, for pathology slide deep-zoom. Shape differs from the rest of this list — likely Tier 2/4 since it needs a tile-source URL rather than a short ID.
+### Genomic loci & association plots
+
+- `locuszoom-assoc` — regional GWAS association plot
+- `locuszoom-gwas-catalog` — association plot with published GWAS Catalog hits labeled
+- `locuszoom-phewas` — phenome-wide association scan for one variant
+- `locuszoom-intervals` — association plot with interval/regulatory annotations
+- `locuszoom-credible-sets` — 95% Bayesian credible set for fine-mapping
+- `locuszoom-multi-pheno` — several related phenotypes overlaid on one locus
+- `genome-browser` — scrollable, zoomable genome browser for a locus (IGV.js)
+
+### Pathways & networks
+
+- `pathway` — a KEGG pathway diagram from a pathway ID
+- `interaction-network` — a protein-protein interaction network from one or more gene names (STRING)
+
+### Sequences & phylogenetics
+
+- `fasta` — a sequence viewer with a position ruler, residue coloring, and highlightable ranges
+- `newick` — a phylogenetic tree from Newick-format text
+
+## Coming soon
+
+- `gene` — Ensembl gene track
+- AlphaFold predicted structures, for proteins without a solved PDB entry
+- Karyotype/ideogram — chromosome-level view with cytobands
+- Taxonomy/species tree
+- RNA secondary structure
+- Sequence logo / motif viewer
+- Plasmid / circular map viewer
+- Pedigree chart
+- Multiple sequence alignment (MSA) viewer
+- Whole-slide/microscopy imaging
 
 ---
 
-`genome-browser` renders inside a shadow root — confirmed working (unlike `protvista`/`locuszoom`, which need light DOM; see `protvista.ts`/`locuszoom/shared.ts`). IGV.js takes a direct element reference rather than a global document-level lookup, which is the dividing line.
+`locuszoom-tabix` (tabix-indexed files) is implemented but not registered by default — a known vendored-dependency issue under strict ESM. Call `registerTabix()` directly to opt in.
 
-Chem components (SMILES/RDKit, PubChem CID, reaction schemes) are a separate package — see `packages/chem` (not yet started).
+Chemistry components (SMILES, PubChem, reaction schemes) are a separate package — see `packages/chem` (not started yet).
