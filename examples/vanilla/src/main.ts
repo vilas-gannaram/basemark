@@ -13,6 +13,7 @@ import gwasVariantReport from '../content/gwas-variant-report.md?raw';
 import labProtocol from '../content/lab-protocol.md?raw';
 import componentGallery from '../content/component-gallery.md?raw';
 import chartsDemo from '../content/charts-demo.md?raw';
+import genomeBrowserDemo from '../content/genome-browser-demo.md?raw';
 
 const registry = createRegistry();
 // registerBioComponents is async — see examples/react/src/main.tsx's comment
@@ -33,6 +34,7 @@ const PAGES: Page[] = [
 	{ slug: 'lab-protocol', label: 'Lab Protocol', source: labProtocol },
 	{ slug: 'gallery', label: 'Component Gallery', source: componentGallery },
 	{ slug: 'charts', label: 'Charts', source: chartsDemo },
+	{ slug: 'genome-browser', label: 'Genome Browser', source: genomeBrowserDemo },
 ];
 
 // Passed as parameters, not closed over as module-scope consts — TS can't

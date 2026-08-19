@@ -28,7 +28,7 @@ Prettier + ESLint run via a Husky pre-commit hook (`lint-staged`). Don't hand-fo
 Pre-alpha, core pipeline works end-to-end:
 
 - **`@basemark/core`** — parses `remark-directive` markdown to hast, validates props, fails visibly via `basemark-error`. Renders to real DOM (`renderMarkdown()`) or a plain string (`renderMarkdownToHtml()`).
-- **`@basemark/bio`** — 8 components (`structure`, `protvista`, `locuszoom-*`), wrapping 3Dmol.js/protvista-uniprot/LocusZoom.js.
+- **`@basemark/bio`** — 9 components (`structure`, `protvista`, `locuszoom-*`, `genome-browser`), wrapping 3Dmol.js/protvista-uniprot/LocusZoom.js/IGV.js.
 - **`@basemark/common`** — 12 components (`card`, `button`, `tabs`, etc.) — see `packages/common/README.md`.
 - **`@basemark/charts`** — `bar-chart`/`line-chart`/`scatter-chart`/`pie-chart`/`radar-chart`/`funnel-chart`/`gauge-chart` (ECharts), a separate package per ARCH §7's heavy-dependency flag — see `packages/charts/README.md`.
 - **`@basemark/react`** — mounts the hast tree as real React components.

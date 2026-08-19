@@ -87,6 +87,7 @@
       "dependencies": {
         "3dmol": "^2.5.5",
         "@basemark/core": "workspace:*",
+        "igv": "^3.8.5",
         "locuszoom": "^0.14.0",
         "protvista-uniprot": "^4.9.3",
       },
@@ -1268,6 +1269,8 @@
     "ieee754": ["ieee754@1.2.1", "", {}, "sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA=="],
 
     "ignore": ["ignore@5.3.2", "", {}, "sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g=="],
+
+    "igv": ["igv@3.8.5", "", {}, "sha512-Tdt0+z0DlQULSPByZG4wm3CeF4VzI+WehEKUyPTsT8W+EhRVV8VVlIZA5U+OXl9mVRMOL444qvN7w4IZJaW9Xw=="],
 
     "immer": ["immer@9.0.21", "", {}, "sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA=="],
 

@@ -14,12 +14,10 @@ The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr star
 - `::locuszoom-multi-pheno{chrom start end}` — layered multi-phenotype plot
 - `::locuszoom-tabix{chrom start end}` — tabix-indexed files. Built, but **not** called from `registerLocusZoomComponents` — blocked by real bugs in `tabix-reader`'s vendored jszlib that only surface under ESM strict mode. Call `registerTabix(registry)` directly if you want it despite the crash risk; see `src/locuszoom/index.ts`.
 
-Everything below this point is still exactly as originally planned — nothing else in this package has been started.
-
 ## Tier 1 — single ID
 
-- [ ] `::protvista{accession="..."}` — UniProt sequence/domain/feature tracks (via ProtVista or its newer modular successor, Nightingale)
-- [ ] `::structure{pdbId="..."}` — 3D protein structure (Mol*, NGL, or 3Dmol.js)
+- [x] `::protvista{accession="..."}` — UniProt sequence/domain/feature tracks (ProtVista/UniProt)
+- [x] `::structure{pdbid="..."}` — 3D protein structure (3Dmol.js)
 - [ ] `::variant{rsid="..."}` — ClinVar/dbSNP variant card
 - [ ] `::gene{ensembl="..."}` — Ensembl gene track
 - [ ] `::pathway{keggId="..."}` — KEGG pathway diagram (Reactome is the alternative source)
@@ -27,7 +25,7 @@ Everything below this point is still exactly as originally planned — nothing e
 ## Tier 2 — composite key
 
 - [x] `::locus{chr="7" start="..." end="..."}` — genomic region plot, the original LocusZoom idea → built as the `locuszoom-*` suite above instead of one generic `::locus` directive
-- [ ] `::genome-browser{locus="chr7:..."}` — IGV.js or JBrowse 2 embed
+- [x] `::genome-browser{locus="chr7:..."}` — IGV.js embed. Only IGV.js's built-in reference genomes are supported (`genome="hg38"` etc.) — no custom track URLs (BAM/VCF/BED), same reasoning as `@basemark/charts` dropping its hosted-file mode: no client-side fetch of a caller-supplied URL until a real allowlist/proxy exists (ARCHITECTURE.md §4).
 - [ ] `::interaction-network{gene="TP53" db="string"}` — protein-protein interaction network via STRING
 
 ## Tier 3 — inline literal
@@ -41,5 +39,9 @@ Everything below this point is still exactly as originally planned — nothing e
 - [ ] Whole-slide/microscopy imaging — OpenSeadragon, for pathology slide deep-zoom. Shape differs from the rest of this list — likely Tier 2/4 since it needs a tile-source URL rather than a short ID.
 
 ---
+
+## Known gaps
+
+- `genome-browser` renders inside a shadow root (unlike `protvista`, which needs light DOM — see `protvista.ts`) on the theory that IGV.js takes a direct element reference rather than LocusZoom's global ID lookup. Not yet confirmed in a real browser — if tracks render unstyled/broken, switch it to light DOM.
 
 Chem components (SMILES/RDKit, PubChem CID, reaction schemes) are a separate package — see `packages/chem` (not yet started).
