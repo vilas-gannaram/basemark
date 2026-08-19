@@ -22,7 +22,7 @@ function getWrappedComponent(tagName: string): ReactWebComponent<HTMLElement> | 
 	return component;
 }
 
-// §6/§10 escape hatch — parse.ts leaves a neutral marker; this is the one
+// §6 escape hatch — parse.ts leaves a neutral marker; this is the one
 // consumer that can honor it, swapping it for the real registered component.
 function renderNativeComponent(node: RootContent & { type: 'element' }, key: number, registry: ComponentRegistry): ReactNode {
 	const { [NATIVE_COMPONENT_DATA_ATTR]: name, ...props } = node.properties as Record<string, unknown>;

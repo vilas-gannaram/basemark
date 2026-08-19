@@ -1,4 +1,3 @@
 - [@AGENTS.md](AGENTS.md)
 - [@README.md](README.md)
 - [@ARCHITECTURE.md](ARCHITECTURE.md)
-- [@VISION.md](VISION.md)

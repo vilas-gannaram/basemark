@@ -28,7 +28,7 @@ await registerBioComponents(registry);
 registerCommonComponents(registry);
 registerChartsComponents(registry);
 
-// ARCHITECTURE.md §6/§10's native registration escape hatch: an app-local
+// ARCHITECTURE.md §6's native registration escape hatch: an app-local
 // React component (with its own useState, no customElements involved),
 // registered as `type: 'react'` instead of a tag. Never for domain packs —
 // see gene-chip.tsx.

@@ -27,7 +27,7 @@ export interface WebComponentDefinition extends ComponentDefinitionBase {
 	tag: string;
 }
 
-// The §6/§10 escape hatch: app-local only, never for domain packs. `component`
+// The §6 escape hatch: app-local only, never for domain packs. `component`
 // is untyped so core stays framework-free — the binding casts it back.
 export interface NativeComponentDefinition extends ComponentDefinitionBase {
 	type: 'react';

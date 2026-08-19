@@ -1,11 +1,11 @@
-Guidance for AI agents working in this repo. See [README.md](README.md) for what Basemark is, [ARCHITECTURE.md](ARCHITECTURE.md) for the full design spec, [VISION.md](VISION.md) for who consumes it. This file is just what changes how you work here.
+Guidance for AI agents working in this repo. See [README.md](README.md) for what Basemark is and who consumes it, [ARCHITECTURE.md](ARCHITECTURE.md) for the full design spec. This file is just what changes how you work here.
 
 ## Architecture decisions
 
 - Authoring syntax is `remark-directive`. Default to leaf directives (`::name{attrs}`); use container directives (`:::name...:::`) only for real child content. ARCH §3.
 - Tiering: default new components to Tier 1/2 (short identifier in, component fetches/derives the rest). Tier 4 (raw data blob) is an escape hatch, not the default. ARCH §2.
 - Web Components are the default render target for `bio`/`chem`/`common`. Native framework registration (`{ type: 'react', component: X }`) is only for app-local, non-portable components. ARCH §6.
-- `registry.ts`'s `ComponentDefinition` is behind the full manifest spec (no `mimetypes`/`version` yet). Read the file directly — it moves.
+- `registry.ts`'s `ComponentDefinition` is behind the full manifest spec (no `version` yet). Read the file directly — it moves.
 
 ## Implementation patterns
 
@@ -39,4 +39,4 @@ Pre-alpha, core pipeline works end-to-end:
 
 `packages/chem`, `packages/svelte` are still stubs.
 
-Open questions: ARCHITECTURE.md §10, VISION.md.
+Open questions: ARCHITECTURE.md §9.

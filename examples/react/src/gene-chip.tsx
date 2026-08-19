@@ -6,7 +6,7 @@ export interface GeneChipProps {
 	children?: ReactNode;
 }
 
-// App-local only (ARCHITECTURE.md §6/§10's native registration escape hatch)
+// App-local only (ARCHITECTURE.md §6's native registration escape hatch)
 // — a real React component with its own state, registered as `type: 'react'`
 // instead of a customElements tag. There's nothing here a Web Component
 // couldn't also do; the point is proving the escape hatch itself works, for a
