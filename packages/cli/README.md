@@ -25,7 +25,7 @@ bun run build            # writes dist/basemark
 `render` builds a registry from `@basemark/core` + `@basemark/common` + `@basemark/bio` + `@basemark/charts`.
 
 - **`common`'s 12 components** are fully wired — each custom-element class is declared *inside* its `register*` function behind a `typeof HTMLElement` guard, so importing the package under Bun (no browser) is safe.
-- **`bio`'s 8 components** go one step further — their vendor libraries (`3dmol`, `protvista-uniprot`, `locuszoom`) crash on load outside a browser regardless of any guard, so they're dynamically `import()`ed instead, making every `register*` function `async`.
+- **`bio`'s 14 components** go one step further — their vendor libraries (`3dmol`, `protvista-uniprot`, `locuszoom`) crash on load outside a browser regardless of any guard, so they're dynamically `import()`ed instead, making every `register*` function `async`.
 - **`charts`' 7 components** (ECharts) follow the same guard as `common` — `echarts` imports cleanly under Bun with no DOM, so no dynamic `import()` is needed.
 - **`chem`** is an empty stub.
 
@@ -54,5 +54,5 @@ Why four bundles, not one: `bio.runtime.js` is ~5MB (3Dmol.js/protvista-uniprot/
 - No structural linter — an unclosed `:::` produces a `basemark-error` banner, not a build failure. No `--strict` mode.
 - No batch rendering — one file at a time, no directory-in/directory-out mode.
 - No scaffolding or registry-validation commands.
-- The `bio` bundle is one file for all 8 components — using just `structure` still pulls in `locuszoom`/`protvista-uniprot`'s weight. Per-component splitting isn't built.
+- The `bio` bundle is one file for all 14 components — using just `structure` still pulls in `locuszoom`/`protvista-uniprot`'s weight. Per-component splitting isn't built.
 - Every output links the `Onest` Google Font (matching the example apps) — the one deliberate network dependency in an otherwise self-contained file. Falls back to the system font stack if the request fails.

@@ -1,32 +1,53 @@
 # @basemark/charts
 
-Chart/plot components (ECharts) — a separate package per ARCHITECTURE.md §7's flag on heavy general-purpose dependencies.
+Chart and plot components for Markdown, built on ECharts. A separate package from `@basemark/common` since charting is a heavier dependency than the average layout component.
 
-## Built
+## Usage
 
-- [x] `::bar-chart` — categories on x, numeric value on y.
-- [x] `::line-chart` — same shape as bar, trend over an ordered sequence.
-- [x] `::scatter-chart` — both axes numeric, no category concept.
-- [x] `::pie-chart` — donut styling by default; proportions of a whole.
-- [x] `::radar-chart` — one entity scored across several dimensions at once. Single series only (v1).
-- [x] `::funnel-chart` — ordered stages narrowing down; renders in the given order, not resorted by value.
-- [x] `::gauge-chart` — one value against a `min`/`max` range. Always exactly one value.
+```ts
+import { createRegistry, renderMarkdown } from '@basemark/core';
+import { registerChartsComponents } from '@basemark/charts';
 
-Every type takes data as inline comma-separated lists straight in the directive (ARCHITECTURE.md §2's Tier 3), no file needed: `bar-chart`/`line-chart`/`pie-chart`/`radar-chart`/`funnel-chart` use `labels`+`values`; `scatter-chart` uses `xValues`+`yValues` (no label concept, both axes numeric). e.g. `::bar-chart{labels="Jan,Feb,Mar" values="120,150,170"}`.
+const registry = createRegistry();
+registerChartsComponents(registry);
 
-These normalize to the same `{x, y}` row shape (`chart.ts`'s `getLabelValueRows()`) before each type builds its own ECharts `option`. Shared renderer: `chart.ts`'s `createChartElement()`, same one-factory-many-callers shape as `@basemark/bio`'s `createLocusZoomElement`.
+renderMarkdown('::bar-chart{labels="Jan,Feb,Mar" values="120,150,170"}', registry);
+```
 
-**Theming:** every chart reads `theme.css`'s `--chart-1`..`--chart-5` for series colors and `--foreground`/`--muted-foreground`/`--border` for text/axis lines — ECharts has no idea CSS custom properties exist, so `chart.ts`'s `themeOption()` reads their computed values and feeds them into the `option` on every render.
+Data goes straight in the directive as comma-separated lists — no file, no upload, no fetch:
 
-## Why no hosted-file mode
+```
+::bar-chart{labels="Jan,Feb,Mar" values="120,150,170"}
+```
 
-An earlier version also took `data` (a `.csv`/`.json` URL) + `x`/`y` field names, resolved with a raw client-side `fetch(url)`. Dropped because that pattern doesn't hold up outside a demo: real-world data mostly isn't sitting behind a plain public storage URL a browser can `fetch()` directly — it's behind auth, a signed-URL expiry, or a proxy, none of which a generic chart component should be guessing at. ARCHITECTURE.md §4 flags exactly this risk: client-side URL fetches of caller-supplied URLs are an SSRF surface, and embedded/inline data is the zero-trust default.
+`bar-chart`/`line-chart`/`pie-chart`/`radar-chart`/`funnel-chart` take `labels` + `values`; `scatter-chart` takes `xValues` + `yValues` (both axes are numeric, no label concept).
 
-Rather than build a `core`-level fetch allowlist/proxy to make hosted URLs safe (unbuilt, cross-package work — see ARCHITECTURE.md §10), the answer here is extension: a consumer who wants to plot an existing dataset writes their own chart type on top of `chart.ts`'s `createChartElement()`/`defineChart()`, fetching however fits their own auth setup — signed URL, authenticated API call, server-side proxy, whatever's real for their deployment — instead of this package doing an opinionated unauthenticated fetch of a URL an author or an LLM supplied.
+## Components
 
-## Known gaps
+### Trends & comparison
 
-- No raw ` ```echarts ` fence escape hatch — core has no fenced-code-block-to-component pipeline yet (same gap blocks Mermaid, see ARCHITECTURE.md §8/§4).
-- Bundle isn't split — pulls in all of `echarts`, not just the chart types actually used.
-- `radar-chart` is single-series only — no way to overlay multiple entities on the same axes yet.
-- Heatmap/treemap/sankey and other non-tabular shapes aren't built — they need a genuinely different data model (grid triples, nested/linked data) than the flat `{x, y}` rows every chart here uses.
+- `bar-chart` — categories on x, numeric value on y
+- `line-chart` — a trend over an ordered sequence
+- `scatter-chart` — both axes numeric, no category concept
+
+### Parts of a whole
+
+- `pie-chart` — donut styling by default
+- `funnel-chart` — ordered stages narrowing down, rendered in the given order
+
+### Single value & scoring
+
+- `gauge-chart` — one value against a min/max range
+- `radar-chart` — one entity scored across several dimensions at once (single series only, for now)
+
+Every chart reads the active theme's colors automatically — no per-chart color configuration needed.
+
+## Why there's no "point me at a data file" mode
+
+Charts here take inline data only, not a `data.csv`/`data.json` URL fetched client-side. Real-world data mostly isn't sitting behind a plain public URL a browser can fetch directly — it's behind auth, a signed-URL expiry, or a proxy. Rather than build in an unauthenticated fetch that wouldn't work for real deployments anyway, plotting an existing dataset is left to a consumer's own chart type built on top of this package's shared renderer, fetching however fits their own auth setup.
+
+## Coming soon
+
+- Multi-series radar charts (overlay several entities on the same axes)
+- Heatmap, treemap, and sankey charts (different data shape than the rest of this list)
+- Smaller bundles — split per chart type instead of pulling in all of ECharts

@@ -1,48 +1,53 @@
 # @basemark/common
 
-General-purpose and layout/container components — not domain-specific. See [ARCHITECTURE.md](../../ARCHITECTURE.md) §8.
+General-purpose components for Markdown — cards, tabs, accordions, alerts, media embeds, and more, styled against a shadcn-compatible theme. Not domain-specific — see `@basemark/bio`/`@basemark/charts`/`@basemark/chem` for those.
 
-## Layout/container — built
+## Usage
 
-- [x] `:::card{title="..."}` — bordered container, one default slot.
-- [x] `:::columns{cols="..."}` — CSS Grid, one child block per cell.
-- [x] `:::tabs` / `:::tab-panel{label="..."}` — reads each panel's `label` off its light-DOM children, toggles `hidden` — handles a dynamic tab count without named slots.
+```ts
+import { createRegistry, renderMarkdown } from '@basemark/core';
+import { registerCommonComponents } from '@basemark/common';
 
-All three zero the vertical margin a nested component would otherwise add (`::slotted()` overrides).
+const registry = createRegistry();
+registerCommonComponents(registry);
 
-## shadcn/ui-inspired components — built
+renderMarkdown(':::card{title="Hello"}\nSome content.\n:::', registry);
+```
 
-Plain custom elements styled against `theme.css`'s shadcn-compatible tokens — no Tailwind, no React dependency.
+## Components
 
-- [x] `:button[Label]{variant size href}` — text directive; `<a>` if `href` set, else `<button>`.
-- [x] `:badge[Label]{variant}` — text directive.
-- [x] `:::alert{variant title} ... :::` — callout box.
-- [x] `::separator{orientation}` — divider line.
-- [x] `:::accordion` / `:::accordion-item{label}` — same pattern as `tabs`.
-- [x] `:::carousel` — CSS `scroll-snap` track + prev/next buttons.
-- [x] `:::popover{trigger side} ... :::` — click-to-open panel, `position: fixed` (not `absolute`, so an `overflow: hidden` ancestor can't clip it). Closes on outside click / Escape.
-- [x] **table** — plain GFM pipe-table syntax, not a directive. Themed globally in `theme.css`.
+### Layout & containers
 
-More of shadcn's set (dialog, dropdown-menu, tooltip) can follow the same pattern — see `card.ts` for the base custom-element/registry shape.
+- `card` — bordered container with an optional title
+- `columns` — lays child blocks side by side in a grid
+- `tabs` / `tab-panel` — switchable panel group
 
-## Media embeds — built
+### UI elements
 
-Tier 0: author writes just the ordinary page URL, the component detects the provider. An unrecognized URL renders an inline error (not `basemark-error` — that's for directive-level failures, this is a runtime data problem).
+- `button` — link or button styling
+- `badge` — small status label
+- `alert` — callout box
+- `separator` — divider line
+- `accordion` / `accordion-item` — collapsible sections
+- `carousel` — scrollable slide track
+- `popover` — click-to-open panel
+- **table** — plain GFM pipe-table syntax, themed automatically (not a directive)
 
-- [x] `::video{url}` — YouTube or Vimeo, any normal share URL shape.
-- [x] `::audio{url}` — Spotify or SoundCloud.
+### Media embeds
 
-Self-hosted `<video>`/`<audio>` and other providers (X, Bluesky, oEmbed) are out of scope for now.
+- `video` — YouTube or Vimeo, from a normal share URL
+- `audio` — Spotify or SoundCloud, from a normal share URL
 
-## Not built yet
+## Coming soon
 
-- [ ] Mermaid family (`<mermaid-diagram>` + `::gantt`/`::flowchart`/etc. translators)
-- [ ] KaTeX
-- [ ] Sortable tables (plain GFM tables render; sort/filter doesn't)
-- [ ] Maps (MapLibre/Leaflet)
-- [ ] Citations (BibTeX)
-- [ ] JSON/tree viewers
+- Mermaid diagrams (flowcharts, Gantt charts, etc.)
+- KaTeX math rendering
+- Sortable tables
+- Maps (MapLibre/Leaflet)
+- Citations (BibTeX)
+- JSON/tree viewers
+- More shadcn-inspired components (dialog, dropdown menu, tooltip)
 
 ---
 
-Bio components (`protvista`, `structure`, `locuszoom-*`) are a separate package — see `packages/bio`. Charts (`bar-chart`, `line-chart`, etc., ECharts) are also a separate package, not part of this list — see `packages/charts`.
+Bio components (protein structures, sequences, variants, ...) are a separate package — see `@basemark/bio`. Chart components (ECharts) are also separate — see `@basemark/charts`.
