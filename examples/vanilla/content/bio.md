@@ -80,6 +80,26 @@ TCF7L2 sits in the Wnt signaling pathway — the map below is the reference (spe
 ::pathway{keggid="map04310" title="Wnt signaling pathway (reference)"}
 :::
 
+## Interaction network (STRING)
+
+The same TCF7L2–β-catenin relationship from the structure tab above, now as a protein-protein interaction network instead of a 3D structure.
+
+:::card{title="TCF7L2 & CTNNB1 (β-catenin) — ::interaction-network"}
+::interaction-network{gene="TCF7L2,CTNNB1" title="TCF7L2 / CTNNB1 interaction network"}
+:::
+
+A single gene, with `species` left at its default (human, taxon 9606) — STRING expands it to its own top interaction partners automatically.
+
+:::card{title="TP53 alone (default-expanded)"}
+::interaction-network{gene="TP53" title="TP53 interaction network"}
+:::
+
+Same idea in mouse (taxon 10090) instead of human — the `species` attr is any NCBI taxonomy ID, not just the default.
+
+:::card{title="Insulin signaling, mouse — Tcf7l2/Ctnnb1/Ins1/Insr"}
+::interaction-network{gene="Tcf7l2,Ctnnb1,Ins1,Insr" species="10090" title="Insulin signaling network (mouse)"}
+:::
+
 ## Inline sequence & tree (Tier 3 — no fetch)
 
 Short content the author supplies directly, parsed and rendered with no accession lookup. Directives, not fences — see AGENTS.md.
@@ -91,7 +111,19 @@ A short peptide, with residues 10-25 highlighted.
 :::
 
 :::card{title="Newick tree — ::newick"}
-A small phylogenetic tree.
+A small phylogenetic tree, branch lengths drawn to scale.
 
 ::newick{tree="(Human:0.1,(Chimp:0.08,Gorilla:0.09):0.05,Orangutan:0.15);" title="Great apes"}
+:::
+
+No branch lengths given at all — every branch falls back to equal spacing, so this renders as a pure cladogram (topology only, no evolutionary-distance meaning).
+
+:::card{title="Topology only, no branch lengths"}
+::newick{tree="(A,(B,C),(D,E));" title="Unscaled topology"}
+:::
+
+A slightly deeper tree, mixing very short (primate) and much longer (fish-vs-mammal) branch lengths in the same plot.
+
+:::card{title="Vertebrate phylogeny"}
+::newick{tree="((Human:0.006,Chimp:0.006):0.003,(Mouse:0.03,Rat:0.03):0.02,Zebrafish:0.15);" title="Vertebrates"}
 :::

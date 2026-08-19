@@ -26,7 +26,7 @@ The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr star
 
 - [x] `::locus{chr="7" start="..." end="..."}` — genomic region plot, the original LocusZoom idea → built as the `locuszoom-*` suite above instead of one generic `::locus` directive
 - [x] `::genome-browser{locus="chr7:..."}` — IGV.js embed. Only IGV.js's built-in reference genomes are supported (`genome="hg38"` etc.) — no custom track URLs (BAM/VCF/BED), same reasoning as `@basemark/charts` dropping its hosted-file mode: no client-side fetch of a caller-supplied URL until a real allowlist/proxy exists (ARCHITECTURE.md §4).
-- [ ] `::interaction-network{gene="TP53" db="string"}` — protein-protein interaction network via STRING
+- [x] `::interaction-network{gene="TP53,MDM2" species="9606" title="..."}` — protein-protein interaction network image via STRING's own REST API (`string-db.org`). `gene` takes one or several comma-separated identifiers; `species` is an NCBI taxonomy ID, defaults to human (9606)
 
 ## Tier 3 — inline literal
 
