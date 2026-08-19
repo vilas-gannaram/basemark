@@ -3,6 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"description": "Bio domain components for bioinformatics authors — structure, protvista, locuszoom-*, genome-browser",
+	"license": "MIT",
 	"type": "module",
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",

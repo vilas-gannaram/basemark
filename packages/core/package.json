@@ -3,6 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"description": "Markdown + directive parser and component registry — framework-agnostic",
+	"license": "MIT",
 	"type": "module",
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",

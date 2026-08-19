@@ -141,7 +141,6 @@ Changesets is the chosen release-flow tool (above), but `.changeset/` isn't set 
 
 ## 9. Open / undecided
 
-- Final project name.
 - Full manifest JSON Schema spec (§5 is conceptual, not field-by-field).
 - SSR fallback for natively-registered (non-web-component) framework components.
 - Which guided Mermaid directives ship at v1 vs. stay raw-fence-only.

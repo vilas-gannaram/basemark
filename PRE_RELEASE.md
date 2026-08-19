@@ -6,9 +6,9 @@ What's left before `@basemark/*` packages can actually be published to npm. Noth
 
 - **Every package is `"private": true`** — including the real ones (`core`, `bio`, `common`, `charts`, `react`, `svelte`, `cli`). `npm publish` refuses a private package outright.
 - **No build step for the library packages.** `main`/`types`/`exports` all point straight at raw `.ts` source (only `cli` has a `build` script, and that's for its standalone binary, not a library dist). A real npm consumer's tooling generally expects compiled `.js` + `.d.ts`, not source TypeScript.
-- **License is unresolved, not just undocumented.** `"license": "UNLICENSED"` in every `package.json`, no `LICENSE` file anywhere. Needs a real license (MIT/Apache-2.0/etc.) chosen deliberately if the intent is for others to use this.
+- ~~**License is unresolved, not just undocumented.**~~ Done — MIT, root `LICENSE` file added, every publishable package's `package.json` carries `"license": "MIT"`.
 - **Changesets isn't actually installed** — ARCHITECTURE.md §8 names it as the release tool, but there's no `@changesets/cli` dependency and no `.changeset/` directory. Needs `bunx changeset init` at minimum.
-- **`@basemark` npm scope ownership is unconfirmed**, and the project name itself is still an open question (ARCHITECTURE.md §9). Worth locking down before publishing — a published npm name is close to permanent.
+- **`@basemark` npm scope ownership is unconfirmed.** The project name itself is now settled (`basemark`/`@basemark/*`, dropped from ARCHITECTURE.md's open questions) — but whether that scope is actually claimable/claimed on npmjs.com still needs checking before a first publish.
 
 ## Needed, but not blocking a first publish
 
