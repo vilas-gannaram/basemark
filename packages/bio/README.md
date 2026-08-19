@@ -40,8 +40,6 @@ The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr star
 
 ---
 
-## Known gaps
-
-- `genome-browser` renders inside a shadow root (unlike `protvista`, which needs light DOM — see `protvista.ts`) on the theory that IGV.js takes a direct element reference rather than LocusZoom's global ID lookup. Not yet confirmed in a real browser — if tracks render unstyled/broken, switch it to light DOM.
+`genome-browser` renders inside a shadow root — confirmed working (unlike `protvista`/`locuszoom`, which need light DOM; see `protvista.ts`/`locuszoom/shared.ts`). IGV.js takes a direct element reference rather than a global document-level lookup, which is the dividing line.
 
 Chem components (SMILES/RDKit, PubChem CID, reaction schemes) are a separate package — see `packages/chem` (not yet started).

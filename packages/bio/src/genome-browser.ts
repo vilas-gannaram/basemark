@@ -24,10 +24,8 @@ const STYLES = `
 	}
 `;
 
-// igv.js takes a real element reference, not a global ID selector (unlike
-// LocusZoom's d3.select('div#'+id) — see locuszoom/shared.ts), so a shadow
-// root should work here. Flagging as unverified against a real browser —
-// if tracks render unstyled/broken, switch to light DOM like protvista.ts.
+// Shadow root works here, confirmed — igv.js takes a real element reference,
+// not a global ID selector (unlike LocusZoom's d3.select('div#'+id)).
 //
 // async — igv touches `document` at module scope (confirmed crash under
 // plain Bun), so the import is deferred and awaited first.
