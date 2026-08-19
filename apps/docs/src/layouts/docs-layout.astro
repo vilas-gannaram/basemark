@@ -9,14 +9,47 @@ interface Props {
 const { title } = Astro.props;
 
 const NAV = [
-	{ href: '/', label: 'Introduction' },
-	{ href: '/getting-started', label: 'Getting started' },
-	{ href: '/authoring/syntax', label: 'Authoring syntax' },
-	{ href: '/authoring/tiering', label: 'Tiering model' },
-	{ href: '/components/common', label: 'Common components' },
-	{ href: '/components/bio', label: 'Bio components' },
-	{ href: '/components/charts', label: 'Chart components' },
-	{ href: '/examples', label: 'Examples' },
+	{
+		label: 'Overview',
+		items: [
+			{ href: '/', label: 'Introduction' },
+			{ href: '/getting-started', label: 'Getting started' },
+			{ href: '/examples', label: 'Examples' },
+		],
+	},
+	{
+		label: 'Core',
+		items: [
+			{ href: '/core', label: 'Overview' },
+			{ href: '/authoring/syntax', label: 'Authoring syntax' },
+			{ href: '/authoring/tiering', label: 'Tiering model' },
+		],
+	},
+	{
+		label: 'Common',
+		items: [
+			{ href: '/components/common', label: 'Components' },
+			{ href: '/examples/common', label: 'Examples' },
+		],
+	},
+	{
+		label: 'Bio',
+		items: [
+			{ href: '/components/bio', label: 'Components' },
+			{ href: '/examples/bio', label: 'Examples' },
+		],
+	},
+	{
+		label: 'Charts',
+		items: [
+			{ href: '/components/charts', label: 'Components' },
+			{ href: '/examples/charts', label: 'Examples' },
+		],
+	},
+	{
+		label: 'CLI',
+		items: [{ href: '/cli', label: 'Overview' }],
+	},
 ];
 ---
 
@@ -46,15 +79,20 @@ const NAV = [
 			</header>
 			<div class="docs-body">
 				<nav class="docs-sidebar" aria-label="Documentation">
-					<ul>
-						{
-							NAV.map((item) => (
-								<li>
-									<a href={item.href}>{item.label}</a>
-								</li>
-							))
-						}
-					</ul>
+					{
+						NAV.map((group) => (
+							<div class="docs-nav-group">
+								<p class="docs-nav-label">{group.label}</p>
+								<ul>
+									{group.items.map((item) => (
+										<li>
+											<a href={item.href}>{item.label}</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						))
+					}
 				</nav>
 				<main class="docs-content">
 					<h1>{title}</h1>
