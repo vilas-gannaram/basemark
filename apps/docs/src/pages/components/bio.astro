@@ -1,7 +1,7 @@
 ---
-import DocsLayout from '../../layouts/DocsLayout.astro';
+import DocsLayout from '../../layouts/docs-layout.astro';
 import { buildRegistry } from '../../lib/registry';
-import ComponentReference from '../../components/ComponentReference.astro';
+import ComponentReference from '../../components/component-reference.astro';
 
 const registry = await buildRegistry();
 const components = registry.list().filter(([, definition]) => definition.domain === 'bio');
