@@ -10,11 +10,19 @@ A component never makes you supply a data blob if a short identifier is enough f
 
 ## Tier 1 — one identifier
 
-`::structure{pdbid="1CRN"}` — a single PDB ID is enough; the component fetches and parses the structure itself.
+A single PDB ID is enough; the component fetches and parses the structure itself:
+
+::structure{pdbid="1CRN"}
+
+That's `::structure{pdbid="1CRN"}` — no structure file, no coordinates, just the ID.
 
 ## Tier 2 — a few short fields
 
-`::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}` — a genomic region, not a blob of association data.
+A genomic region — chromosome, start, end — not a blob of association data:
+
+::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}
+
+That's `::locuszoom-assoc{chrom="10" start="114550452" end="115067678"}` — the component fetches and plots the association data itself.
 
 ## Tier 3 — inline, no fetch
 
