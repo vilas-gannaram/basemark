@@ -19,7 +19,7 @@ Never make an author supply a data blob if a short identifier is enough for the 
 | 0 — zero config | nothing but a URL/DOI | auto-detect + fetch | citation card |
 | 1 — single ID | one accession/identifier | fetch + parse + render | `::protvista{accession="P05067"}` |
 | 2 — composite key | 2-4 short fields | fetch + parse + render | `::locus{chr="7" start="..." end="..."}` |
-| 3 — inline literal | the actual short content | parse + render, no fetch | ` ```smiles ` fence |
+| 3 — inline literal | the actual short content | parse + render, no fetch | `::fasta{sequence="..."}` |
 | 4 — full data/URL | structured blob or file URL | render only | escape hatch, avoid |
 
 Default new components to Tier 1/2. Tier 4 is an escape hatch, not the default UX.
@@ -45,6 +45,8 @@ Default to leaf directives — nothing to leave unclosed.
 2. **Built** — `parse.ts` checks whether a container's raw source ends in a closing fence line, flags it if not.
 3. Structural colon-balance linter in CI — not built.
 4. **Built** — fail visibly: flagged containers render as `basemark-error`, which still shows the swallowed content via its own slot.
+
+**Known failure mode:** a bare `word:word` in prose (a genomic coordinate like `chr10:114550452`, a variant ID like `10:114758349_C/T`, a timestamp) parses as a **text directive** (`:name` — see §3's syntax block) — the text after the colon silently becomes an "unknown component" `basemark-error` instead of plain text. No structural fix (the syntax is inherently ambiguous with prose); wrap the literal in backticks (an inline code span isn't tokenized as a directive) whenever colon-separated content like this appears outside of a directive's own attributes.
 
 ---
 
@@ -134,7 +136,7 @@ Everything depends on core; core depends on nothing framework-specific.
 
 **Bio/chem — Tier 2:** `::locus{chr start end}` (LocusZoom), `::genome-browser{locus}` (IGV.js), `::interaction-network{gene}`
 
-**Bio/chem — Tier 3:** ` ```smiles ` (RDKit.js), ` ```fasta `, ` ```newick `
+**Bio/chem — Tier 3:** `::smiles{value="..."}` (RDKit.js), `::fasta{sequence="..."}`, `::newick{tree="..."}`
 
 **General-purpose (`common`):** Mermaid family, KaTeX, sortable tables, maps, citations, JSON/tree viewers, media embeds. Charts are `@basemark/charts` (ECharts), a separate package per §7's flag — not `common`.
 
@@ -177,4 +179,5 @@ basemark/
 - Which `common` candidates need their own package — see §7's flag.
 - §6's escape hatch has no implementation path yet: `registry.ts` has no `render` field, `parse.ts` always emits `hName: definition.tag`, `@basemark/react` only resolves via `customElements.get`. All three need to change together.
 - Unclosed-container detection (§3) is a heuristic, not a full parse of remark-directive's closing rules. The structural linter is still unbuilt.
+- No convention for which `common` layout/container component to wrap a top-level component in when authoring a doc — `card`, `columns`, `tabs`/`tab-panel`, `accordion`/`accordion-item`, `carousel`, `popover` (§8/`packages/common/README.md`) all overlap in what they can hold, and nothing says which fits which situation. Surfaced because `examples/vanilla/content/bio.md` ended up wrapping some components in `card` and others in `tabs` with no documented reason why — looked like a rule, wasn't one, just an earlier doc's narrative carried forward. Needs an actual decision, not just picking one example and running with it.
 - Who consumes this and how — see [VISION.md](VISION.md).

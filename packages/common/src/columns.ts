@@ -13,23 +13,25 @@ const STYLES = `
 	}
 	.grid {
 		display: grid;
+		align-items: stretch;
 		gap: 1rem;
 	}
 	slot {
 		display: contents;
 	}
-	/* min-width: 0 overrides grid's default auto (= min-content size), which
-	 * would otherwise let a wide child (e.g. a bio plot's <svg>) force its
-	 * track wider than its fair share and overflow the grid. */
+	/* min-width/min-height: 0 let a wide/tall child shrink to its fair share
+	 * instead of overflowing the grid. align-self: stretch is explicit since
+	 * slotted content through a display:contents <slot> doesn't reliably
+	 * inherit it, which left same-row cards ragged-bottomed otherwise. */
 	::slotted(*) {
 		min-width: 0;
 		min-height: 0;
+		align-self: stretch;
 		/* Grid's own gap separates cells, not a child's :host margin — !important since :host outbeats ::slotted(). */
 		margin-top: 0 !important;
 		margin-bottom: 0 !important;
-		/* Columns has no chrome of its own — a child shouldn't add any either. */
-		border: none !important;
-		background: transparent !important;
+		/* Unlike card.ts, no border/background stripping — columns draws no
+		 * chrome of its own, so there's nothing for a slotted :::card::: to double up against. */
 	}
 `;
 

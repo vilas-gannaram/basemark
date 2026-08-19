@@ -18,6 +18,7 @@ Guidance for AI agents working in this repo. See [README.md](README.md) for what
 - `unified`'s `runSync(tree)` drops the source text unless you pass the same `VFile` you parsed with. Always `runSync(tree, file)`.
 - Don't re-add a bare `packages/*` rule to `.gitignore` — an old NuGet template rule once hid the whole `packages/` dir from git.
 - `Bun.build()` can split one entry point into multiple output chunks (e.g. a real `.css` import becomes its own asset chunk). Write every `result.outputs` entry, not just `outputs[0]` — see `packages/cli/scripts/bundle-runtime.ts`.
+- A bare `word:word` in authored prose (genomic coordinates like `chr10:114550452`, variant IDs like `10:114758349_C/T`, timestamps) is misparsed by `remark-directive` as a text directive and renders as an "unknown component" `basemark-error`. When writing or generating example/demo markdown, wrap any such colon-separated literal in backticks. See ARCHITECTURE.md §3's second "Known failure mode".
 
 ## Tooling
 
@@ -28,7 +29,7 @@ Prettier + ESLint run via a Husky pre-commit hook (`lint-staged`). Don't hand-fo
 Pre-alpha, core pipeline works end-to-end:
 
 - **`@basemark/core`** — parses `remark-directive` markdown to hast, validates props, fails visibly via `basemark-error`. Renders to real DOM (`renderMarkdown()`) or a plain string (`renderMarkdownToHtml()`).
-- **`@basemark/bio`** — 8 components (`structure`, `protvista`, `locuszoom-*`), wrapping 3Dmol.js/protvista-uniprot/LocusZoom.js.
+- **`@basemark/bio`** — 9 components (`structure`, `protvista`, `locuszoom-*`, `genome-browser`), wrapping 3Dmol.js/protvista-uniprot/LocusZoom.js/IGV.js.
 - **`@basemark/common`** — 12 components (`card`, `button`, `tabs`, etc.) — see `packages/common/README.md`.
 - **`@basemark/charts`** — `bar-chart`/`line-chart`/`scatter-chart`/`pie-chart`/`radar-chart`/`funnel-chart`/`gauge-chart` (ECharts), a separate package per ARCH §7's heavy-dependency flag — see `packages/charts/README.md`.
 - **`@basemark/react`** — mounts the hast tree as real React components.
