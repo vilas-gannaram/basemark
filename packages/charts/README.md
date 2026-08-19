@@ -59,3 +59,7 @@ Charts here take inline data only, not a `data.csv`/`data.json` URL fetched clie
 - Multi-series radar charts (overlay several entities on the same axes)
 - Heatmap, treemap, and sankey charts (different data shape than the rest of this list)
 - Smaller bundles — split per chart type instead of pulling in all of ECharts
+
+## A note for whoever builds Mermaid diagrams
+
+Not a chart, and not really this package's concern — parked here for now since this is the one existing example of ARCHITECTURE.md §7's "heavy dependency gets its own package" pattern, and Mermaid doesn't have a home yet. The intended shape: one shared `<mermaid-diagram>` renders raw Mermaid source; guided directives (`::gantt`, `::flowchart`, etc.) just translate their attrs into generated Mermaid source and hand it to that same renderer, rather than each guided directive rendering independently.

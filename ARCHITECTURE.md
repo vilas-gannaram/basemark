@@ -1,10 +1,8 @@
 # Basemark — Architecture & Design Spec
 
-See [README.md](README.md) for a project overview, [AGENTS.md](AGENTS.md) for repo working guidance, [VISION.md](VISION.md) for who consumes this.
+See [README.md](README.md) for a project overview, including who consumes this, and [AGENTS.md](AGENTS.md) for repo working guidance.
 
-## 1. What this is
-
-A Markdown renderer that embeds live, interactive components — protein viewers, molecule viewers, genomic tracks, charts — using a short identifier (accession ID, PDB ID, locus) instead of raw config.
+## 1. Design constraints
 
 Primary users: bioinformatics/cheminformatics authors. Secondary: general Markdown authors wanting MDX-like power with no JS framework. Both human and AI write it, so the syntax must be cheap and hard to get wrong. Community-extendable without forking core.
 
@@ -63,28 +61,16 @@ hast (e.g. tagName: "structure-viewer")
 DOM / static HTML / React tree
 ```
 
-**Data resolution (mimebundles):** for Tier 1/2 components, a resolver fetches a URL and hands the component a `{mimetype: representation}` bundle (Jupyter's pattern) instead of the renderer guessing the format. Components own their own parsing — no universal parsing layer.
-
-```yaml
-:::structure-viewer
-source:
-  application/pdb: "https://files.rcsb.org/download/1CRN.pdb"
-:::
-```
-
-Security: client-side URL fetches are an SSRF risk — route through an allowlist/proxy; embedded data is the zero-trust default. No allowlist/proxy resolver exists yet (§10), so no package should ship a raw client-side `fetch()` of a caller-supplied URL in the meantime — `@basemark/charts` dropped its own hosted-`data`-URL mode for exactly this reason (see its README's "Why no hosted-file mode"). A consumer that wants to plot/render an existing dataset extends the relevant package with their own component instead, fetching however fits their own auth/proxy setup.
-
 ---
 
 ## 5. Component registry & manifest
 
-Every component ships a manifest — name, prop schema, mimetypes, version — validated at parse time, so bad props fail visibly instead of passing through.
+Every component ships a manifest — name, prop schema, version — validated at parse time, so bad props fail visibly instead of passing through.
 
 ```js
 registry.register({
   name: 'structure',
   schema: { pdbId: { type: 'string', required: true } },
-  mimetypes: ['chemical/x-pdb'],
   render: { type: 'webcomponent', tag: 'structure-viewer' },
 });
 
@@ -115,40 +101,22 @@ Natively-registered React/Svelte components can't use slotting — the framework
 ## 7. Package boundaries
 
 ```
-        bio, chem, common  ──┐
-        react, svelte    ────┼──►  core  ◄──── cli
-        (consumer apps)  ────┘
+        bio, chem, common, charts  ──┐
+        react, svelte            ────┼──►  core  ◄──── cli
+        (consumer apps)          ────┘
 ```
 
 Everything depends on core; core depends on nothing framework-specific.
 
-> **Flag:** `registerCommonComponents()` eagerly registers everything in `common`, so a `card`-only consumer still pays for it. Fine for the current shadcn-ui set, but §8's unbuilt heavy components (Mermaid, MapLibre/Leaflet) should each be their own package (`@basemark/diagrams` etc.), not added to `common` — `@basemark/charts` (ECharts) is the first proof of this pattern, split out on exactly this reasoning. KaTeX/citations/JSON-viewers are probably light enough to stay.
+> **Flag:** `registerCommonComponents()` eagerly registers everything in `common`, so a `card`-only consumer still pays for it. Fine for the current shadcn-ui set, but unbuilt heavy components (Mermaid, MapLibre/Leaflet) should each be their own package (`@basemark/diagrams` etc.), not added to `common` — `@basemark/charts` (ECharts) is the first proof of this pattern, split out on exactly this reasoning; see its README for a parked note on how Mermaid would fit it. KaTeX/citations/JSON-viewers are probably light enough to stay in `common`.
 
 - **`@basemark/core`** — parse, transform, registry, data resolver. Pure logic, no DOM. Must stay small and stable.
 - **`@basemark/react` / `@basemark/svelte`** — mount core's hast tree per-framework.
-- **`@basemark/cli`** — build-time tooling: batch rendering, linter, scaffolding, registry validation, single-file shareable HTML (see VISION.md).
+- **`@basemark/cli`** — build-time tooling: batch rendering, linter, scaffolding, registry validation, single-file shareable HTML (see README.md's "Who uses this").
 
 ---
 
-## 8. Component catalog
-
-**Bio/chem — Tier 1:** `::protvista{accession}` (UniProt), `::structure{pdbid}` (Mol*/3Dmol), `::molecule{cid}` (RDKit.js), `::variant{rsid}`, `::pathway{keggId}`, `::gene{ensembl}`, `::citation{doi}`
-
-**Bio/chem — Tier 2:** `::locus{chr start end}` (LocusZoom), `::genome-browser{locus}` (IGV.js), `::interaction-network{gene}`
-
-**Bio/chem — Tier 3:** `::smiles{value="..."}` (RDKit.js), `::fasta{sequence="..."}`, `::newick{tree="..."}`
-
-**General-purpose (`common`):** Mermaid family, KaTeX, sortable tables, maps, citations, JSON/tree viewers, media embeds. Charts are `@basemark/charts` (ECharts), a separate package per §7's flag — not `common`.
-
-**Layout (`common`):** `:::card`, `:::columns`, `:::tabs`/`:::tab-panel` — see §6 and `packages/common/README.md`. All three zero the margin a nested component would otherwise add.
-
-**Mermaid note:** one shared `<mermaid-diagram>` renders raw Mermaid source. Guided directives (`::gantt`, `::flowchart`, etc.) translate attrs → generated Mermaid source → same renderer. Raw ` ```mermaid ` fence is the Tier-4 escape hatch.
-
-Build status (real vs. planned) lives in `packages/bio/README.md` / `packages/common/README.md`, not here.
-
----
-
-## 9. Monorepo structure & tooling
+## 8. Monorepo structure & tooling
 
 Bun workspaces + Turborepo + Changesets.
 - Not pnpm — `packages/cli` ships as a `bun build --compile` binary, so the CLI's runtime and the repo's package manager are the same Bun install.
@@ -162,22 +130,22 @@ basemark/
 ├── experiments/  # POCs, no stability contract (doesn't exist yet)
 ├── configs/      # shared eslint/tsconfig/vitest configs
 ├── turbo.json
-├── package.json  # "workspaces" field defines the globs
-└── .changeset/
+└── package.json  # "workspaces" field defines the globs
 ```
+
+Changesets is the chosen release-flow tool (above), but `.changeset/` isn't set up yet — no release has happened.
 
 `examples/`/`apps/` are `private: true` and unscoped — visibly not published artifacts.
 
 ---
 
-## 10. Open / undecided
+## 9. Open / undecided
 
 - Final project name.
 - Full manifest JSON Schema spec (§5 is conceptual, not field-by-field).
 - SSR fallback for natively-registered (non-web-component) framework components.
 - Which guided Mermaid directives ship at v1 vs. stay raw-fence-only.
 - Which `common` candidates need their own package — see §7's flag.
-- §6's escape hatch has no implementation path yet: `registry.ts` has no `render` field, `parse.ts` always emits `hName: definition.tag`, `@basemark/react` only resolves via `customElements.get`. All three need to change together.
 - Unclosed-container detection (§3) is a heuristic, not a full parse of remark-directive's closing rules. The structural linter is still unbuilt.
-- No convention for which `common` layout/container component to wrap a top-level component in when authoring a doc — `card`, `columns`, `tabs`/`tab-panel`, `accordion`/`accordion-item`, `carousel`, `popover` (§8/`packages/common/README.md`) all overlap in what they can hold, and nothing says which fits which situation. Surfaced because `examples/vanilla/content/bio.md` ended up wrapping some components in `card` and others in `tabs` with no documented reason why — looked like a rule, wasn't one, just an earlier doc's narrative carried forward. Needs an actual decision, not just picking one example and running with it.
-- Who consumes this and how — see [VISION.md](VISION.md).
+- No convention for which `common` layout/container component to wrap a top-level component in when authoring a doc — `card`, `columns`, `tabs`/`tab-panel`, `accordion`/`accordion-item`, `carousel`, `popover` (`packages/common/README.md`) all overlap in what they can hold, and nothing says which fits which situation.
+- Who consumes this and how — see README.md.

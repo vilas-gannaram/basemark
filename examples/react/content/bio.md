@@ -4,7 +4,7 @@ Every `@basemark/bio` directive, in one page. `MarkdownRenderer` from `@basemark
 
 ## Protein sequence & structure
 
-:gene-chip[TCF7L2]{full="Transcription factor 7-like 2" chrom="10"} (also called TCF-4), a Wnt-pathway transcription factor — its full-length domain architecture from UniProt, and the one crystallized structure of it bound to β-catenin. (Click the gene name — it's a real React component with its own state, registered through the native escape hatch, ARCHITECTURE.md §6/§10, not a Web Component.)
+:gene-chip[TCF7L2]{full="Transcription factor 7-like 2" chrom="10"} (also called TCF-4), a Wnt-pathway transcription factor — its full-length domain architecture from UniProt, and the one crystallized structure of it bound to β-catenin. (Click the gene name — it's a real React component with its own state, registered through the native escape hatch, ARCHITECTURE.md §6, not a Web Component.)
 
 ::::tabs
 :::tab-panel{label="Domain architecture (ProtVista)"}

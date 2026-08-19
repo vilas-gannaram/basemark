@@ -4,7 +4,7 @@ import type { Element as HastElement, Root as HastRoot } from 'hast';
 import type { ComponentRegistry } from './registry';
 import { NATIVE_COMPONENT_DATA_ATTR, NATIVE_COMPONENT_TAG, parseMarkdown } from './parse';
 
-// Plain DOM can't upgrade a `type: 'react'` definition (ARCH §6/§10) — swap
+// Plain DOM can't upgrade a `type: 'react'` definition (ARCH §6) — swap
 // it for basemark-error instead of silently rendering nothing.
 function rejectNativeComponents(hast: HastRoot): void {
 	visit(
@@ -17,7 +17,7 @@ function rejectNativeComponents(hast: HastRoot): void {
 			node.properties = {
 				directive: name,
 				message:
-					`Component "${name}" is a native framework component (the §6/§10 escape hatch) and has no plain-DOM ` +
+					`Component "${name}" is a native framework component (the §6 escape hatch) and has no plain-DOM ` +
 					'render path — use a framework binding that supports it (e.g. @basemark/react) instead of renderMarkdown().',
 				source: `::${name}{...}`,
 			};
