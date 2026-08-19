@@ -1,11 +1,11 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createChartElement, defineChart, getLabelValueRows, type ChartRow } from './chart';
+import { createChartElement, defineChart, getLabelValueRows, type IChartRow } from './chart';
 
 export const LINE_CHART_TAG = 'basemark-line-chart';
 
 const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
-function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
+function buildOption(rows: IChartRow[], title: string | null): Record<string, unknown> {
 	return {
 		title: title ? { text: title } : undefined,
 		tooltip: {},

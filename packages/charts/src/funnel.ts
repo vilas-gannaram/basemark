@@ -1,5 +1,5 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createChartElement, defineChart, getLabelValueRows, type ChartRow } from './chart';
+import { createChartElement, defineChart, getLabelValueRows, type IChartRow } from './chart';
 
 export const FUNNEL_CHART_TAG = 'basemark-funnel-chart';
 
@@ -7,7 +7,7 @@ const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
 // `sort: 'none'` — ECharts' default 'descending' would silently reorder a
 // deliberately author-ordered funnel (usually widest-stage-first) by value.
-function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
+function buildOption(rows: IChartRow[], title: string | null): Record<string, unknown> {
 	return {
 		title: title ? { text: title, left: 'center', top: '2%' } : undefined,
 		tooltip: { trigger: 'item' },

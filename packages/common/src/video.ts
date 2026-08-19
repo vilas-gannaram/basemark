@@ -2,14 +2,9 @@ import type { ComponentRegistry } from '@basemark/core';
 
 export const VIDEO_TAG = 'basemark-video';
 
-interface VideoEmbed {
-	provider: 'YouTube' | 'Vimeo';
-	embedUrl: string;
-}
-
 // Tier 0 (ARCH §2) — resolves the provider from a plain page URL. Only the
 // extracted ID (restricted charset) is interpolated, never the raw url.
-function resolveEmbed(url: string): VideoEmbed | null {
+function resolveEmbed(url: string): IVideoEmbed | null {
 	const youtube = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
 	if (youtube) return { provider: 'YouTube', embedUrl: `https://www.youtube.com/embed/${youtube[1]}` };
 
@@ -112,4 +107,9 @@ export function registerVideo(registry: ComponentRegistry): void {
 			},
 		},
 	});
+}
+
+interface IVideoEmbed {
+	provider: 'YouTube' | 'Vimeo';
+	embedUrl: string;
 }

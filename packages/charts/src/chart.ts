@@ -4,25 +4,6 @@ import type { ComponentRegistry } from '@basemark/core';
 // echarts imports cleanly under Bun with no DOM — unlike @basemark/bio, no
 // dynamic import needed, only the module-scope class guard (AGENTS.md).
 
-// Normalizes inline comma-separated attrs (Tier 3, ARCH §2) to this shape.
-// Deliberately no hosted-`data`-URL mode — see this package's README's "Why no hosted-file mode".
-export interface ChartRow {
-	x: string;
-	y: string;
-}
-
-export interface ChartElementConfig<A extends string> {
-	// Every attr this chart type reads (besides `title`, handled separately).
-	observedAttrs: readonly A[];
-	// Resolves this document's actual data from its inline attrs. Throws
-	// (with a message meant for the rendered error, not just a console log)
-	// if the required attrs weren't given.
-	getRows: (attrs: Partial<Record<A, string>>) => ChartRow[];
-	// Plain object, not ECharts' EChartsOption — avoids fighting its full
-	// surface. `attrs` param is mainly for gauge.ts (no tabular rows at all).
-	buildOption: (rows: ChartRow[], title: string | null, attrs: Partial<Record<A, string>>) => Record<string, unknown>;
-}
-
 // Splits two parallel comma-separated lists into rows. Mismatched lengths
 // aren't an error — trailing entries on the longer list are silently dropped.
 export function splitInlineLists(a: string, b: string): [string[], string[]] {
@@ -30,7 +11,7 @@ export function splitInlineLists(a: string, b: string): [string[], string[]] {
 }
 
 // Shared by bar/line/pie/radar/funnel. scatter.ts doesn't use this — both its axes are numeric, no "label" concept.
-export function getLabelValueRows(chartName: string, attrs: { labels?: string; values?: string }): ChartRow[] {
+export function getLabelValueRows(chartName: string, attrs: { labels?: string; values?: string }): IChartRow[] {
 	if (attrs.labels && attrs.values) {
 		const [labels, values] = splitInlineLists(attrs.labels, attrs.values);
 		return labels.map((x, i) => ({ x, y: values[i] ?? '' }));
@@ -85,7 +66,7 @@ const HOST_STYLE = `
 
 // Owns the shadow root, echarts instance, and resize handling — each chart
 // type just resolves rows and builds an option. Mirrors bio's createLocusZoomElement.
-export function createChartElement<A extends string>(config: ChartElementConfig<A>): CustomElementConstructor {
+export function createChartElement<A extends string>(config: IChartElementConfig<A>): CustomElementConstructor {
 	return class extends HTMLElement {
 		private chart?: echarts.ECharts;
 		private resizeObserver?: ResizeObserver;
@@ -132,7 +113,7 @@ export function createChartElement<A extends string>(config: ChartElementConfig<
 			root.innerHTML = `<style>${HOST_STYLE}</style><div class="chart"></div>`;
 			const container = root.querySelector('.chart') as HTMLElement;
 
-			let rows: ChartRow[];
+			let rows: IChartRow[];
 			try {
 				rows = await config.getRows(attrs);
 			} catch (error) {
@@ -176,3 +157,22 @@ export function defineChart(tag: string, buildElementClass: () => CustomElementC
 }
 
 export type { ComponentRegistry };
+
+// Normalizes inline comma-separated attrs (Tier 3, ARCH §2) to this shape.
+// Deliberately no hosted-`data`-URL mode — see this package's README's "Why no hosted-file mode".
+export interface IChartRow {
+	x: string;
+	y: string;
+}
+
+export interface IChartElementConfig<A extends string> {
+	// Every attr this chart type reads (besides `title`, handled separately).
+	observedAttrs: readonly A[];
+	// Resolves this document's actual data from its inline attrs. Throws
+	// (with a message meant for the rendered error, not just a console log)
+	// if the required attrs weren't given.
+	getRows: (attrs: Partial<Record<A, string>>) => IChartRow[];
+	// Plain object, not ECharts' EChartsOption — avoids fighting its full
+	// surface. `attrs` param is mainly for gauge.ts (no tabular rows at all).
+	buildOption: (rows: IChartRow[], title: string | null, attrs: Partial<Record<A, string>>) => Record<string, unknown>;
+}

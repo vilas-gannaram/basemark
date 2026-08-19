@@ -1,5 +1,5 @@
 import type { ComponentRegistry } from '@basemark/core';
-import { createLocusZoomElement, LOCUSZOOM_API_BASE, type LocusZoomStatic } from './shared';
+import { createLocusZoomElement, LOCUSZOOM_API_BASE, type TLocusZoomStatic } from './shared';
 
 export const LOCUSZOOM_MULTI_PHENO_TAG = 'basemark-locuszoom-multi-pheno';
 
@@ -16,7 +16,7 @@ const PHENOTYPES = [
 
 // Take `LocusZoom` as a parameter, not a module-scope import (see shared.ts)
 // — safe as plain functions since neither runs until render() calls them.
-function buildDataSources(LocusZoom: LocusZoomStatic) {
+function buildDataSources(LocusZoom: TLocusZoomStatic) {
 	const sources = new LocusZoom.DataSources()
 		.add('recomb', ['RecombLZ', { url: `${LOCUSZOOM_API_BASE}annotation/recomb/results/`, build: 'GRCh37' }])
 		.add('gene', ['GeneLZ', { url: `${LOCUSZOOM_API_BASE}annotation/genes/`, build: 'GRCh37' }])
@@ -27,7 +27,7 @@ function buildDataSources(LocusZoom: LocusZoomStatic) {
 	return sources;
 }
 
-function buildLayout(LocusZoom: LocusZoomStatic, attrs: Record<(typeof OBSERVED_ATTRS)[number], string>): Record<string, unknown> {
+function buildLayout(LocusZoom: TLocusZoomStatic, attrs: Record<(typeof OBSERVED_ATTRS)[number], string>): Record<string, unknown> {
 	const associationPanel = LocusZoom.Layouts.get('panel', 'association', {
 		data_layers: [
 			LocusZoom.Layouts.get('data_layer', 'significance', { name: 'Line of GWAS Significance' }),

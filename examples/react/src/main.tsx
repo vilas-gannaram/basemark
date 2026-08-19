@@ -46,13 +46,7 @@ registry.register('gene-chip', {
 	},
 });
 
-interface Page {
-	slug: string;
-	label: string;
-	source: string;
-}
-
-const PAGES: Page[] = [
+const PAGES: IPage[] = [
 	{ slug: 'bio', label: 'Bio', source: bio },
 	{ slug: 'common', label: 'Common', source: common },
 	{ slug: 'charts', label: 'Charts', source: charts },
@@ -75,7 +69,7 @@ function App() {
 		return () => window.removeEventListener('hashchange', onHashChange);
 	}, []);
 
-	const page = PAGES.find((candidate) => candidate.slug === slug) as Page;
+	const page = PAGES.find((candidate) => candidate.slug === slug) as IPage;
 
 	return (
 		<>
@@ -97,3 +91,9 @@ const root = document.getElementById('root');
 if (!root) throw new Error('#root element not found');
 
 createRoot(root).render(<App />);
+
+interface IPage {
+	slug: string;
+	label: string;
+	source: string;
+}

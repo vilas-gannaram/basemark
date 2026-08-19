@@ -19,13 +19,7 @@ await registerBioComponents(registry);
 registerCommonComponents(registry);
 registerChartsComponents(registry);
 
-interface Page {
-	slug: string;
-	label: string;
-	source: string;
-}
-
-const PAGES: Page[] = [
+const PAGES: IPage[] = [
 	{ slug: 'bio', label: 'Bio', source: bio },
 	{ slug: 'common', label: 'Common', source: common },
 	{ slug: 'charts', label: 'Charts', source: charts },
@@ -64,10 +58,16 @@ function renderNav(navEl: HTMLElement, slug: string): void {
 
 function renderPage(): void {
 	const slug = activeSlug();
-	const page = PAGES.find((candidate) => candidate.slug === slug) as Page;
+	const page = PAGES.find((candidate) => candidate.slug === slug) as IPage;
 	renderNav(nav, slug);
 	root.replaceChildren(renderMarkdown(page.source, registry));
 }
 
 window.addEventListener('hashchange', renderPage);
 renderPage();
+
+interface IPage {
+	slug: string;
+	label: string;
+	source: string;
+}

@@ -9,7 +9,7 @@ import { VFile } from 'vfile';
 import type { Root as MdastRoot } from 'mdast';
 import type { Directives } from 'mdast-util-directive';
 import type { Root as HastRoot } from 'hast';
-import type { ComponentRegistry, PropSchema } from './registry';
+import type { ComponentRegistry, IPropSchema } from './registry';
 import { validateProps } from './registry';
 import { registerErrorComponent } from './error-element';
 
@@ -31,7 +31,7 @@ function isUnclosedContainer(raw: string): boolean {
 	return !CLOSING_FENCE_LINE.test(lastLine);
 }
 
-function coerceValue(raw: string, type: PropSchema['type'] | undefined): string | number | boolean {
+function coerceValue(raw: string, type: IPropSchema['type'] | undefined): string | number | boolean {
 	if (type === 'number') {
 		const asNumber = Number(raw);
 		return Number.isNaN(asNumber) ? raw : asNumber;
