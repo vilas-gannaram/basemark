@@ -6,21 +6,12 @@ import { registerIntervals } from './intervals';
 import { registerMultiPheno } from './multi-pheno';
 import { registerPhewas } from './phewas';
 
-// registerTabix (./tabix.ts) is intentionally not called here: it's blocked
-// by real bugs in `tabix-reader`'s vendored jszlib, which only surface under
-// ESM's strict mode (silently masked in old-style script/CJS usage) —
-// `nowrap = 0` instead of `this.nowrap = 0` in Inflate.inflateInit, and
-// `z._adler` read but never assigned in InfBlocks.reset. The component
-// itself is complete and verified against examples/ext/tabix_tracks.html;
-// call registerTabix(registry) directly if you want it despite the crash.
+// Not called below — blocked by real bugs in tabix-reader's vendored jszlib
+// under ESM strict mode. Complete and verified otherwise; call registerTabix(registry) directly if you want it.
 export { registerTabix } from './tabix';
 
-// async — each of these is now async itself (see shared.ts's
-// createLocusZoomElement comment: 'locuszoom' can't be a top-level import
-// outside a browser, so building each element is deferred to a dynamic
-// import). Run in parallel, not sequentially, since none depend on another's
-// result — each just needs its own dynamic import of the same underlying
-// 'locuszoom' module (which the runtime module cache dedupes for free).
+// Parallel, not sequential — each just needs its own dynamic import of
+// 'locuszoom' (module cache dedupes it for free). See shared.ts.
 export async function registerLocusZoomComponents(registry: ComponentRegistry): Promise<void> {
 	await Promise.all([
 		registerAssoc(registry),

@@ -10,11 +10,7 @@ declare module 'locuszoom' {
 	}
 
 	interface Plot {
-		// Re-measures the plot's container and resizes the SVG to fit — see
-		// esm/components/plot.js. populate() itself never calls this with an
-		// actual measured width (see shared.ts), so callers that mount into a
-		// container narrower than the layout's configured `width` must call
-		// this explicitly once the container has its real size.
+		// Resizes the SVG to fit its container — populate() never calls this itself (see shared.ts).
 		rescaleSVG(): void;
 	}
 

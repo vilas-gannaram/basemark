@@ -12,10 +12,8 @@ function describeProp(name: string, schema: PropSchema): string {
 	return schema.description ? `  - ${summary}: ${schema.description}` : `  - ${summary}`;
 }
 
-// Full title + description + prop schema for one component. Call this only
-// for the component(s) an author has actually picked, after reading the
-// index from generateSystemPrompt() — keeps per-request cost proportional
-// to what's used, not to how many components are registered.
+// Full detail for one component, called only after generateSystemPrompt()'s
+// index picks it — keeps per-request cost proportional to what's used.
 export function describeComponent(registry: ComponentRegistry, name: string): string {
 	const definition = registry.resolve(name);
 	if (!definition) throw new Error(`Component "${name}" is not registered.`);
@@ -33,11 +31,8 @@ function indexLine(name: string, definition: ComponentDefinition): string {
 	return `::${name} — ${definition.title}`;
 }
 
-// Per ARCHITECTURE.md §5: derive the AI-facing prompt from the registry
-// itself rather than hand-maintained docs. This is deliberately an index
-// (name + title per component), not full descriptions for everything —
-// pass `domain` to scope it to one pack, and call describeComponent() to
-// fetch detail for whichever component gets picked.
+// Derives the AI-facing prompt from the registry itself, not hand-maintained
+// docs (ARCH §5). An index only — call describeComponent() for detail.
 export function generateSystemPrompt(registry: ComponentRegistry, options?: SystemPromptOptions): string {
 	const components = registry.list().filter(([, definition]) => !options?.domain || definition.domain === options.domain);
 	if (components.length === 0) return 'No components are registered.';

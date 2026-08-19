@@ -4,11 +4,8 @@ export const POPOVER_TAG = 'basemark-popover';
 
 const SIDES = ['top', 'bottom', 'left', 'right'] as const;
 
-// Container directive, not text — unlike button/badge's single-word inline
-// label, a popover's body is markdown content (possibly multi-paragraph,
-// possibly nested components), same reasoning as card/alert. The trigger
-// text is a plain attr (`trigger="..."`) since it's just a short label, not
-// content that needs markdown itself.
+// Container, not text — body is markdown content, same reasoning as
+// card/alert. `trigger` stays a plain attr since it's just a short label.
 const STYLES = `
 	:host {
 		display: inline-block;
@@ -29,13 +26,9 @@ const STYLES = `
 		outline-offset: 2px;
 	}
 	.panel {
-		/* position: fixed, not absolute — an absolutely-positioned panel's
-		   containing block is this :host, which can sit inside an ancestor
-		   with overflow: hidden (e.g. accordion.ts's collapsing .body) that
-		   then clips it. fixed escapes that: it's positioned in viewport
-		   coordinates (computed in JS, see positionPanel()) and isn't clipped
-		   by a plain overflow: hidden ancestor, only by one that itself sets
-		   transform/filter/contain — none of these components do. */
+		/* fixed, not absolute — absolute's containing block (:host) can sit
+		   inside an overflow: hidden ancestor (e.g. accordion's .body) that
+		   clips it; fixed uses viewport coords instead (see positionPanel()). */
 		position: fixed;
 		z-index: 50;
 		width: max-content;
@@ -57,11 +50,7 @@ const STYLES = `
 `;
 
 export function registerPopover(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so
-	// registerPopover() stays importable from a DOM-less consumer (e.g.
-	// @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		class PopoverElement extends HTMLElement {
 			static get observedAttributes(): string[] {
@@ -69,10 +58,7 @@ export function registerPopover(registry: ComponentRegistry): void {
 			}
 
 			private open = false;
-			// Bound once in the constructor (not per-render) so addEventListener/
-			// removeEventListener in connectedCallback/disconnectedCallback target
-			// the same function reference — an inline arrow re-created each render
-			// would never actually be removable.
+			// Bound once, not per-render — so add/removeEventListener target the same reference.
 			private readonly onDocumentPointerDown = (event: PointerEvent): void => {
 				if (!this.open) return;
 				if (event.composedPath().includes(this)) return;
@@ -81,10 +67,7 @@ export function registerPopover(registry: ComponentRegistry): void {
 			private readonly onDocumentKeydown = (event: KeyboardEvent): void => {
 				if (event.key === 'Escape') this.close();
 			};
-			// Only actually reposition while open (position: fixed needs manual
-			// tracking, since it doesn't get clipped/scrolled-with by an ancestor the
-			// way position: absolute would) — cheap no-op check otherwise, same
-			// always-listening pattern as onDocumentPointerDown above.
+			// position: fixed needs manual repositioning on scroll/resize — no-op while closed.
 			private readonly onReposition = (): void => {
 				if (this.open) this.positionPanel();
 			};
@@ -98,9 +81,7 @@ export function registerPopover(registry: ComponentRegistry): void {
 				this.render();
 				document.addEventListener('pointerdown', this.onDocumentPointerDown);
 				document.addEventListener('keydown', this.onDocumentKeydown);
-				// capture: true so this also catches scrolling inside any nested
-				// scroll container between here and the window, not just window-level
-				// scroll — scroll events don't bubble, but do fire during capture.
+				// capture: true so this also catches scroll inside nested containers — scroll doesn't bubble.
 				window.addEventListener('scroll', this.onReposition, { capture: true, passive: true });
 				window.addEventListener('resize', this.onReposition);
 			}
@@ -127,9 +108,7 @@ export function registerPopover(registry: ComponentRegistry): void {
 				return SIDES.includes(side as (typeof SIDES)[number]) ? (side as (typeof SIDES)[number]) : 'bottom';
 			}
 
-			// position: fixed panel, positioned from the trigger's *viewport*
-			// coordinates (not relative to :host) — see the .panel comment in STYLES
-			// for why fixed is used instead of absolute in the first place.
+			// Positioned from the trigger's viewport coordinates, not :host — see the .panel comment in STYLES.
 			private positionPanel(): void {
 				const root = this.shadowRoot as ShadowRoot;
 				const trigger = root.querySelector('.trigger') as HTMLElement;

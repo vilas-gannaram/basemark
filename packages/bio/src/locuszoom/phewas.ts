@@ -15,17 +15,11 @@ function parseVariant(variant: string): { chrom: string; position: number } {
 	return { chrom: match[1], position: Number(match[2]) };
 }
 
-// registerPhewas is async — see shared.ts's createLocusZoomElement comment.
-// The element itself is built here, inside the guarded function, rather than
-// at module scope (as it used to be): its buildDataSources/buildLayout need a
-// real `LocusZoom` value, which only exists after createLocusZoomElement's
-// own dynamic import resolves.
+// async — see shared.ts's createLocusZoomElement. Built inside the guarded
+// function since buildDataSources/buildLayout need a real `LocusZoom` value.
 export async function registerPhewas(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// Verified against locuszoom@0.14.0's examples/phewas_scatter.html:
-		// centered on a single variant (not a region), with a fixed +/-250kb
-		// window — narrower scope than locuszoom-assoc/gwas-catalog, which take
-		// an explicit region.
+		// Verified against locuszoom@0.14.0's examples/phewas_scatter.html — centered on one variant, not a region.
 		const PhewasElement = await createLocusZoomElement({
 			observedAttrs: OBSERVED_ATTRS,
 			buildDataSources: (LocusZoom) =>

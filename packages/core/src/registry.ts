@@ -27,14 +27,8 @@ export interface WebComponentDefinition extends ComponentDefinitionBase {
 	tag: string;
 }
 
-// The §6/§10 escape hatch: an app-local, non-portable component rendered
-// natively by one specific framework binding, not a Web Component. Never for
-// domain packs (bio/chem/common) — those must stay Web Components so they
-// work everywhere; this is for e.g. an app that already has React state/
-// context it wants a directive to plug straight into, with no customElements
-// indirection. `component` is left untyped here so @basemark/core carries no
-// framework dependency — the consuming framework binding casts it back (see
-// @basemark/react's renderNode).
+// The §6/§10 escape hatch: app-local only, never for domain packs. `component`
+// is untyped so core stays framework-free — the binding casts it back.
 export interface NativeComponentDefinition extends ComponentDefinitionBase {
 	type: 'react';
 	component: unknown;

@@ -4,10 +4,8 @@ export const ALERT_TAG = 'basemark-alert';
 
 const VARIANTS = ['default', 'destructive'] as const;
 
-// Container directive, not leaf — an alert's body is prose (possibly
-// multi-paragraph, possibly with nested inline directives), same reasoning
-// as card.ts. Structurally near-identical to card; the difference is
-// variant-driven coloring instead of neutral chrome.
+// Container, not leaf — body is prose, same reasoning as card.ts. Near-
+// identical structurally; the difference is variant-driven coloring.
 const STYLES = `
 	:host {
 		display: block;
@@ -40,10 +38,7 @@ const STYLES = `
 `;
 
 export function registerAlert(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so registerAlert()
-	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		class AlertElement extends HTMLElement {
 			static get observedAttributes(): string[] {

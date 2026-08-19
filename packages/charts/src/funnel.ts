@@ -5,10 +5,8 @@ export const FUNNEL_CHART_TAG = 'basemark-funnel-chart';
 
 const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
-// Author supplies stages in whatever order makes sense to them (usually
-// widest-first, e.g. "Visitors,Signups,Paying") — ECharts' own default
-// `sort: 'descending'` would silently reorder that by value, which fights a
-// deliberately-ordered funnel. `sort: 'none'` keeps the author's own order.
+// `sort: 'none'` — ECharts' default 'descending' would silently reorder a
+// deliberately author-ordered funnel (usually widest-stage-first) by value.
 function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
 	return {
 		title: title ? { text: title, left: 'center', top: '2%' } : undefined,

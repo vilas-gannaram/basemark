@@ -1,21 +1,13 @@
-// './3dmol' is an ambient .d.ts (declare module '3dmol/build/3Dmol.es6.js'
-// — see that file). This side-effect import is required, not just belt-and-
-// suspenders: a downstream consumer with its own separate `tsc` run (e.g.
-// examples/vanilla, whose tsconfig only globs its own "src") never discovers
-// an ambient declaration file that nothing actually imports — only this
-// package's own tsconfig happens to glob-include it directly.
+// Side-effect import required — a downstream consumer's own tsc run never
+// discovers './3dmol''s ambient .d.ts otherwise (only this package's tsconfig globs it).
 import './3dmol';
 import type { ComponentRegistry } from '@basemark/core';
 
 export const STRUCTURE_TAG = 'basemark-structure';
 const STRUCTURE_HEIGHT_PX = 620;
 
-// :host styling is scoped to this element's own shadow root — it can't leak
-// onto the host page, and the host page's own CSS (resets, MUI/AntD
-// baselines, etc.) can't reach in and distort it. Theme values (--border,
-// --radius, --card) still arrive via inheritance: CSS custom properties
-// cross shadow boundaries even though ordinary rules don't (see @basemark/core's
-// theme.css).
+// :host styling is scoped to this shadow root, can't leak or be reached into.
+// Theme tokens still arrive via inheritance — see @basemark/core's theme.css.
 const STYLES = `
 	:host {
 		display: block;
@@ -37,20 +29,9 @@ const STYLES = `
 	}
 `;
 
-// 3Dmol.js instead of pdbe-molstar (used earlier): pdbe-molstar ships a full
-// Mol* application — toolbar, Structure Tools panel, Quick Styles, save
-// PNG/SVG — when the goal here is just rendering the structure, not
-// providing a tool. 3Dmol.js's core build (not the `.ui` variant) is a bare
-// WebGL renderer with no chrome, and its own `download('pdb:{id}', ...)`
-// helper fetches straight from RCSB (with a bcif→pdb fallback built in), so
-// this stays Tier 1 — no fetch/parse logic needed on our side.
-// registerStructure is async, unlike @basemark/common's register* functions
-// — 3Dmol.js (imported below) touches `window` at its own module scope, same
-// problem AGENTS.md's guard note covers for a class declared directly here,
-// so it can't be a plain top-level import either. Deferred to a dynamic
-// import, awaited before StructureElement is declared (its render() closes
-// over createViewer/download) and before customElements.define() — both
-// DOM-only operations, gated by the same guard as the class itself.
+// 3Dmol.js's core build (not `.ui`), not pdbe-molstar — a bare WebGL
+// renderer with no chrome, since the goal is rendering, not a full tool.
+// async — 3Dmol.js touches `window` at module scope, so the import is deferred and awaited first.
 export async function registerStructure(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		const { createViewer, download } = await import('3dmol/build/3Dmol.es6.js');

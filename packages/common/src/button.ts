@@ -5,11 +5,8 @@ export const BUTTON_TAG = 'basemark-button';
 const VARIANTS = ['default', 'secondary', 'destructive', 'outline', 'ghost', 'link'] as const;
 const SIZES = ['default', 'sm', 'lg', 'icon'] as const;
 
-// inline-flex (not block, unlike card/columns/tabs) since a button is meant
-// to sit inside a sentence via the text-directive form (:button[Label]{...}),
-// same shape as shadcn's own Button. --ring reuses the same focus token every
-// other interactive common component (input) uses, so keyboard focus reads
-// consistently across the package.
+// inline-flex, not block — a button sits inside a sentence via the text-
+// directive form (:button[Label]{...}), same shape as shadcn's Button.
 const STYLES = `
 	:host {
 		display: inline-flex;
@@ -53,16 +50,10 @@ const STYLES = `
 `;
 
 export function registerButton(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so registerButton()
-	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// A single custom element renders as either <a> or <button> depending
-		// on whether `href` is set — mirrors shadcn's Button-as-Link pattern
-		// (asChild + next/link) without needing a separate directive for
-		// link-styled CTAs, the most common use of Button inside a rendered
-		// content document.
+		// Renders as <a> or <button> depending on `href` — mirrors shadcn's
+		// Button-as-Link pattern without a separate link-CTA directive.
 		class ButtonElement extends HTMLElement {
 			static get observedAttributes(): string[] {
 				return ['variant', 'size', 'href', 'disabled'];
@@ -93,11 +84,8 @@ export function registerButton(registry: ComponentRegistry): void {
 				const disabled = this.hasAttribute('disabled');
 				const asLink = Boolean(href) && !disabled;
 
-				// Built via DOM APIs, not string interpolation, for the one part of
-				// this that's untrusted author input: `href` could otherwise break out
-				// of its attribute (e.g. `" onclick="..."`) if concatenated into
-				// innerHTML the way class/tag-name are above (both are internally
-				// controlled, not author-supplied strings).
+				// Built via DOM APIs, not innerHTML — `href` is untrusted author
+				// input and could break out of an interpolated attribute.
 				root.innerHTML = `<style>${STYLES}</style>`;
 				const el = document.createElement(asLink ? 'a' : 'button');
 				el.className = `btn variant-${variant} size-${size}`;

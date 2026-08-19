@@ -5,19 +5,12 @@ export const LOCUSZOOM_ASSOC_TAG = 'basemark-locuszoom-assoc';
 
 const OBSERVED_ATTRS = ['chrom', 'start', 'end'] as const;
 
-// registerAssoc is async — see shared.ts's createLocusZoomElement comment.
-// The element itself is built here, inside the guarded function, rather than
-// at module scope (as it used to be): its buildDataSources/buildLayout
-// closures need a real `LocusZoom` value, which only exists after
-// createLocusZoomElement's own dynamic import resolves.
+// async — see shared.ts's createLocusZoomElement. Built inside the guarded
+// function since buildDataSources/buildLayout need a real `LocusZoom` value.
 export async function registerAssoc(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		// Mirrors the data sources used by LocusZoom's own standard association
-		// demo (region 10:114550452-115067678, T2D GWAS meta-analysis, source id
-		// 45) — verified against locuszoom@0.14.0's `index.html`. This is the
-		// whole point of the Tier-2 design: the layout and sources are fixed
-		// inside the component, and the directive only ever exposes
-		// chrom/start/end.
+		// Mirrors LocusZoom's own standard association demo (verified against
+		// locuszoom@0.14.0). Tier-2: sources/layout are fixed, only chrom/start/end are exposed.
 		const AssocElement = await createLocusZoomElement({
 			observedAttrs: OBSERVED_ATTRS,
 			buildDataSources: (LocusZoom) =>

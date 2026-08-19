@@ -4,10 +4,7 @@ export const SEPARATOR_TAG = 'basemark-separator';
 
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
-// Leaf directive — a plain divider line, no content. Purely a --border
-// token consumer; exists as a themeable alternative to a raw markdown `---`
-// thematic break for authors who want it to read as UI chrome rather than a
-// prose section break.
+// Leaf, no content — a themeable alternative to markdown `---` for authors who want UI chrome, not a prose break.
 const STYLES = `
 	:host {
 		display: block;
@@ -31,11 +28,7 @@ const STYLES = `
 `;
 
 export function registerSeparator(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so
-	// registerSeparator() stays importable from a DOM-less consumer (e.g.
-	// @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		class SeparatorElement extends HTMLElement {
 			static get observedAttributes(): string[] {

@@ -8,12 +8,8 @@ interface AudioEmbed {
 	height: number;
 }
 
-// Tier 0, same reasoning as video.ts. Spotify needs a (type, id) pair pulled
-// out of the URL to build its /embed/ path; SoundCloud's player accepts any
-// original track/playlist/set URL directly via a `url` query param, no ID
-// extraction needed — so that branch passes the url straight through
-// (encoded), rather than parsing it apart like the other three providers
-// across this file and video.ts do.
+// Tier 0, same reasoning as video.ts. Spotify needs a (type, id) pair for its
+// /embed/ path; SoundCloud's player takes the original URL directly.
 function resolveEmbed(url: string): AudioEmbed | null {
 	const spotify = url.match(/open\.spotify\.com\/(track|album|playlist|episode|show)\/(\w+)/);
 	if (spotify) {
@@ -21,11 +17,8 @@ function resolveEmbed(url: string): AudioEmbed | null {
 	}
 
 	if (/^https:\/\/(www\.)?soundcloud\.com\//.test(url)) {
-		// Passing the whole url through this player, not extracting an ID —
-		// this is the one provider (here or in video.ts) that works this way.
-		// SoundCloud's own theming params take a raw hex color, which would
-		// need converting theme.css's OKLCH tokens at runtime to use — left
-		// as the provider's own default look rather than doing that.
+		// Whole URL passed through, not an extracted ID — the one provider that
+		// works this way. Default player look, not theme.css-matched colors.
 		return { provider: 'SoundCloud', embedUrl: `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`, height: 166 };
 	}
 
@@ -61,10 +54,7 @@ const STYLES = `
 `;
 
 export function registerAudio(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so registerAudio()
-	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		class AudioElement extends HTMLElement {
 			static get observedAttributes(): string[] {

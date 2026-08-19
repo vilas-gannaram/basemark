@@ -29,10 +29,7 @@ const STYLES = `
 `;
 
 export function registerBadge(registry: ComponentRegistry): void {
-	// Guarded and declared inside the function, not at module scope — see
-	// @basemark/core's error-element.ts and AGENTS.md's "custom element class
-	// must never be declared at module scope" note. Needed so registerBadge()
-	// stays importable from a DOM-less consumer (e.g. @basemark/cli under Bun).
+	// See AGENTS.md's "never declare a custom element class at module scope" — this guard is why.
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		class BadgeElement extends HTMLElement {
 			static get observedAttributes(): string[] {

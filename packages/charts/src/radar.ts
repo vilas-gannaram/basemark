@@ -5,11 +5,8 @@ export const RADAR_CHART_TAG = 'basemark-radar-chart';
 
 const OBSERVED_ATTRS = ['labels', 'values'] as const;
 
-// Single series only, v1 — comparing several dimensions for ONE entity
-// (e.g. one product's scores across 5 criteria), not multiple entities
-// overlaid on the same axes. Each axis's max is the largest value present
-// times 1.2 headroom, not a fixed 100 — these are arbitrary units (skill
-// scores, ratings), not always percentages.
+// Single series only, v1 — one entity across several dimensions, not
+// multiple overlaid. Axis max is the largest value * 1.2, not a fixed 100 (units are arbitrary, not always %).
 function buildOption(rows: ChartRow[], title: string | null): Record<string, unknown> {
 	const values = rows.map((row) => Number(row.y));
 	const max = Math.max(...values, 1) * 1.2;
