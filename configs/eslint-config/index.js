@@ -14,6 +14,10 @@ export default tseslint.config(
 	// with Prettier, which owns formatting (see root .prettierrc.json).
 	eslintConfigPrettier,
 	{
-		ignores: ['**/dist/**', '**/.next/**', '**/node_modules/**'],
+		// packages/cli/src/generated is gitignored (pre-built runtime bundles,
+		// see packages/cli/scripts/bundle-runtime.ts) but not eslint-ignored —
+		// postinstall regenerates it, and eslint then lints the minified output
+		// as source, throwing thousands of browser-global no-undef errors.
+		ignores: ['**/dist/**', '**/.next/**', '**/node_modules/**', '**/generated/**'],
 	},
 );
