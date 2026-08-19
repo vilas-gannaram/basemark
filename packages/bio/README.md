@@ -18,7 +18,7 @@ The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr star
 
 - [x] `::protvista{accession="..."}` — UniProt sequence/domain/feature tracks (ProtVista/UniProt)
 - [x] `::structure{pdbid="..."}` — 3D protein structure (3Dmol.js)
-- [ ] `::variant{rsid="..."}` — ClinVar/dbSNP variant card
+- [x] `::variant{rsid="..." title="..."}` — ClinVar/dbSNP variant card (gene, position, allele, clinical significance, associated conditions, CADD score), fetched from MyVariant.info's own REST API. `dbsnp` only carries hg19 coordinates; hg38 position is only shown when a ClinVar record supplies it
 - [ ] `::gene{ensembl="..."}` — Ensembl gene track
 - [x] `::pathway{keggid="..." title="..."}` — KEGG pathway diagram, rendered as a static image from KEGG's own REST API (`rest.kegg.jp`) — not the interactive KGML map, which is server-rendered HTML with its own JS (Reactome is the alternative source, not used here)
 

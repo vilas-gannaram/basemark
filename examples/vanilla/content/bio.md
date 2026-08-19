@@ -20,6 +20,24 @@ PDB entry 1JPW: the crystal structure of a fragment of TCF7L2 in complex with β
 :::
 ::::
 
+## Variant cards (ClinVar/dbSNP)
+
+Three variants, fetched live from MyVariant.info by rsID — one per ClinVar significance category, so the color coding actually shows something. First is the variant the locus-wide plots below are all about.
+
+::::columns{cols="2"}
+:::card{title="rs7903146 — ::variant"}
+::variant{rsid="rs7903146" title="TCF7L2 (risk allele)"}
+:::
+
+:::card{title="rs28897696 — ::variant"}
+::variant{rsid="rs28897696" title="BRCA1 (pathogenic)"}
+:::
+
+:::card{title="rs2032582 — ::variant"}
+::variant{rsid="rs2032582" title="ABCB1 (benign)"}
+:::
+::::
+
 ## Genomic-locus plots (LocusZoom)
 
 All six center on the same locus — *TCF7L2*, `chr10:114,550,452-115,067,678` — the single most replicated genetic association in type 2 diabetes, led by intronic variant **rs7903146**.

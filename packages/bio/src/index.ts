@@ -7,6 +7,7 @@ import { registerFasta } from './fasta';
 import { registerNewick } from './newick';
 import { registerPathway } from './pathway';
 import { registerInteractionNetwork } from './interaction-network';
+import { registerVariant } from './variant';
 
 export * from './locuszoom';
 export * from './protvista';
@@ -16,6 +17,7 @@ export * from './fasta';
 export * from './newick';
 export * from './pathway';
 export * from './interaction-network';
+export * from './variant';
 
 // Run in parallel — each's vendor-library dynamic import is independent.
 export async function registerBioComponents(registry: ComponentRegistry): Promise<void> {
@@ -28,5 +30,6 @@ export async function registerBioComponents(registry: ComponentRegistry): Promis
 		registerNewick(registry),
 		registerPathway(registry),
 		registerInteractionNetwork(registry),
+		registerVariant(registry),
 	]);
 }
