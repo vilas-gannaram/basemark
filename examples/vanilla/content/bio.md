@@ -72,6 +72,14 @@ A scrollable/zoomable view of raw genomic coordinates — distinct from the asso
 ::genome-browser{locus="chr1:1000000-1050000" genome="hg19"}
 :::
 
+## Pathway diagram (KEGG)
+
+TCF7L2 sits in the Wnt signaling pathway — the map below is the reference (species-agnostic) diagram for it.
+
+:::card{title="Wnt signaling pathway — ::pathway"}
+::pathway{keggid="map04310" title="Wnt signaling pathway (reference)"}
+:::
+
 ## Inline sequence & tree (Tier 3 — no fetch)
 
 Short content the author supplies directly, parsed and rendered with no accession lookup. Directives, not fences — see AGENTS.md.

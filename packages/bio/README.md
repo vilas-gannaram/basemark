@@ -20,7 +20,7 @@ The original plan had one Tier-2 idea for genomic-locus plots: `::locus{chr star
 - [x] `::structure{pdbid="..."}` — 3D protein structure (3Dmol.js)
 - [ ] `::variant{rsid="..."}` — ClinVar/dbSNP variant card
 - [ ] `::gene{ensembl="..."}` — Ensembl gene track
-- [ ] `::pathway{keggId="..."}` — KEGG pathway diagram (Reactome is the alternative source)
+- [x] `::pathway{keggid="..." title="..."}` — KEGG pathway diagram, rendered as a static image from KEGG's own REST API (`rest.kegg.jp`) — not the interactive KGML map, which is server-rendered HTML with its own JS (Reactome is the alternative source, not used here)
 
 ## Tier 2 — composite key
 
