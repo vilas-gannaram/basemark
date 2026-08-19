@@ -1,0 +1,44 @@
+---
+import type { ComponentDefinition } from '@basemark/core';
+
+interface Props {
+	name: string;
+	definition: ComponentDefinition;
+}
+
+const { name, definition } = Astro.props;
+const props = definition.schema ? Object.entries(definition.schema) : [];
+---
+
+<section class="component-ref">
+	<h2>
+		{definition.title} <code>::{name}</code>
+	</h2>
+	<p>{definition.description}</p>
+	{
+		props.length > 0 && (
+			<table>
+				<thead>
+					<tr>
+						<th>Prop</th>
+						<th>Type</th>
+						<th>Required</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					{props.map(([propName, propSchema]) => (
+						<tr>
+							<td>
+								<code>{propName}</code>
+							</td>
+							<td>{propSchema.type}</td>
+							<td>{propSchema.required ? 'yes' : 'no'}</td>
+							<td>{propSchema.description ?? '—'}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		)
+	}
+</section>

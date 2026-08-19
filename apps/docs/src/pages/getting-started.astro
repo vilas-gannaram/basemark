@@ -1,0 +1,13 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import { buildRegistry } from '../lib/registry';
+import { renderMarkdownToHtml } from '@basemark/core';
+import source from '../../content/getting-started.md?raw';
+
+const registry = await buildRegistry();
+const html = renderMarkdownToHtml(source, registry);
+---
+
+<DocsLayout title="Getting started">
+	<Fragment set:html={html} />
+</DocsLayout>

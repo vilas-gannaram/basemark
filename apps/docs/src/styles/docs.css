@@ -1,0 +1,128 @@
+/*
+ * Site chrome only (sidebar/header layout) — every color/spacing/typography
+ * token comes from @basemark/core/theme.css, imported before this file in
+ * DocsLayout.astro. Matches packages/cli/src/render.ts's own approach: the
+ * Onest font + heading letter-spacing override, nothing else framework-y.
+ */
+html:root {
+	--font-sans: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	letter-spacing: -0.02em;
+}
+
+body {
+	margin: 0;
+}
+
+.docs-shell {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.docs-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.875rem 1.5rem;
+	border-bottom: 1px solid var(--border);
+	background: var(--sidebar);
+}
+
+.docs-brand {
+	font-weight: 700;
+	font-size: var(--text-lg);
+	color: var(--sidebar-foreground);
+	text-decoration: none;
+}
+
+.docs-theme-toggle {
+	border: 1px solid var(--border);
+	background: var(--background);
+	color: var(--foreground);
+	border-radius: var(--radius);
+	width: 2rem;
+	height: 2rem;
+	font-size: var(--text-base);
+	cursor: pointer;
+}
+
+.docs-body {
+	flex: 1;
+	display: flex;
+	align-items: flex-start;
+}
+
+.docs-sidebar {
+	width: 16rem;
+	flex-shrink: 0;
+	padding: 1.5rem 1rem;
+	border-right: 1px solid var(--sidebar-border);
+	background: var(--sidebar);
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	max-height: 100vh;
+	overflow-y: auto;
+}
+
+.docs-sidebar ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.docs-sidebar a {
+	display: block;
+	padding: 0.4rem 0.625rem;
+	border-radius: var(--radius);
+	color: var(--sidebar-foreground);
+	text-decoration: none;
+	font-size: var(--text-sm);
+}
+
+.docs-sidebar a:hover {
+	background: var(--sidebar-accent);
+	color: var(--sidebar-accent-foreground);
+}
+
+.docs-content {
+	flex: 1;
+	min-width: 0;
+	max-width: 48rem;
+	margin: 0 auto;
+	padding: 2.5rem 1.5rem 4rem;
+}
+
+.component-ref {
+	padding-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.component-ref:last-child {
+	border-bottom: none;
+}
+
+@media (max-width: 768px) {
+	.docs-body {
+		flex-direction: column;
+	}
+	.docs-sidebar {
+		width: 100%;
+		position: static;
+		max-height: none;
+		border-right: none;
+		border-bottom: 1px solid var(--sidebar-border);
+	}
+}

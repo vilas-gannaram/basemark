@@ -1,0 +1,79 @@
+---
+import '@basemark/core/theme.css';
+import '../styles/docs.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+
+const NAV = [
+	{ href: '/', label: 'Introduction' },
+	{ href: '/getting-started', label: 'Getting started' },
+	{ href: '/authoring/syntax', label: 'Authoring syntax' },
+	{ href: '/authoring/tiering', label: 'Tiering model' },
+	{ href: '/components/common', label: 'Common components' },
+	{ href: '/components/bio', label: 'Bio components' },
+	{ href: '/components/charts', label: 'Chart components' },
+	{ href: '/examples', label: 'Examples' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title} — Basemark</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
+		<script is:inline>
+			// Applied before first paint (not in the client register.ts module,
+			// which loads too late and would flash the light theme first) — reads
+			// the same localStorage key the toggle button in this layout writes.
+			if (localStorage.getItem('basemark-docs-theme') === 'dark') {
+				document.documentElement.classList.add('dark');
+			}
+		</script>
+	</head>
+	<body>
+		<div class="docs-shell">
+			<header class="docs-header">
+				<a class="docs-brand" href="/">Basemark</a>
+				<button id="theme-toggle" class="docs-theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
+			</header>
+			<div class="docs-body">
+				<nav class="docs-sidebar" aria-label="Documentation">
+					<ul>
+						{
+							NAV.map((item) => (
+								<li>
+									<a href={item.href}>{item.label}</a>
+								</li>
+							))
+						}
+					</ul>
+				</nav>
+				<main class="docs-content">
+					<h1>{title}</h1>
+					<slot />
+				</main>
+			</div>
+		</div>
+		<script is:inline>
+			document.getElementById('theme-toggle').addEventListener('click', () => {
+				const isDark = document.documentElement.classList.toggle('dark');
+				localStorage.setItem('basemark-docs-theme', isDark ? 'dark' : 'light');
+			});
+		</script>
+		<script>
+			// A real module script (not frontmatter — frontmatter runs at build
+			// time in Node, never reaches the browser). Upgrades the
+			// already-resolved custom-element tags renderMarkdownToHtml() baked
+			// into this page's static HTML.
+			import '../client/register.ts';
+		</script>
+	</body>
+</html>

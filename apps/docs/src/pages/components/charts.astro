@@ -1,0 +1,13 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { buildRegistry } from '../../lib/registry';
+import ComponentReference from '../../components/ComponentReference.astro';
+
+const registry = await buildRegistry();
+const components = registry.list().filter(([, definition]) => definition.domain === 'charts');
+---
+
+<DocsLayout title="Chart components">
+	<p>Chart/plot components (ECharts). Inline data only — no hosted-file/URL mode, see the reference below for why.</p>
+	{components.map(([name, definition]) => <ComponentReference name={name} definition={definition} />)}
+</DocsLayout>
