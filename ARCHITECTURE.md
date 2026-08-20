@@ -129,11 +129,12 @@ basemark/
 ├── examples/     # per-framework integration demos
 ├── experiments/  # POCs, no stability contract (doesn't exist yet)
 ├── configs/      # shared eslint/tsconfig/vitest configs
+├── .changeset/
 ├── turbo.json
 └── package.json  # "workspaces" field defines the globs
 ```
 
-Changesets is the chosen release-flow tool (above), but `.changeset/` isn't set up yet — no release has happened.
+`bun run changeset` to add one, `bun run version` to bump, `bun run release` to publish — no release has happened yet.
 
 `examples/`/`apps/` are `private: true` and unscoped — visibly not published artifacts.
 
@@ -141,7 +142,6 @@ Changesets is the chosen release-flow tool (above), but `.changeset/` isn't set 
 
 ## 9. Open / undecided
 
-- Final project name.
 - Full manifest JSON Schema spec (§5 is conceptual, not field-by-field).
 - SSR fallback for natively-registered (non-web-component) framework components.
 - Which guided Mermaid directives ship at v1 vs. stay raw-fence-only.

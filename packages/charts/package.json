@@ -1,12 +1,16 @@
 {
 	"name": "@basemark/charts",
 	"version": "0.0.0",
-	"private": true,
 	"description": "Chart/plot components (ECharts) — a separate package per ARCHITECTURE.md §7's flag on heavy general-purpose dependencies",
+	"license": "MIT",
 	"type": "module",
-	"main": "./src/index.ts",
-	"types": "./src/index.ts",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
 	"scripts": {
+		"build": "bun run scripts/build.ts",
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {

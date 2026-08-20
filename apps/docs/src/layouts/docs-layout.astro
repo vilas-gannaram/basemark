@@ -9,15 +9,63 @@ interface Props {
 const { title } = Astro.props;
 
 const NAV = [
-	{ href: '/', label: 'Introduction' },
-	{ href: '/getting-started', label: 'Getting started' },
-	{ href: '/authoring/syntax', label: 'Authoring syntax' },
-	{ href: '/authoring/tiering', label: 'Tiering model' },
-	{ href: '/components/common', label: 'Common components' },
-	{ href: '/components/bio', label: 'Bio components' },
-	{ href: '/components/charts', label: 'Chart components' },
-	{ href: '/examples', label: 'Examples' },
+	{
+		label: 'Overview',
+		items: [
+			{ href: '/', label: 'Introduction' },
+			{ href: '/getting-started', label: 'Getting started' },
+			{ href: '/examples', label: 'Examples' },
+		],
+	},
+	{
+		label: 'Core',
+		items: [
+			{ href: '/core', label: 'Overview' },
+			{ href: '/authoring/syntax', label: 'Authoring syntax' },
+			{ href: '/authoring/tiering', label: 'Tiering model' },
+		],
+	},
+	{
+		label: 'Common',
+		items: [
+			{ href: '/components/common', label: 'Components' },
+			{ href: '/examples/common', label: 'Examples' },
+		],
+	},
+	{
+		label: 'Bio',
+		items: [
+			{ href: '/components/bio', label: 'Components' },
+			{ href: '/examples/bio', label: 'Examples' },
+		],
+	},
+	{
+		label: 'Charts',
+		items: [
+			{ href: '/components/charts', label: 'Components' },
+			{ href: '/examples/charts', label: 'Examples' },
+		],
+	},
+	{
+		label: 'CLI',
+		items: [{ href: '/cli', label: 'Overview' }],
+	},
 ];
+
+// Strips the configured `base` (only present in the built site, not `dev` —
+// see astro.config.mjs) so it compares against NAV's plain, base-less
+// hrefs, then drops any trailing slash so '/core' and '/core/' both match.
+// Strips the configured `base` (present in Astro.url.pathname for a built
+// site, not in dev — see astro.config.mjs) so it compares against NAV's
+// plain, base-less hrefs. import.meta.env.BASE_URL and Astro.url.pathname
+// disagree on trailing slash ('/Basemark' vs '/Basemark/core/'), so this
+// strips base as a prefix rather than naively .replace()-ing it in place —
+// a plain replace with '/' left a doubled '//core' (confirmed by building).
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) : Astro.url.pathname).replace(
+	/\/$/,
+	'',
+) || '/';
 ---
 
 <!doctype html>
@@ -46,15 +94,22 @@ const NAV = [
 			</header>
 			<div class="docs-body">
 				<nav class="docs-sidebar" aria-label="Documentation">
-					<ul>
-						{
-							NAV.map((item) => (
-								<li>
-									<a href={item.href}>{item.label}</a>
-								</li>
-							))
-						}
-					</ul>
+					{
+						NAV.map((group) => (
+							<div class="docs-nav-group">
+								<p class="docs-nav-label">{group.label}</p>
+								<ul>
+									{group.items.map((item) => (
+										<li>
+											<a href={item.href} class={item.href === currentPath ? 'active' : undefined}>
+												{item.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						))
+					}
 				</nav>
 				<main class="docs-content">
 					<h1>{title}</h1>

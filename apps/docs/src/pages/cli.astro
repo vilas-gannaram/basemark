@@ -1,0 +1,13 @@
+---
+import DocsLayout from '../layouts/docs-layout.astro';
+import { buildRegistry } from '../lib/registry';
+import { renderMarkdownToHtml } from '@basemark/core';
+import source from '../../content/cli.md?raw';
+
+const registry = await buildRegistry();
+const html = renderMarkdownToHtml(source, registry);
+---
+
+<DocsLayout title="CLI">
+	<Fragment set:html={html} />
+</DocsLayout>
