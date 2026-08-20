@@ -4,11 +4,13 @@
 	"description": "Build/render tooling for basemark — renders a markdown(+directives) file to one self-contained HTML file",
 	"license": "MIT",
 	"type": "module",
-	"main": "./src/index.ts",
-	"types": "./src/index.ts",
 	"bin": {
 		"basemark": "./src/index.ts"
 	},
+	"files": [
+		"src",
+		"scripts"
+	],
 	"scripts": {
 		"check-types": "tsc --noEmit",
 		"bundle:runtime": "bun run scripts/bundle-runtime.ts",
