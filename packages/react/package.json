@@ -5,9 +5,10 @@
 	"description": "React binding for @basemark/core",
 	"license": "MIT",
 	"type": "module",
-	"main": "./src/index.tsx",
-	"types": "./src/index.tsx",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"scripts": {
+		"build": "bun run scripts/build.ts",
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
