@@ -13,6 +13,9 @@
 		},
 		"./theme.css": "./dist/theme.css"
 	},
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "bun run scripts/build.ts",
 		"check-types": "tsc --noEmit",
