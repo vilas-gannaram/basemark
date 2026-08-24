@@ -18,5 +18,5 @@ const isDev = process.argv.includes('dev');
 
 export default defineConfig({
 	site: 'https://vilas-gannaram.github.io',
-	base: isDev ? '/' : '/Basemark',
+	base: isDev ? '/' : '/basemark',
 });
