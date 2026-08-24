@@ -7,7 +7,7 @@ const USAGE = `Usage: basemark <command>
 
 Commands:
   render <input.md> [-o <output.html>]      Resolve a markdown(+directives) file to one self-contained HTML file
-  skill install [--global] [--target <dir>] Install the basemark authoring skill (default: .claude/skills/basemark)
+  skill install [<dir>] [--global]          Install the basemark authoring skill (default: .claude/skills/basemark)
   help                                      Show this message`;
 
 async function main(argv: string[]): Promise<void> {
@@ -52,15 +52,16 @@ async function runRender(argv: string[]): Promise<void> {
 }
 
 async function runSkillInstall(argv: string[]): Promise<void> {
-	const { values } = parseArgs({
+	const { values, positionals } = parseArgs({
 		args: argv,
 		options: {
 			global: { type: 'boolean' },
 			target: { type: 'string' },
 		},
+		allowPositionals: true,
 	});
 
-	const installedTo = await installSkill({ global: values.global, target: values.target });
+	const installedTo = await installSkill({ global: values.global, target: positionals[0] ?? values.target });
 	console.log(`Installed basemark skill to ${installedTo}`);
 }
 
