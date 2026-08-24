@@ -1,19 +1,37 @@
 #!/usr/bin/env bun
 import { parseArgs } from 'node:util';
 import { renderToHtml } from './render';
+import { installSkill } from './skill';
 
-const USAGE = `Usage: basemark render <input.md> [-o <output.html>]`;
+const USAGE = `Usage: basemark <command>
+
+Commands:
+  render <input.md> [-o <output.html>]      Resolve a markdown(+directives) file to one self-contained HTML file
+  skill install [--global] [--target <dir>] Install the basemark authoring skill (default: .claude/skills/basemark)
+  help                                      Show this message`;
 
 async function main(argv: string[]): Promise<void> {
 	const [command, ...rest] = argv;
 
-	if (command !== 'render') {
+	if (command === undefined || command === 'help' || command === '--help' || command === '-h') {
+		console.log(USAGE);
+		return;
+	}
+
+	if (command === 'render') {
+		await runRender(rest);
+	} else if (command === 'skill' && rest[0] === 'install') {
+		await runSkillInstall(rest.slice(1));
+	} else {
+		console.error(`Unknown command: ${command}\n`);
 		console.error(USAGE);
 		process.exit(1);
 	}
+}
 
+async function runRender(argv: string[]): Promise<void> {
 	const { values, positionals } = parseArgs({
-		args: rest,
+		args: argv,
 		options: { out: { type: 'string', short: 'o' } },
 		allowPositionals: true,
 	});
@@ -31,6 +49,19 @@ async function main(argv: string[]): Promise<void> {
 	await Bun.write(outputPath, html);
 
 	console.log(`Wrote ${outputPath}`);
+}
+
+async function runSkillInstall(argv: string[]): Promise<void> {
+	const { values } = parseArgs({
+		args: argv,
+		options: {
+			global: { type: 'boolean' },
+			target: { type: 'string' },
+		},
+	});
+
+	const installedTo = await installSkill({ global: values.global, target: values.target });
+	console.log(`Installed basemark skill to ${installedTo}`);
 }
 
 await main(process.argv.slice(2));
