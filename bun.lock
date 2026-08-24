@@ -85,7 +85,7 @@
     },
     "packages/bio": {
       "name": "@basemark/bio",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "3dmol": "^2.5.5",
         "@basemark/core": "workspace:*",
@@ -99,7 +99,7 @@
     },
     "packages/charts": {
       "name": "@basemark/charts",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@basemark/core": "workspace:*",
         "echarts": "^6.1.0",
@@ -138,7 +138,7 @@
     },
     "packages/common": {
       "name": "@basemark/common",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@basemark/core": "workspace:*",
       },
@@ -148,7 +148,7 @@
     },
     "packages/core": {
       "name": "@basemark/core",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "hast-util-to-dom": "^4.0.1",
         "hast-util-to-html": "^9.0.5",
@@ -171,7 +171,7 @@
     },
     "packages/react": {
       "name": "@basemark/react",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@basemark/core": "workspace:*",
         "@lit/react": "^1.0.8",

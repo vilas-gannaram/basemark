@@ -1,6 +1,6 @@
 {
 	"name": "@basemark/bio",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Bio domain components for bioinformatics authors — structure, protvista, locuszoom-*, genome-browser",
 	"license": "MIT",
 	"type": "module",
