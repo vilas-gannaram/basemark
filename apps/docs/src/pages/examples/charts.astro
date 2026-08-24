@@ -1,11 +1,11 @@
 ---
 import DocsLayout from '../../layouts/docs-layout.astro';
 import { buildRegistry } from '../../lib/registry';
-import { renderMarkdownToHtml } from '@basemark/core';
+import { renderContent } from '../../lib/render-content';
 import source from '../../../content/examples-charts.md?raw';
 
 const registry = await buildRegistry();
-const html = renderMarkdownToHtml(source, registry);
+const html = renderContent(source, registry);
 ---
 
 <DocsLayout title="Charts examples">

@@ -89,7 +89,7 @@ const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pat
 	<body>
 		<div class="docs-shell">
 			<header class="docs-header">
-				<a class="docs-brand" href="/">Basemark</a>
+				<a class="docs-brand" href={base || '/'}>Basemark</a>
 				<button id="theme-toggle" class="docs-theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
 			</header>
 			<div class="docs-body">
@@ -101,7 +101,7 @@ const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pat
 								<ul>
 									{group.items.map((item) => (
 										<li>
-											<a href={item.href} class={item.href === currentPath ? 'active' : undefined}>
+											<a href={base + item.href} class={item.href === currentPath ? 'active' : undefined}>
 												{item.label}
 											</a>
 										</li>
