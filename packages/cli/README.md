@@ -24,7 +24,7 @@ bun run build            # writes dist/basemark
 
 `render` builds a registry from `@basemark/core` + `@basemark/common` + `@basemark/bio` + `@basemark/charts`.
 
-- **`common`'s 12 components** are fully wired — each custom-element class is declared *inside* its `register*` function behind a `typeof HTMLElement` guard, so importing the package under Bun (no browser) is safe.
+- **`common`'s 14 components** are fully wired — each custom-element class is declared *inside* its `register*` function behind a `typeof HTMLElement` guard, so importing the package under Bun (no browser) is safe.
 - **`bio`'s 14 components** go one step further — their vendor libraries (`3dmol`, `protvista-uniprot`, `locuszoom`) crash on load outside a browser regardless of any guard, so they're dynamically `import()`ed instead, making every `register*` function `async`.
 - **`charts`' 7 components** (ECharts) follow the same guard as `common` — `echarts` imports cleanly under Bun with no DOM, so no dynamic `import()` is needed.
 - **`chem`** is an empty stub.

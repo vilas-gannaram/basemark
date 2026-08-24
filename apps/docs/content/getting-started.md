@@ -1,6 +1,6 @@
 ## Install
 
-Not published to npm yet — this is the install story once it is. `@basemark/core` plus whichever component packs your document actually uses; none are bundled together, so a `common`-only app doesn't pull in `bio`'s much heavier vendor libraries.
+`@basemark/core` plus whichever component packs your document actually uses; none are bundled together, so a `common`-only app doesn't pull in `bio`'s much heavier vendor libraries.
 
 ```sh
 bun add @basemark/core @basemark/common

@@ -2,7 +2,7 @@
 
 ## Install
 
-Not published to npm yet. For now, run it from source or compile the standalone binary yourself:
+Not published to npm yet — its `postinstall` step needs Bun, which isn't guaranteed for npm consumers, so it's held back until it ships a precompiled binary instead. For now, run it from source or compile the standalone binary yourself:
 
 ```sh
 bun install
@@ -17,9 +17,11 @@ cd packages/cli && bun run build
 
 ```sh
 basemark render doc.md -o doc.html
+basemark skill install [<dir>] [--global]
+basemark help
 ```
 
-That's the whole interface — one command, one input file, one output file.
+`render` is the one most people want — one input file, one output file. `skill install` generates and installs a Claude Skill for authoring Basemark documents, derived from the live component registry: an index of every registered component plus one reference file per component with its full prop details. Installs to `.claude/skills/basemark/` by default, `~/.claude/skills/basemark/` with `--global`, or wherever `<dir>` points.
 
 ## What's actually inside the output file
 
