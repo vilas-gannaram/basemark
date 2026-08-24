@@ -15,7 +15,6 @@
 		"check-types": "tsc --noEmit",
 		"bundle:runtime": "bun run scripts/bundle-runtime.ts",
 		"build:skill": "bun run scripts/build-skill.ts",
-		"postinstall": "bun run bundle:runtime && bun run build:skill",
 		"build": "bun run bundle:runtime && bun run build:skill && bun build --compile --outfile=dist/basemark ./src/index.ts"
 	},
 	"dependencies": {
