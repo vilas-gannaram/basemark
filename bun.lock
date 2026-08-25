@@ -117,23 +117,21 @@
     },
     "packages/cli": {
       "name": "@basemark/cli",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "bin": {
-        "basemark": "./src/index.ts",
+        "basemark": "./dist/index.js",
       },
-      "dependencies": {
+      "devDependencies": {
         "@basemark/bio": "workspace:*",
         "@basemark/charts": "workspace:*",
         "@basemark/common": "workspace:*",
         "@basemark/core": "workspace:*",
-        "hast-util-to-html": "^9.0.5",
-        "unist-util-visit": "^5.1.0",
-      },
-      "devDependencies": {
         "@basemark/tsconfig-base": "workspace:*",
         "@types/bun": "^1.3.10",
         "@types/hast": "^3.0.5",
         "@types/node": "^26.2.0",
+        "hast-util-to-html": "^9.0.5",
+        "unist-util-visit": "^5.1.0",
       },
     },
     "packages/common": {

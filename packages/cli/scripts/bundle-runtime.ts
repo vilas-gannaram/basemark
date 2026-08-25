@@ -1,7 +1,7 @@
-// Run before `bun build --compile` (see package.json's "build" script), not
-// at render time — see this file's original single-entry version (git
-// history) for why a per-render Bun.build() call breaks inside a compiled
-// binary. Split into three separate bundles, one per src/runtime/*.ts entry,
+// Run before packages/cli's own build (see package.json's "build" script),
+// not at render time — see this file's original single-entry version (git
+// history) for why a per-render Bun.build() call doesn't survive being
+// bundled itself. Split into three separate bundles, one per src/runtime/*.ts entry,
 // rather than one combined bundle: render.ts only inlines the ones a given
 // document's resolved directives actually need (see its usedDomains()), so a
 // common-only document doesn't ship bio's much heavier vendor libraries

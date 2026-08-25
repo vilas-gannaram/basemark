@@ -1,4 +1,5 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
+import { readFile, writeFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 import { renderToHtml } from './render';
 import { installSkill } from './skill';
@@ -44,9 +45,9 @@ async function runRender(argv: string[]): Promise<void> {
 
 	const outputPath = values.out ?? inputPath.replace(/\.mdx?$/, '') + '.html';
 
-	const source = await Bun.file(inputPath).text();
+	const source = await readFile(inputPath, 'utf8');
 	const html = await renderToHtml(source);
-	await Bun.write(outputPath, html);
+	await writeFile(outputPath, html);
 
 	console.log(`Wrote ${outputPath}`);
 }

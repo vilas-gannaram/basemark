@@ -1,34 +1,31 @@
 {
 	"name": "@basemark/cli",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Build/render tooling for basemark — renders a markdown(+directives) file to one self-contained HTML file",
 	"license": "MIT",
 	"type": "module",
 	"bin": {
-		"basemark": "./src/index.ts"
+		"basemark": "./dist/index.js"
 	},
 	"files": [
-		"src",
-		"scripts"
+		"dist"
 	],
 	"scripts": {
 		"check-types": "tsc --noEmit",
 		"bundle:runtime": "bun run scripts/bundle-runtime.ts",
 		"build:skill": "bun run scripts/build-skill.ts",
-		"build": "bun run bundle:runtime && bun run build:skill && bun build --compile --outfile=dist/basemark ./src/index.ts"
+		"build": "bun run bundle:runtime && bun run build:skill && bun run scripts/build.ts"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"@basemark/bio": "workspace:*",
 		"@basemark/charts": "workspace:*",
 		"@basemark/common": "workspace:*",
 		"@basemark/core": "workspace:*",
-		"hast-util-to-html": "^9.0.5",
-		"unist-util-visit": "^5.1.0"
-	},
-	"devDependencies": {
 		"@basemark/tsconfig-base": "workspace:*",
 		"@types/bun": "^1.3.10",
 		"@types/hast": "^3.0.5",
-		"@types/node": "^26.2.0"
+		"@types/node": "^26.2.0",
+		"hast-util-to-html": "^9.0.5",
+		"unist-util-visit": "^5.1.0"
 	}
 }

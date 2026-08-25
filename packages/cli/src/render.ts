@@ -5,7 +5,8 @@ import type { Element as HastElement, Root as HastRoot } from 'hast';
 import { buildRegistry } from './registry';
 
 // Static text import, not runtime `import.meta.resolve` + file read — the
-// latter needs a real disk path, which doesn't exist inside `bun build --compile`'s virtual filesystem.
+// bundler only inlines a `with { type: 'text' }` import when it's visible
+// ahead of time, not a dynamically-resolved path.
 // @ts-expect-error -- no .d.ts for the text-loader import form
 import themeCss from '@basemark/core/theme.css' with { type: 'text' };
 // Pre-bundled by scripts/bundle-runtime.ts — run `bun run bundle:runtime`
