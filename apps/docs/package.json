@@ -1,6 +1,6 @@
 {
 	"name": "docs",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"private": true,
 	"description": "Documentation site — dogfoods @basemark/core to render its own markdown docs.",
 	"type": "module",

@@ -1,7 +1,7 @@
 {
 	"name": "@basemark/charts",
-	"version": "0.1.0",
-	"description": "Chart/plot components (ECharts) \u2014 a separate package per ARCHITECTURE.md \u00a77's flag on heavy general-purpose dependencies",
+	"version": "0.1.1",
+	"description": "Chart/plot components (ECharts) — a separate package per ARCHITECTURE.md §7's flag on heavy general-purpose dependencies",
 	"license": "MIT",
 	"repository": {
 		"type": "git",

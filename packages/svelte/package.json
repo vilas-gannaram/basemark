@@ -1,6 +1,6 @@
 {
 	"name": "@basemark/svelte",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"private": true,
 	"description": "Svelte binding for @basemark/core — stub, pending @basemark/react validation",
 	"license": "MIT",

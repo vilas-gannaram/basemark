@@ -1,7 +1,7 @@
 {
 	"name": "@basemark/core",
-	"version": "0.1.0",
-	"description": "Markdown + directive parser and component registry \u2014 framework-agnostic",
+	"version": "0.1.1",
+	"description": "Markdown + directive parser and component registry — framework-agnostic",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
