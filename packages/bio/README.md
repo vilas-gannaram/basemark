@@ -2,6 +2,12 @@
 
 Bioinformatics components for Markdown. Write a short identifier — an accession, a PDB ID, an rsID, a locus — and get back a real, interactive viewer: protein structures, sequence tracks, clinical variants, pathway maps, interaction networks, genome browsing, and more.
 
+## Install
+
+```sh
+bun add @basemark/core @basemark/bio
+```
+
 ## Usage
 
 ```ts

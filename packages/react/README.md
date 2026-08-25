@@ -2,6 +2,14 @@
 
 React binding for `@basemark/core`. Renders a parsed Markdown+directive document as a real React tree — every resolved custom element wrapped generically via `@lit/react`'s `createComponent()`, not hand-written per component.
 
+## Install
+
+```sh
+bun add @basemark/core @basemark/react
+```
+
+Requires `react` >=18 as a peer dependency (not bundled).
+
 ## Usage
 
 ```tsx

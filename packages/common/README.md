@@ -2,6 +2,12 @@
 
 General-purpose components for Markdown — cards, tabs, accordions, alerts, media embeds, and more, styled against a shadcn-compatible theme. Not domain-specific — see `@basemark/bio`/`@basemark/charts`/`@basemark/chem` for those.
 
+## Install
+
+```sh
+bun add @basemark/core @basemark/common
+```
+
 ## Usage
 
 ```ts

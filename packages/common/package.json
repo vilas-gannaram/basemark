@@ -1,8 +1,15 @@
 {
 	"name": "@basemark/common",
 	"version": "0.1.0",
-	"description": "Common domain components — tables, charts, maps, katex",
+	"description": "Common domain components \u2014 tables, charts, maps, katex",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/vilas-gannaram/basemark.git",
+		"directory": "packages/common"
+	},
+	"homepage": "https://vilas-gannaram.github.io/basemark",
+	"bugs": "https://github.com/vilas-gannaram/basemark/issues",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",

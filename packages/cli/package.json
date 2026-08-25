@@ -1,8 +1,15 @@
 {
 	"name": "@basemark/cli",
 	"version": "0.1.0",
-	"description": "Build/render tooling for basemark — renders a markdown(+directives) file to one self-contained HTML file",
+	"description": "Build/render tooling for basemark \u2014 renders a markdown(+directives) file to one self-contained HTML file",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/vilas-gannaram/basemark.git",
+		"directory": "packages/cli"
+	},
+	"homepage": "https://vilas-gannaram.github.io/basemark",
+	"bugs": "https://github.com/vilas-gannaram/basemark/issues",
 	"type": "module",
 	"bin": {
 		"basemark": "./dist/index.js"

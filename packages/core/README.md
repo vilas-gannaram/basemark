@@ -2,6 +2,12 @@
 
 The engine behind Basemark: parses Markdown with directive syntax (`::name{attrs}`), resolves each directive against a component registry, validates its props, and renders the result — either to real DOM elements or to a plain HTML string. Framework-agnostic and dependency-light; domain component packages (`@basemark/bio`, `@basemark/common`, `@basemark/charts`) build on top of it.
 
+## Install
+
+```sh
+bun add @basemark/core
+```
+
 ## Usage
 
 ```ts

@@ -6,6 +6,10 @@ Build-time tooling for Basemark. First command: `render` — resolves a markdown
 
 ```sh
 npx @basemark/cli render doc.md -o doc.html
+
+# or install it once:
+npm install -g @basemark/cli
+basemark render doc.md -o doc.html
 ```
 
 Runs on plain Node — no Bun install required. `dist/index.js` is a self-contained bundle (every dependency, including `@basemark/bio`/`common`/`charts`, is built in); your markdown input is **not** embedded, it's read from disk each run.

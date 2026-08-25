@@ -2,6 +2,12 @@
 
 Chart and plot components for Markdown, built on ECharts. A separate package from `@basemark/common` since charting is a heavier dependency than the average layout component.
 
+## Install
+
+```sh
+bun add @basemark/core @basemark/charts
+```
+
 ## Usage
 
 ```ts
