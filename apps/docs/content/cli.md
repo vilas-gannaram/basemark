@@ -2,16 +2,11 @@
 
 ## Install
 
-Not published to npm yet — its `postinstall` step needs Bun, which isn't guaranteed for npm consumers, so it's held back until it ships a precompiled binary instead. For now, run it from source or compile the standalone binary yourself:
-
 ```sh
-bun install
-bun run packages/cli/src/index.ts render doc.md -o doc.html   # run from source
-
-# or, compile a standalone binary once:
-cd packages/cli && bun run build
-./dist/basemark render doc.md -o doc.html
+npx @basemark/cli render doc.md -o doc.html
 ```
+
+Runs on plain Node — no Bun install required. `dist/index.js` bundles every dependency in, including `@basemark/bio`/`common`/`charts`.
 
 ## Usage
 

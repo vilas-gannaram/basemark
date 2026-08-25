@@ -119,7 +119,7 @@ Everything depends on core; core depends on nothing framework-specific.
 ## 8. Monorepo structure & tooling
 
 Bun workspaces + Turborepo + Changesets.
-- Not pnpm — `packages/cli` ships as a `bun build --compile` binary, so the CLI's runtime and the repo's package manager are the same Bun install.
+- Not pnpm — `Bun.build()` is every package's own build tool (`scripts/build.ts` in each), so the repo's package manager and its build tooling are the same Bun install. Published output itself doesn't require Bun: library packages ship plain JS via `tsc`/`Bun.build`, and `packages/cli` bundles to a plain Node-runnable `dist/index.js` — no `bun build --compile`, no Bun on the end user's machine.
 - Not Lerna — Turbo covers task-running, Changesets fits a PR-driven release flow.
 
 ```
