@@ -1,6 +1,6 @@
 {
 	"name": "@basemark/chem",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"private": true,
 	"description": "Chem domain components (rdkit, smiles, reactions) — stub, pending core validation",
 	"license": "MIT",
