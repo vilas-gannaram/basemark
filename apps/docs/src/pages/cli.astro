@@ -8,6 +8,6 @@ const registry = await buildRegistry();
 const { html, toc } = renderContent(source, registry);
 ---
 
-<DocsLayout title="CLI" toc={toc}>
+<DocsLayout title="CLI" toc={toc} editPath="content/cli.md">
 	<Fragment set:html={html} />
 </DocsLayout>

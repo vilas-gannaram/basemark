@@ -6,9 +6,14 @@ import type { ITocItem } from '../lib/toc';
 interface Props {
 	title: string;
 	toc?: ITocItem[];
+	// Relative to apps/docs/, e.g. "content/getting-started.md" — omit for
+	// pages with no single source file (the data-driven component-reference
+	// pages, generated straight from the registry, have nothing to "edit").
+	editPath?: string;
 }
 
-const { title, toc = [] } = Astro.props;
+const { title, toc = [], editPath } = Astro.props;
+const REPO = 'https://github.com/vilas-gannaram/basemark';
 
 const NAV = [
 	{
@@ -120,10 +125,28 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 						</div>
 					))
 				}
+				<div class="docs-sidebar-footer">
+					<a href={REPO} target="_blank" rel="noreferrer">
+						GitHub
+					</a>
+					<a href="https://www.npmjs.com/package/@basemark/core" target="_blank" rel="noreferrer">
+						npm
+					</a>
+					<a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noreferrer">
+						MIT License
+					</a>
+				</div>
 			</nav>
 			<main class="docs-content">
 				<article class="docs-article">
 					<h1>{title}</h1>
+					{
+						editPath && (
+							<a class="docs-edit-link" href={`${REPO}/edit/main/apps/docs/${editPath}`} target="_blank" rel="noreferrer">
+								Edit this page on GitHub →
+							</a>
+						)
+					}
 					<slot />
 					{
 						(prevItem || nextItem) && (

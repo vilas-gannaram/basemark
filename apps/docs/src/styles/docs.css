@@ -114,6 +114,28 @@ body {
 	font-weight: 600;
 }
 
+.docs-sidebar-footer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.75rem;
+	margin-top: 1.5rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--sidebar-border);
+}
+
+.docs-sidebar-footer a {
+	display: inline;
+	padding: 0;
+	font-size: var(--text-xs);
+	color: var(--muted-foreground);
+}
+
+.docs-sidebar-footer a:hover {
+	background: none;
+	color: var(--sidebar-foreground);
+	text-decoration: underline;
+}
+
 .docs-content {
 	flex: 1;
 	min-width: 0;
@@ -176,6 +198,19 @@ body {
 
 .docs-toc a:hover {
 	color: var(--foreground);
+}
+
+.docs-edit-link {
+	display: inline-block;
+	margin: -0.5rem 0 1.5rem;
+	font-size: var(--text-sm);
+	color: var(--muted-foreground);
+	text-decoration: none;
+}
+
+.docs-edit-link:hover {
+	color: var(--foreground);
+	text-decoration: underline;
 }
 
 .component-ref {

@@ -8,6 +8,6 @@ const registry = await buildRegistry();
 const { html, toc } = renderContent(source, registry);
 ---
 
-<DocsLayout title="Authoring syntax" toc={toc}>
+<DocsLayout title="Authoring syntax" toc={toc} editPath="content/authoring-syntax.md">
 	<Fragment set:html={html} />
 </DocsLayout>

@@ -8,6 +8,6 @@ const registry = await buildRegistry();
 const { html, toc } = renderContent(source, registry);
 ---
 
-<DocsLayout title="Tiering model" toc={toc}>
+<DocsLayout title="Tiering model" toc={toc} editPath="content/tiering.md">
 	<Fragment set:html={html} />
 </DocsLayout>
