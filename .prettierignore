@@ -6,7 +6,7 @@ coverage
 
 # Dependencies
 node_modules
-bun.lock
+pnpm-lock.yaml
 
 # Markdown is intentionally excluded from auto-format — docs in this repo use
 # hand-tuned line breaks and table layouts (ARCHITECTURE.md, VISION.md, etc.)
