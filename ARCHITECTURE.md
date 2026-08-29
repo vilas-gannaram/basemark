@@ -118,8 +118,8 @@ Everything depends on core; core depends on nothing framework-specific.
 
 ## 8. Monorepo structure & tooling
 
-Bun workspaces + Turborepo + Changesets.
-- Not pnpm — `Bun.build()` is every package's own build tool (`scripts/build.ts` in each), so the repo's package manager and its build tooling are the same Bun install. Published output itself doesn't require Bun: library packages ship plain JS via `tsc`/`Bun.build`, and `packages/cli` bundles to a plain Node-runnable `dist/index.js` — no `bun build --compile`, no Bun on the end user's machine.
+pnpm workspaces + Turborepo + Changesets.
+- pnpm, not Bun — `changesets/cli`'s publish command only rewrites `workspace:*` ranges natively for pnpm/yarn; npm and Bun both fall through to a plain `npm publish` with zero rewriting, shipping the literal `workspace:*` string and breaking `npm install` for consumers. `tsup` (esbuild) is each package's build tool (`tsup.config.ts` in each), independent of the package manager. Published output doesn't require pnpm or Bun: library packages ship plain JS, and `packages/cli` bundles to a plain Node-runnable `dist/index.js`.
 - Not Lerna — Turbo covers task-running, Changesets fits a PR-driven release flow.
 
 ```
@@ -128,13 +128,13 @@ basemark/
 ├── apps/         # deployed, not published (docs site)
 ├── examples/     # per-framework integration demos
 ├── experiments/  # POCs, no stability contract (doesn't exist yet)
-├── configs/      # shared eslint/tsconfig/vitest configs
+├── configs/      # shared eslint/tsconfig/vitest/tsup configs
 ├── .changeset/
 ├── turbo.json
-└── package.json  # "workspaces" field defines the globs
+└── pnpm-workspace.yaml  # defines the workspace package globs
 ```
 
-`bun run changeset` to add one, `bun run version` to bump, `bun run release` to publish — no release has happened yet.
+`pnpm changeset` to add one, `pnpm run version` to bump, `pnpm run release` to publish.
 
 `examples/`/`apps/` are `private: true` and unscoped — visibly not published artifacts.
 

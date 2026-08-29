@@ -5,7 +5,7 @@ The engine behind Basemark: parses Markdown with directive syntax (`::name{attrs
 ## Install
 
 ```sh
-bun add @basemark/core
+pnpm add @basemark/core
 ```
 
 ## Usage

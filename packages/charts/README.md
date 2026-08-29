@@ -5,7 +5,7 @@ Chart and plot components for Markdown, built on ECharts. A separate package fro
 ## Install
 
 ```sh
-bun add @basemark/core @basemark/charts
+pnpm add @basemark/core @basemark/charts
 ```
 
 ## Usage

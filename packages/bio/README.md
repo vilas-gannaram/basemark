@@ -5,7 +5,7 @@ Bioinformatics components for Markdown. Write a short identifier — an accessio
 ## Install
 
 ```sh
-bun add @basemark/core @basemark/bio
+pnpm add @basemark/core @basemark/bio
 ```
 
 ## Usage

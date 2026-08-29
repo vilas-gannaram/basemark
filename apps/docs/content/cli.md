@@ -6,7 +6,7 @@
 npx @basemark/cli render doc.md -o doc.html
 ```
 
-Runs on plain Node — no Bun install required. `dist/index.js` bundles every dependency in, including `@basemark/bio`/`common`/`charts`.
+Runs on plain Node. `dist/index.js` bundles every dependency in, including `@basemark/bio`/`common`/`charts`.
 
 ## Usage
 
