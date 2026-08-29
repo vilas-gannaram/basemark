@@ -5,9 +5,9 @@ import { renderContent } from '../lib/render-content';
 import source from '../../content/core.md?raw';
 
 const registry = await buildRegistry();
-const html = renderContent(source, registry);
+const { html, toc } = renderContent(source, registry);
 ---
 
-<DocsLayout title="Core">
+<DocsLayout title="Core" toc={toc} editPath="content/core.md">
 	<Fragment set:html={html} />
 </DocsLayout>

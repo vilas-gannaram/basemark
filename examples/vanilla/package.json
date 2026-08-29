@@ -16,7 +16,6 @@
 		"@basemark/core": "workspace:*"
 	},
 	"devDependencies": {
-		"@basemark/tsconfig-base": "workspace:*",
 		"vite": "^8.1.5"
 	}
 }

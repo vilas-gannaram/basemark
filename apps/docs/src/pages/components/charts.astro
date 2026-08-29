@@ -1,13 +1,15 @@
 ---
 import DocsLayout from '../../layouts/docs-layout.astro';
 import { buildRegistry } from '../../lib/registry';
+import { slugify } from '../../lib/slug';
 import ComponentReference from '../../components/component-reference.astro';
 
 const registry = await buildRegistry();
 const components = registry.list().filter(([, definition]) => definition.domain === 'charts');
+const toc = components.map(([, definition]) => ({ id: slugify(definition.title), text: definition.title, level: 2 as const }));
 ---
 
-<DocsLayout title="Chart components">
+<DocsLayout title="Chart components" toc={toc}>
 	<p>Chart/plot components (ECharts). Inline data only — no hosted-file/URL mode, see the reference below for why.</p>
 	{components.map(([name, definition]) => <ComponentReference name={name} definition={definition} />)}
 </DocsLayout>

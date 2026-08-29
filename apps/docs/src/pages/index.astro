@@ -5,9 +5,11 @@ import { renderContent } from '../lib/render-content';
 import source from '../../content/introduction.md?raw';
 
 const registry = await buildRegistry();
-const html = renderContent(source, registry);
+// No toc prop passed to DocsLayout — a right-rail "on this page" nav would
+// compete with the hero treatment on a landing page.
+const { html } = renderContent(source, registry);
 ---
 
-<DocsLayout title="Introduction">
+<DocsLayout title="Introduction" editPath="content/introduction.md" hero hideTitle>
 	<Fragment set:html={html} />
 </DocsLayout>

@@ -19,11 +19,11 @@ import { registerCommonComponents } from '@basemark/common';
 const registry = createRegistry();
 registerCommonComponents(registry);
 
-const root = document.getElementById('app');
-renderMarkdown('::button[Click me]{variant="default"}', registry, root);
+const fragment = renderMarkdown('::button[Click me]{variant="default"}', registry);
+document.getElementById('app').appendChild(fragment);
 ```
 
-`renderMarkdown()` mounts real DOM nodes directly. Use `renderMarkdownToHtml()` instead if you want a plain HTML string (e.g. to write to a file — no `document` required, works in Node/Bun).
+`renderMarkdown()` returns a `DocumentFragment` of real DOM nodes — append it wherever you want it mounted. Use `renderMarkdownToHtml()` instead if you want a plain HTML string (e.g. to write to a file — no `document` required, works in Node/Bun).
 
 ## React
 

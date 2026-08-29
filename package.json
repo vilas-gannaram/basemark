@@ -9,7 +9,6 @@
 		"dev": "turbo run dev",
 		"check-types": "turbo run check-types",
 		"test": "turbo run test",
-		"lint": "turbo run lint && eslint .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"changeset": "changeset",
@@ -22,25 +21,15 @@
 	"license": "MIT",
 	"packageManager": "pnpm@10.30.3",
 	"devDependencies": {
-		"@basemark/eslint-config": "workspace:*",
 		"@changesets/cli": "^3.0.1",
-		"@eslint/js": "^10.0.1",
-		"eslint": "^10.7.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^17.1.1",
 		"prettier": "^3.6.2",
 		"tsup": "^8.5.0",
 		"turbo": "^2.10.6",
-		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.64.0"
+		"typescript": "^5.9.3"
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx}": [
-			"prettier --write",
-			"eslint --fix"
-		],
-		"*.json": [
-			"prettier --write"
-		]
+		"*.{js,jsx,ts,tsx,json}": "prettier --write"
 	}
 }

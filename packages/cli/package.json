@@ -28,7 +28,6 @@
 		"@basemark/charts": "workspace:*",
 		"@basemark/common": "workspace:*",
 		"@basemark/core": "workspace:*",
-		"@basemark/tsconfig-base": "workspace:*",
 		"@types/hast": "^3.0.5",
 		"@types/node": "^26.2.0",
 		"hast-util-to-html": "^9.0.5",

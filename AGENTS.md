@@ -27,7 +27,7 @@ Guidance for AI agents working in this repo. See [README.md](README.md) for what
 
 ## Tooling
 
-Prettier + ESLint run via a Husky pre-commit hook (`lint-staged`). Don't hand-format or add stylistic ESLint rules — Prettier owns that.
+Prettier runs via a Husky pre-commit hook (`lint-staged`). Don't hand-format — Prettier owns that. No ESLint — `tsc`'s `strict`/`noUnusedLocals`/`noUnusedParameters` already cover most of what it'd add here.
 
 ## Status
 
