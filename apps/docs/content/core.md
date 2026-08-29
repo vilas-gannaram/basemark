@@ -60,7 +60,7 @@ This is what a Claude Skill (or any other AI-authoring surface) reaches for inst
 
 Three render paths, one parser:
 
-- `renderMarkdown(source, registry, root)` — mounts real DOM directly (browser only).
+- `renderMarkdown(source, registry)` — returns a `DocumentFragment` of real DOM nodes to append yourself (browser only).
 - `renderMarkdownToHtml(source, registry)` — returns a plain string, no `document` required. Every narrative page on this site (including this one) is rendered this way.
 - `@basemark/react`'s `MarkdownRenderer` — same parse, wrapped as a React component.
 
