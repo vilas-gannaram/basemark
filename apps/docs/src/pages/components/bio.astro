@@ -1,13 +1,15 @@
 ---
 import DocsLayout from '../../layouts/docs-layout.astro';
 import { buildRegistry } from '../../lib/registry';
+import { slugify } from '../../lib/slug';
 import ComponentReference from '../../components/component-reference.astro';
 
 const registry = await buildRegistry();
 const components = registry.list().filter(([, definition]) => definition.domain === 'bio');
+const toc = components.map(([, definition]) => ({ id: slugify(definition.title), text: definition.title, level: 2 as const }));
 ---
 
-<DocsLayout title="Bio components">
+<DocsLayout title="Bio components" toc={toc}>
 	<p>Domain components for bioinformatics authors, wrapping 3Dmol.js/ProtVista/LocusZoom.js.</p>
 	{components.map(([name, definition]) => <ComponentReference name={name} definition={definition} />)}
 </DocsLayout>

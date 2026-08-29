@@ -117,9 +117,65 @@ body {
 .docs-content {
 	flex: 1;
 	min-width: 0;
-	max-width: 48rem;
-	margin: 0 auto;
+	display: flex;
+	justify-content: center;
+	gap: 3rem;
 	padding: 2.5rem 1.5rem 4rem;
+}
+
+.docs-article {
+	flex: 1;
+	min-width: 0;
+	max-width: 48rem;
+}
+
+.docs-toc {
+	width: 12rem;
+	flex-shrink: 0;
+	position: sticky;
+	top: 2.5rem;
+	align-self: flex-start;
+	font-size: var(--text-sm);
+}
+
+.docs-toc-label {
+	margin: 0 0 0.625rem;
+	font-size: var(--text-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: var(--muted-foreground);
+}
+
+.docs-toc ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	border-left: 1px solid var(--border);
+}
+
+.docs-toc li {
+	padding-left: 0.75rem;
+	border-left: 2px solid transparent;
+	margin-left: -1px;
+}
+
+.docs-toc li.docs-toc-sub {
+	padding-left: 1.5rem;
+}
+
+.docs-toc a {
+	color: var(--muted-foreground);
+	text-decoration: none;
+	display: block;
+	line-height: var(--leading-snug);
+}
+
+.docs-toc a:hover {
+	color: var(--foreground);
 }
 
 .component-ref {
@@ -130,6 +186,12 @@ body {
 
 .component-ref:last-child {
 	border-bottom: none;
+}
+
+@media (max-width: 1100px) {
+	.docs-toc {
+		display: none;
+	}
 }
 
 @media (max-width: 768px) {

@@ -1,16 +1,17 @@
 ---
 import DocsLayout from '../../layouts/docs-layout.astro';
 import { buildRegistry } from '../../lib/registry';
+import { slugify } from '../../lib/slug';
 import ComponentReference from '../../components/component-reference.astro';
 
 // Data-driven, not hand-authored markdown — generated straight from the
-// registry so this page can't drift from what's actually registered (see
-// the plan's note on packages/bio/README.md's stale checklist).
+// registry so this page can't drift from what's actually registered.
 const registry = await buildRegistry();
 const components = registry.list().filter(([, definition]) => definition.domain === 'common');
+const toc = components.map(([, definition]) => ({ id: slugify(definition.title), text: definition.title, level: 2 as const }));
 ---
 
-<DocsLayout title="Common components">
+<DocsLayout title="Common components" toc={toc}>
 	<p>General-purpose and layout components — not domain-specific.</p>
 	{components.map(([name, definition]) => <ComponentReference name={name} definition={definition} />)}
 </DocsLayout>
