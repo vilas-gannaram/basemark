@@ -26,8 +26,5 @@
 		"igv": "^3.8.5",
 		"locuszoom": "^0.14.0",
 		"protvista-uniprot": "^4.9.3"
-	},
-	"devDependencies": {
-		"@basemark/tsconfig-base": "workspace:*"
 	}
 }

@@ -128,7 +128,7 @@ basemark/
 ├── apps/         # deployed, not published (docs site)
 ├── examples/     # per-framework integration demos
 ├── experiments/  # POCs, no stability contract (doesn't exist yet)
-├── configs/      # shared tsconfig/vitest configs
+├── configs/      # shared vitest config
 ├── .changeset/
 ├── turbo.json
 └── pnpm-workspace.yaml  # defines the workspace package globs

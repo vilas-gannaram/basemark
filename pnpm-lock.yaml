@@ -55,8 +55,6 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  configs/tsconfig-base: {}
-
   configs/vitest-config: {}
 
   examples/react:
@@ -83,9 +81,6 @@ importers:
         specifier: ^19.2.8
         version: 19.2.8(react@19.2.8)
     devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.18
@@ -114,9 +109,6 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
     devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
       vite:
         specifier: ^8.1.5
         version: 8.2.2(@types/node@26.4.0)(esbuild@0.27.7)(yaml@2.9.0)
@@ -138,10 +130,6 @@ importers:
       protvista-uniprot:
         specifier: ^4.9.3
         version: 4.9.4(@types/react@19.2.18)(encoding@0.1.13)(fp-ts@2.16.11)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-    devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
 
   packages/charts:
     dependencies:
@@ -151,10 +139,6 @@ importers:
       echarts:
         specifier: ^6.1.0
         version: 6.1.0
-    devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
 
   packages/chem:
     dependencies:
@@ -176,9 +160,6 @@ importers:
       '@basemark/core':
         specifier: workspace:*
         version: link:../core
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
       '@types/hast':
         specifier: ^3.0.5
         version: 3.0.5
@@ -197,10 +178,6 @@ importers:
       '@basemark/core':
         specifier: workspace:*
         version: link:../core
-    devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
 
   packages/core:
     dependencies:
@@ -238,9 +215,6 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
     devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
       '@types/hast':
         specifier: ^3.0.5
         version: 3.0.5
@@ -260,9 +234,6 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8(@types/react@19.2.18)
     devDependencies:
-      '@basemark/tsconfig-base':
-        specifier: workspace:*
-        version: link:../../configs/tsconfig-base
       '@types/hast':
         specifier: ^3.0.5
         version: 3.0.5
