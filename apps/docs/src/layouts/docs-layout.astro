@@ -10,9 +10,16 @@ interface Props {
 	// pages with no single source file (the data-driven component-reference
 	// pages, generated straight from the registry, have nothing to "edit").
 	editPath?: string;
+	// Landing-page treatment (currently just "/") — CSS-only: the content is
+	// still real dogfooded markdown (see apps/docs/README.md), this only
+	// styles it differently, never adds hand-written copy.
+	hero?: boolean;
+	// Homepage skips the generic page <h1> — introduction.md's own opening
+	// paragraph reads as the tagline instead of a redundant "Introduction" heading.
+	hideTitle?: boolean;
 }
 
-const { title, toc = [], editPath } = Astro.props;
+const { title, toc = [], editPath, hero = false, hideTitle = false } = Astro.props;
 const REPO = 'https://github.com/vilas-gannaram/basemark';
 
 const NAV = [
@@ -137,9 +144,9 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 					</a>
 				</div>
 			</nav>
-			<main class="docs-content">
+			<main class={hero ? 'docs-content docs-hero' : 'docs-content'}>
 				<article class="docs-article">
-					<h1>{title}</h1>
+					{!hideTitle && <h1>{title}</h1>}
 					{
 						editPath && (
 							<a class="docs-edit-link" href={`${REPO}/edit/main/apps/docs/${editPath}`} target="_blank" rel="noreferrer">
