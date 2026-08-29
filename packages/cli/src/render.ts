@@ -56,7 +56,7 @@ function usedDomains(hast: HastRoot, registry: ComponentRegistry): Set<string> {
 
 // VISION.md's third consumption path — one self-contained .html, runtime and
 // theme inlined for only the domain(s) this document uses. One exception: the
-// Onest font link below is a real network dependency (falls back to theme.css's system stack).
+// Geist font link below is a real network dependency (falls back to theme.css's system stacks).
 export async function renderToHtml(source: string): Promise<string> {
 	const registry = await buildRegistry();
 	const hast = parseMarkdown(source, registry);
@@ -77,12 +77,13 @@ export async function renderToHtml(source: string): Promise<string> {
 <title>${escapeHtml(deriveTitle(source))}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>${themeCss}</style>${runtimeCss ? `\n<style>${runtimeCss}</style>` : ''}
 <style>
-	/* Matches examples/vanilla's own override — see the module comment on this being the one network dependency. */
+	/* See the module comment on this being the one network dependency. */
 	html:root {
-		--font-sans: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		--font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		--font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 	}
 	h1, h2, h3, h4, h5, h6 {
 		letter-spacing: -0.02em;
@@ -101,7 +102,7 @@ export async function renderToHtml(source: string): Promise<string> {
 </style>
 </head>
 <body>
-<div class="basemark-doc">
+<div class="basemark-doc typeset typeset-docs">
 ${bodyHtml}
 </div>
 <script>${runtimeJs}</script>
