@@ -15,7 +15,7 @@ Search is Pagefind's Component UI (`<pagefind-modal-trigger>`/`<pagefind-modal>`
 
 ## Nav structure
 
-The sidebar (`src/layouts/docs-layout.astro`'s `NAV`) groups pages by pack: Overview, Core (`@basemark/core` itself — install, pipeline, plus the Authoring syntax/Tiering model sub-pages), Common, Bio, Charts, and CLI. Common/Bio/Charts each carry two pages — a component-reference page (schema list) and an Examples page (a full narrative document, ported from `examples/vanilla/content/*.md` so there's one story instead of two to maintain). `@basemark/chem` has neither yet — still a stub.
+The sidebar (`src/layouts/docs-layout.astro`'s `NAV`) groups pages by pack: Overview, Core (`@basemark/core` itself — install, pipeline, plus the Authoring syntax/Tiering model sub-pages), Common, Bio, Charts, and CLI. Common/Bio/Charts each carry two pages — a component-reference page (schema list) and an Examples page (plain per-directive reference, own copy — distinct from the onboarding-story markdown in `examples/vanilla/content/*.md`, which `examples/react` also renders). `@basemark/chem` has neither yet — still a stub.
 
 ## Dev
 

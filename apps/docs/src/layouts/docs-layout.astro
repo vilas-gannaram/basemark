@@ -6,16 +6,14 @@ import type { ITocItem } from '../lib/toc';
 interface Props {
 	title: string;
 	toc?: ITocItem[];
-	// Relative to apps/docs/, e.g. "content/getting-started.md" — omit for
-	// pages with no single source file (the data-driven component-reference
-	// pages, generated straight from the registry, have nothing to "edit").
+	// Relative to apps/docs/; omit for pages with no single source file
+	// (the data-driven component-reference pages).
 	editPath?: string;
-	// Landing-page treatment (currently just "/") — CSS-only: the content is
-	// still real dogfooded markdown (see apps/docs/README.md), this only
-	// styles it differently, never adds hand-written copy.
+	// Landing-page treatment (currently just "/") — CSS-only styling, no
+	// hand-written copy.
 	hero?: boolean;
-	// Homepage skips the generic page <h1> — introduction.md's own opening
-	// paragraph reads as the tagline instead of a redundant "Introduction" heading.
+	// Homepage skips the generic page <h1>; introduction.md's own opening
+	// paragraph reads as the tagline instead.
 	hideTitle?: boolean;
 }
 
@@ -66,25 +64,17 @@ const NAV = [
 	},
 ];
 
-// Strips the configured `base` (only present in the built site, not `dev` —
-// see astro.config.mjs) so it compares against NAV's plain, base-less
-// hrefs, then drops any trailing slash so '/core' and '/core/' both match.
-// Strips the configured `base` (present in Astro.url.pathname for a built
-// site, not in dev — see astro.config.mjs) so it compares against NAV's
-// plain, base-less hrefs. import.meta.env.BASE_URL and Astro.url.pathname
-// disagree on trailing slash ('/Basemark' vs '/Basemark/core/'), so this
-// strips base as a prefix rather than naively .replace()-ing it in place —
-// a plain replace with '/' left a doubled '//core' (confirmed by building).
+// Strips the configured `base` (present in the built site, not `dev`) so
+// this compares against NAV's plain, base-less hrefs; a naive .replace()
+// left a doubled '//core' instead, so strip as a prefix, not in place.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) : Astro.url.pathname).replace(
 	/\/$/,
 	'',
 ) || '/';
 
-// Prev/next reading order — the same flattened NAV order the sidebar
-// displays, not alphabetical or file-tree order. Keeps each item's group
-// label too — "Components"/"Examples" alone repeats across Common/Bio/Charts,
-// meaningless without knowing which pack it's from.
+// Prev/next reading order, flattened from NAV. Keeps each item's group
+// label too — "Components"/"Examples" alone repeats across packs.
 const FLAT_NAV = NAV.flatMap((group) => group.items.map((item) => ({ ...item, group: group.label })));
 const currentIndex = FLAT_NAV.findIndex((item) => item.href === currentPath);
 const prevItem = currentIndex > 0 ? FLAT_NAV[currentIndex - 1] : undefined;
@@ -101,28 +91,23 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
 		{
-			// Pagefind's index only exists after `astro build && pagefind --site dist`
-			// (see package.json) — dist/pagefind/ isn't reachable in `astro dev`, so
-			// search is a production-only feature.
+			// Pagefind's index only exists after `astro build && pagefind --site dist`,
+			// so search is production-only — unreachable in `astro dev`.
 			!import.meta.env.DEV && (
 				<>
 					<link href={`${base}/pagefind/pagefind-component-ui.css`} rel="stylesheet" />
 					<script is:inline src={`${base}/pagefind/pagefind-component-ui.js`} type="module" />
 					{
-						// Auto-detection of the bundle path from the script's own src
-						// isn't reliable in practice under a GitHub Pages subpath — set
-						// it explicitly. Must appear before pagefind-modal-trigger/
-						// pagefind-modal connect, so it stays here in <head>, ahead of
-						// them in <body>.
+						// Auto-detection isn't reliable under a GitHub Pages subpath; set
+						// bundle-path explicitly, before pagefind-modal-trigger connects.
 					}
 					<pagefind-config bundle-path={`${base}/pagefind/`} />
 				</>
 			)
 		}
 		<script is:inline>
-			// Applied before first paint (not in the client register.ts module,
-			// which loads too late and would flash the light theme first) — reads
-			// the same localStorage key the toggle button in this layout writes.
+			// Applied before first paint — register.ts loads too late and would
+			// flash the light theme first.
 			if (localStorage.getItem('basemark-docs-theme') === 'dark') {
 				document.documentElement.classList.add('dark');
 			}
@@ -228,10 +213,8 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 			});
 		</script>
 		<script>
-			// A real module script (not frontmatter — frontmatter runs at build
-			// time in Node, never reaches the browser). Upgrades the
-			// already-resolved custom-element tags renderMarkdownToHtml() baked
-			// into this page's static HTML.
+			// A real module script — frontmatter runs at build time in Node and
+			// never reaches the browser.
 			import '../client/register.ts';
 		</script>
 	</body>

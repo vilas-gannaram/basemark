@@ -1,4 +1,4 @@
-Every `@basemark/bio` directive, in one page. Rendered server-side to static HTML via `renderMarkdownToHtml()`, then upgraded client-side into real custom elements — the same two-step path every narrative page on this site uses.
+Every `@basemark/bio` directive, in one page. Rendered server-side to static HTML via `renderMarkdownToHtml()`, then upgraded client-side into real custom elements — the same two-step path every page on this site uses.
 
 ## Protein sequence & structure
 

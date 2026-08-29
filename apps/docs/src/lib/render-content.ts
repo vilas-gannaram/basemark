@@ -1,11 +1,8 @@
 import { renderMarkdownToHtml, type ComponentRegistry } from '@basemark/core';
 import { extractToc, type ITocItem } from './toc';
 
-// Astro's `base` config only prefixes URLs Astro itself generates (assets,
-// its own <a> hrefs) — not raw href="/..." strings baked into markdown
-// content's rendered HTML (:button{href="/getting-started"} etc.), so those
-// need rewriting by hand. Doesn't touch protocol-relative ("//host") or
-// absolute ("https://...") hrefs — only a single leading slash matches.
+// Astro's `base` only prefixes URLs Astro itself generates, not raw
+// href="/..." strings baked into rendered markdown — rewrite those by hand.
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 export interface IRenderedContent {

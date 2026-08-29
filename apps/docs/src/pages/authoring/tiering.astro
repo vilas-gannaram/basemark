@@ -2,12 +2,12 @@
 import DocsLayout from '../../layouts/docs-layout.astro';
 import { buildRegistry } from '../../lib/registry';
 import { renderContent } from '../../lib/render-content';
-import source from '../../../content/tiering.md?raw';
+import source from '../../../content/authoring/tiering.md?raw';
 
 const registry = await buildRegistry();
 const { html, toc } = renderContent(source, registry);
 ---
 
-<DocsLayout title="Tiering model" toc={toc} editPath="content/tiering.md">
+<DocsLayout title="Tiering model" toc={toc} editPath="content/authoring/tiering.md">
 	<Fragment set:html={html} />
 </DocsLayout>

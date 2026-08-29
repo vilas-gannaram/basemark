@@ -9,9 +9,8 @@ export interface ITocItem {
 const HEADING_RE = /<(h[23])>([\s\S]*?)<\/\1>/g;
 
 // Injects an id into each h2/h3 in already-rendered HTML and returns the
-// items for an "on this page" nav. Headings are content-authored (## / ###
-// in our own .md files), never attacker-controlled — same trust level as
-// render-content.ts's own href-rewriting regex over the same HTML.
+// items for an "on this page" nav. Headings are content-authored, never
+// attacker-controlled.
 export function extractToc(html: string): { html: string; items: ITocItem[] } {
 	const items: ITocItem[] = [];
 	const seen = new Map<string, number>();
