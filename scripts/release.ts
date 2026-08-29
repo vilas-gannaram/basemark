@@ -11,6 +11,6 @@ if (resolve.exitCode !== 0) {
 	process.exit(resolve.exitCode ?? 1);
 }
 
-const publish = Bun.spawnSync(['bunx', 'changeset', 'publish'], { stdout: 'inherit', stderr: 'inherit' });
+const publish = Bun.spawnSync(['bunx', 'changeset', 'publish', '--git-tag=false'], { stdout: 'inherit', stderr: 'inherit' });
 restore();
 process.exit(publish.exitCode ?? 1);
