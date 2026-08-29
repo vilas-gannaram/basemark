@@ -2,37 +2,30 @@ import { parseMarkdown, type ComponentRegistry } from '@basemark/core';
 import { toHtml } from 'hast-util-to-html';
 import { visit } from 'unist-util-visit';
 import type { Element as HastElement, Root as HastRoot } from 'hast';
+import { readFileSync } from 'node:fs';
 import { buildRegistry } from './registry';
 
-// Static text import, not runtime `import.meta.resolve` + file read — the
-// bundler only inlines a `with { type: 'text' }` import when it's visible
-// ahead of time, not a dynamically-resolved path.
-// @ts-expect-error -- no .d.ts for the text-loader import form
-import themeCss from '@basemark/core/theme.css' with { type: 'text' };
-// Pre-bundled by scripts/bundle-runtime.ts — run `bun run bundle:runtime`
-// (or `bun run build`) once after cloning before these resolve to anything real.
-// base.runtime.js is always inlined; the rest only when usedDomains() needs them (bio alone is ~5MB).
-// @ts-expect-error -- no .d.ts for the text-loader import form
-import baseRuntimeJs from './generated/base.runtime.js' with { type: 'text' };
-// @ts-expect-error -- no .d.ts for the text-loader import form
-import commonRuntimeJs from './generated/common.runtime.js' with { type: 'text' };
-// @ts-expect-error -- no .d.ts for the text-loader import form
-import bioRuntimeJs from './generated/bio.runtime.js' with { type: 'text' };
-// @ts-expect-error -- no .d.ts for the text-loader import form
-import chartsRuntimeJs from './generated/charts.runtime.js' with { type: 'text' };
-// bio.ts's dynamic locuszoom.css import emits its own output chunk — skip
-// inlining it and every locuszoom-* component renders with no styling (a real shipped bug, see bundle-runtime.ts).
-// @ts-expect-error -- no .d.ts for the text-loader import form
-import bioRuntimeCss from './generated/bio.runtime.css' with { type: 'text' };
+// Read at runtime, relative to this module's own location, rather than
+// bundled in as string literals — keeps the bundler-agnostic. Assets are
+// copied next to dist/index.js by tsup.config.ts's onSuccess hook, sourced
+// from scripts/bundle-runtime.ts's output (run via `pnpm run bundle:runtime`,
+// or `pnpm run build`, once after cloning) plus @basemark/core's theme.css.
+// base.js is always inlined; the rest only when usedDomains() needs them (bio alone is ~5MB).
+function readAsset(relativePath: string): string {
+	return readFileSync(new URL(relativePath, import.meta.url), 'utf-8');
+}
+
+const themeCss = readAsset('./generated/theme.css');
+const baseRuntimeJs = readAsset('./generated/base.global.js');
 
 const DOMAIN_RUNTIME: Record<string, string> = {
-	common: commonRuntimeJs,
-	bio: bioRuntimeJs,
-	charts: chartsRuntimeJs,
+	common: readAsset('./generated/common.global.js'),
+	bio: readAsset('./generated/bio.global.js'),
+	charts: readAsset('./generated/charts.global.js'),
 };
 
 const DOMAIN_CSS: Record<string, string> = {
-	bio: bioRuntimeCss,
+	bio: readAsset('./generated/bio.css'),
 };
 
 // Falls back to the source's first ATX heading, then a fixed default — no need for a full front-matter parser.

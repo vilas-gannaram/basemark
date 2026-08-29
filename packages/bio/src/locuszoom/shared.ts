@@ -30,7 +30,7 @@ let plotIdCounter = 0;
 // shadow root and silently no-ops (open leak risk, see ARCH §10).
 //
 // async — `locuszoom`/its CSS touch `window`/`d3` at module scope (confirmed
-// crash under plain Bun), so both are dynamically imported and awaited first.
+// crash under plain Node), so both are dynamically imported and awaited first.
 export async function createLocusZoomElement<A extends string>(config: ILocusZoomElementConfig<A>): Promise<CustomElementConstructor> {
 	const { default: LocusZoom } = await import('locuszoom');
 	await import('locuszoom/dist/locuszoom.css');

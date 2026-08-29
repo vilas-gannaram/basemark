@@ -1,7 +1,7 @@
 import * as echarts from 'echarts';
 import type { ComponentRegistry } from '@basemark/core';
 
-// echarts imports cleanly under Bun with no DOM — unlike @basemark/bio, no
+// echarts imports cleanly under Node with no DOM — unlike @basemark/bio, no
 // dynamic import needed, only the module-scope class guard (AGENTS.md).
 
 // Splits two parallel comma-separated lists into rows. Mismatched lengths

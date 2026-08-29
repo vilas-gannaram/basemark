@@ -24,7 +24,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "bun run scripts/build.ts",
+		"build": "tsup",
 		"check-types": "tsc --noEmit",
 		"test": "vitest run"
 	},
@@ -43,6 +43,7 @@
 	},
 	"devDependencies": {
 		"@basemark/tsconfig-base": "workspace:*",
+		"@basemark/tsup-config": "workspace:*",
 		"@types/hast": "^3.0.5",
 		"@types/mdast": "^4.0.4",
 		"vitest": "^4.1.10"

@@ -28,7 +28,7 @@ const STYLES = `
 // not a global ID selector (unlike LocusZoom's d3.select('div#'+id)).
 //
 // async — igv touches `document` at module scope (confirmed crash under
-// plain Bun), so the import is deferred and awaited first.
+// plain Node), so the import is deferred and awaited first.
 export async function registerGenomeBrowser(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
 		const { default: igv } = await import('igv');

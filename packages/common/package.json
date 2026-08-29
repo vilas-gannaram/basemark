@@ -17,13 +17,14 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "bun run scripts/build.ts",
+		"build": "tsup",
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@basemark/core": "workspace:*"
 	},
 	"devDependencies": {
-		"@basemark/tsconfig-base": "workspace:*"
+		"@basemark/tsconfig-base": "workspace:*",
+		"@basemark/tsup-config": "workspace:*"
 	}
 }
