@@ -232,7 +232,7 @@ PublishScripts/
 # NuGet Symbol Packages
 *.snupkg
 # The packages folder can be ignored because of Package Restore
-# (NuGet convention — disabled here since packages/ is our Bun workspace)
+# (NuGet convention — disabled here since packages/ is our pnpm workspace)
 # **/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
 # !**/[Pp]ackages/build/

@@ -5,7 +5,7 @@ React binding for `@basemark/core`. Renders a parsed Markdown+directive document
 ## Install
 
 ```sh
-bun add @basemark/core @basemark/react
+pnpm add @basemark/core @basemark/react
 ```
 
 Requires `react` >=18 as a peer dependency (not bundled).

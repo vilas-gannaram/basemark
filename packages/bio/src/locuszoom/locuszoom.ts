@@ -27,7 +27,7 @@ declare module 'locuszoom' {
 	}
 }
 
-declare module 'locuszoom/dist/locuszoom.css';
+declare module 'locuszoom/dist/locuszoom.css' {}
 
 // Ext plugins each export an install(LocusZoom) function meant for
 // LocusZoom.use(). Typed loosely — only enough surface for what this

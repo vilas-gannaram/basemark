@@ -3,9 +3,9 @@
 `@basemark/core` plus whichever component packs your document actually uses; none are bundled together, so a `common`-only app doesn't pull in `bio`'s much heavier vendor libraries.
 
 ```sh
-bun add @basemark/core @basemark/common
+pnpm add @basemark/core @basemark/common
 # add @basemark/bio and/or @basemark/charts as needed
-# React apps also need: bun add @basemark/react
+# React apps also need: pnpm add @basemark/react
 ```
 
 Pick whichever consumption path below matches your app. All three resolve the same directive syntax against the same component registry — see [Authoring syntax](/authoring/syntax) for the markdown itself.

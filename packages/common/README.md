@@ -5,7 +5,7 @@ General-purpose components for Markdown — cards, tabs, accordions, alerts, med
 ## Install
 
 ```sh
-bun add @basemark/core @basemark/common
+pnpm add @basemark/core @basemark/common
 ```
 
 ## Usage

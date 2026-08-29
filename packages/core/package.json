@@ -24,7 +24,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "bun run scripts/build.ts",
+		"build": "tsup",
 		"check-types": "tsc --noEmit",
 		"test": "vitest run"
 	},

@@ -12,7 +12,7 @@ npm install -g @basemark/cli
 basemark render doc.md -o doc.html
 ```
 
-Runs on plain Node — no Bun install required. `dist/index.js` is a self-contained bundle (every dependency, including `@basemark/bio`/`common`/`charts`, is built in); your markdown input is **not** embedded, it's read from disk each run.
+Runs on plain Node. `dist/index.js` is a self-contained bundle (every dependency, including `@basemark/bio`/`common`/`charts`, is built in); your markdown input is **not** embedded, it's read from disk each run.
 
 ## What gets resolved
 
@@ -37,11 +37,11 @@ The "component runtime" is separate: browser-side JS that calls every `register*
 
 ### Runtime bundling: pre-built, split per domain, inlined per document
 
-The runtime is bundled **at CLI build time**, not per-render — `scripts/bundle-runtime.ts` runs `Bun.build()` once per entry in `src/runtime/` (`base`, `common`, `bio`, `charts`), writing each to `src/generated/`. `render.ts` pulls each in via a static text import, same as `theme.css`.
+The runtime is bundled **at CLI build time**, not per-render — `scripts/bundle-runtime.ts` runs `tsup` once for every entry in `src/runtime/` (`base`, `common`, `bio`, `charts`), writing each to `src/generated/`. `tsup.config.ts`'s `onSuccess` hook copies those (plus `theme.css`) into `dist/generated/`, and `render.ts` reads each one at runtime via a plain `fs.readFileSync` relative to its own module location.
 
-Why build-time, not per-render: a per-render `Bun.build()` call needs a real filesystem to bundle from — doesn't survive being bundled itself. A static import, unlike a runtime call, is visible to the bundler ahead of time and gets embedded as a string constant.
+Why build-time, not per-render: a per-render bundler call needs a real filesystem to bundle from — doesn't survive being bundled itself.
 
-Why four bundles, not one: `bio.runtime.js` is ~5MB (3Dmol.js/protvista-uniprot/locuszoom); `charts.runtime.js` (ECharts) is ~1.2MB; `common.runtime.js` is ~30KB; `base.runtime.js` (just the error component, always inlined) is ~2KB. `render.ts`'s `usedDomains()` checks which domains a document's resolved tags actually belong to, and only inlines the bundles it needs — a `card`-only doc stays small, a `::protvista{}` doc picks up the 5MB `bio` bundle but nothing else.
+Why four bundles, not one: `bio.global.js` is ~5MB (3Dmol.js/protvista-uniprot/locuszoom); `charts.global.js` (ECharts) is ~1.2MB; `common.global.js` is ~30KB; `base.global.js` (just the error component, always inlined) is ~2KB. `render.ts`'s `usedDomains()` checks which domains a document's resolved tags actually belong to, and only inlines the bundles it needs — a `card`-only doc stays small, a `::protvista{}` doc picks up the 5MB `bio` bundle but nothing else.
 
 ## Known gaps
 

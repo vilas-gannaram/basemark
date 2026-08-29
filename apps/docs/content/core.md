@@ -3,7 +3,7 @@
 ## Install
 
 ```sh
-bun add @basemark/core
+pnpm add @basemark/core
 ```
 
 ## The pipeline

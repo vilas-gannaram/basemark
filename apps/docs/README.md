@@ -18,9 +18,9 @@ The sidebar (`src/layouts/docs-layout.astro`'s `NAV`) groups pages by pack: Over
 ## Dev
 
 ```sh
-bun run --filter=docs dev       # http://localhost:4321
-bun run --filter=docs build     # writes dist/
-bun run --filter=docs check-types   # astro check, not plain tsc — .astro files need it
+pnpm --filter docs dev       # http://localhost:4321
+pnpm --filter docs build     # writes dist/
+pnpm --filter docs check-types   # astro check, not plain tsc — .astro files need it
 ```
 
 ## Known gaps
