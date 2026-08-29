@@ -31,6 +31,6 @@ Prettier + ESLint run via a Husky pre-commit hook (`lint-staged`). Don't hand-fo
 
 ## Status
 
-Pre-alpha, core pipeline works end-to-end — see README.md's package table for what each package is. `packages/chem` and `packages/svelte` are still stubs; everything else listed there is real.
+Alpha — core pipeline works end-to-end and `bio`/`common`/`charts`/`react`/`cli` are published to npm, but breaking changes are still expected. See README.md's package table for what each package is. `packages/chem` and `packages/svelte` are still stubs; everything else listed there is real.
 
 Open questions: ARCHITECTURE.md §9.
