@@ -6,6 +6,8 @@ Basemark's documentation site — for end users authoring Basemark markdown (hum
 
 Astro, static output. No React/MDX — content resolves to plain HTML at build time via `renderMarkdownToHtml()` (Node-safe, same function `@basemark/cli` uses), and the already-resolved custom-element tags upgrade client-side via one shared script. Theming is `@basemark/core/theme.css` directly, same tokens every other package and the CLI's own rendered output use — no Tailwind/UI-kit.
 
+Search is Pagefind's Component UI (`<pagefind-modal-trigger>`/`<pagefind-modal>`, triggered from the sidebar header). `data-pagefind-body` on `docs-layout.astro`'s `<article>` scopes indexing to actual page content — without it Pagefind indexes the whole `<body>`, sidebar nav/footer included, on every page. `--pf-*` custom properties in `docs.css` map Pagefind's own theming variables onto our tokens, so it follows the site's light/dark toggle automatically.
+
 ## Two ways a page gets built
 
 - **Narrative pages** (`/`, `/getting-started`, `/core`, `/cli`, `/authoring/*`, `/examples*`) — real `.md` files under `content/`, loaded via Vite's `?raw` import and rendered with `renderMarkdownToHtml()` in each page's frontmatter.
@@ -25,7 +27,7 @@ pnpm --filter docs check-types   # astro check, not plain tsc — .astro files n
 
 ## Known gaps
 
-- No search (Pagefind would be the natural fit for a static Astro site — not built).
+- Search (Pagefind) only works on the built/previewed site — `pagefind --site dist` runs as a `build` postbuild step (see `package.json`), and `dist/pagefind/` doesn't exist for `astro dev` to serve, so the search trigger is hidden there.
 - Prettier has no `.astro`-file support wired up (`prettier-plugin-astro` isn't installed) — `.astro` files aren't auto-formatted by the pre-commit hook the way `.ts`/`.json` are.
 - `packages/chem` isn't in the reference pages — still an empty stub, nothing to register yet.
 - `astro.config.mjs`'s `base: '/Basemark'` assumes a GitHub Pages project site at that exact repo name/casing — see `.github/workflows/deploy-docs.yml`.

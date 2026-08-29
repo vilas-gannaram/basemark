@@ -100,6 +100,17 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
+		{
+			// Pagefind's index only exists after `astro build && pagefind --site dist`
+			// (see package.json) — dist/pagefind/ isn't reachable in `astro dev`, so
+			// search is a production-only feature.
+			!import.meta.env.DEV && (
+				<>
+					<link href={`${base}/pagefind/pagefind-component-ui.css`} rel="stylesheet" />
+					<script is:inline src={`${base}/pagefind/pagefind-component-ui.js`} type="module" />
+				</>
+			)
+		}
 		<script is:inline>
 			// Applied before first paint (not in the client register.ts module,
 			// which loads too late and would flash the light theme first) — reads
@@ -114,8 +125,14 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 			<nav class="docs-sidebar" aria-label="Documentation">
 				<div class="docs-sidebar-header">
 					<a class="docs-brand" href={base || '/'}>Basemark</a>
-					<button id="theme-toggle" class="docs-theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
+					<div class="docs-sidebar-header-actions">
+						{!import.meta.env.DEV && (
+							<pagefind-modal-trigger class="docs-search-trigger" compact hide-shortcut aria-label="Search" />
+						)}
+						<button id="theme-toggle" class="docs-theme-toggle" type="button" aria-label="Toggle dark mode">◐</button>
+					</div>
 				</div>
+				{!import.meta.env.DEV && <pagefind-modal />}
 				{
 					NAV.map((group) => (
 						<div class="docs-nav-group">
@@ -145,11 +162,11 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 				</div>
 			</nav>
 			<main class={hero ? 'docs-content docs-hero' : 'docs-content'}>
-				<article class="docs-article">
+				<article class="docs-article" data-pagefind-body>
 					{!hideTitle && <h1>{title}</h1>}
 					{
 						editPath && (
-							<a class="docs-edit-link" href={`${REPO}/edit/main/apps/docs/${editPath}`} target="_blank" rel="noreferrer">
+							<a class="docs-edit-link" data-pagefind-ignore href={`${REPO}/edit/main/apps/docs/${editPath}`} target="_blank" rel="noreferrer">
 								Edit this page on GitHub →
 							</a>
 						)
@@ -157,7 +174,7 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 					<slot />
 					{
 						(prevItem || nextItem) && (
-							<nav class="docs-prev-next" aria-label="Prev/next">
+							<nav class="docs-prev-next" aria-label="Prev/next" data-pagefind-ignore>
 								{prevItem ? (
 									<a class="docs-prev-next-link docs-prev" href={base + prevItem.href}>
 										<span class="docs-prev-next-label">← Previous</span>

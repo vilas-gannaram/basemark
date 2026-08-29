@@ -67,6 +67,38 @@ body {
 	cursor: pointer;
 }
 
+.docs-sidebar-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+/*
+ * Pagefind's Component UI (dist/pagefind/pagefind-component-ui.css, generated
+ * by the `pagefind` CLI post-build step — search-config.md) themes itself via
+ * these --pf-* custom properties, not our own tokens directly. Mapping them
+ * here keeps it in sync with our .dark toggle automatically — no separate
+ * data-pf-theme wiring needed.
+ */
+:root {
+	--pf-text: var(--foreground);
+	--pf-text-secondary: var(--muted-foreground);
+	--pf-text-muted: var(--muted-foreground);
+	--pf-background: var(--card);
+	--pf-border: var(--border);
+	--pf-border-focus: var(--ring);
+	--pf-hover: var(--muted);
+	--pf-mark: var(--primary);
+	--pf-modal-backdrop: rgba(0, 0, 0, 0.5);
+	--pf-font: var(--font-sans);
+	--pf-outline-focus: var(--ring);
+}
+
+.docs-search-trigger {
+	--pf-input-height: 2rem;
+	border-radius: var(--radius);
+}
+
 .docs-nav-group {
 	margin-bottom: 1.25rem;
 }
