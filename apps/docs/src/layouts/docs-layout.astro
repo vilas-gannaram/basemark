@@ -4,9 +4,16 @@ import '../styles/docs.css';
 
 interface Props {
 	title: string;
+	// Landing-page treatment (currently just "/") — CSS-only: the content is
+	// still real dogfooded markdown (see apps/docs/README.md), this only
+	// styles it differently, never adds hand-written copy.
+	hero?: boolean;
+	// Homepage skips the generic page <h1> — introduction.md's own opening
+	// paragraph reads as the tagline instead of a redundant "Introduction" heading.
+	hideTitle?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, hero = false, hideTitle = false } = Astro.props;
 
 const NAV = [
 	{
@@ -110,8 +117,8 @@ const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pat
 					))
 				}
 			</nav>
-			<main class="docs-content">
-				<h1>{title}</h1>
+			<main class={hero ? 'docs-content docs-hero' : 'docs-content'}>
+				{!hideTitle && <h1>{title}</h1>}
 				<slot />
 			</main>
 		</div>

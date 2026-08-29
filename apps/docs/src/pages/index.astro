@@ -8,6 +8,6 @@ const registry = await buildRegistry();
 const html = renderContent(source, registry);
 ---
 
-<DocsLayout title="Introduction">
+<DocsLayout title="Introduction" hero hideTitle>
 	<Fragment set:html={html} />
 </DocsLayout>
