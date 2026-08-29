@@ -80,7 +80,7 @@ function App() {
 					</a>
 				))}
 			</nav>
-			<div className="content">
+			<div className="content typeset typeset-docs">
 				<MarkdownRenderer source={page.source} registry={registry} />
 			</div>
 		</>
