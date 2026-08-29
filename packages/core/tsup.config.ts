@@ -11,7 +11,11 @@ export default {
 	clean: true,
 	sourcemap: true,
 	async onSuccess() {
-		const { copyFile } = await import('node:fs/promises');
-		await copyFile('src/theme.css', 'dist/theme.css');
+		// Concatenated, not a `@import './typeset.css'` left in the shipped
+		// file — packages/cli inlines this file's content into one <style>
+		// tag, where a relative @import can't resolve.
+		const { readFile, writeFile } = await import('node:fs/promises');
+		const [theme, typeset] = await Promise.all([readFile('src/theme.css', 'utf-8'), readFile('src/typeset.css', 'utf-8')]);
+		await writeFile('dist/theme.css', `${theme}\n${typeset}`);
 	},
 };

@@ -69,11 +69,11 @@
 	--border: oklch(0.922 0 0);
 	--input: oklch(0.922 0 0);
 	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.87 0 0);
-	--chart-2: oklch(0.556 0 0);
-	--chart-3: oklch(0.439 0 0);
-	--chart-4: oklch(0.371 0 0);
-	--chart-5: oklch(0.269 0 0);
+	--chart-1: oklch(0.845 0.143 164.978);
+	--chart-2: oklch(0.696 0.17 162.48);
+	--chart-3: oklch(0.596 0.145 163.225);
+	--chart-4: oklch(0.508 0.118 165.612);
+	--chart-5: oklch(0.432 0.095 166.913);
 	--radius: 0.625rem;
 	--sidebar: oklch(0.985 0 0);
 	--sidebar-foreground: oklch(0.145 0 0);
@@ -104,11 +104,11 @@
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
 	--ring: oklch(0.556 0 0);
-	--chart-1: oklch(0.87 0 0);
-	--chart-2: oklch(0.556 0 0);
-	--chart-3: oklch(0.439 0 0);
-	--chart-4: oklch(0.371 0 0);
-	--chart-5: oklch(0.269 0 0);
+	--chart-1: oklch(0.845 0.143 164.978);
+	--chart-2: oklch(0.696 0.17 162.48);
+	--chart-3: oklch(0.596 0.145 163.225);
+	--chart-4: oklch(0.508 0.118 165.612);
+	--chart-5: oklch(0.432 0.095 166.913);
 	--sidebar: oklch(0.205 0 0);
 	--sidebar-foreground: oklch(0.985 0 0);
 	--sidebar-primary: oklch(0.488 0.243 264.376);
@@ -119,13 +119,6 @@
 	--sidebar-ring: oklch(0.556 0 0);
 }
 
-/*
- * Plain markdown prose (h1-h6, p, ul/ol, ...) renders as ordinary light-DOM
- * elements, not inside any component's shadow root — so unlike every
- * component's own :host { font-family: var(--font-sans) }, nothing sets its
- * font unless the host page's body already does. Setting it here once, and
- * letting it inherit down, covers all of it without per-tag rules.
- */
 body {
 	font-family: var(--font-sans);
 	font-size: var(--text-base);
@@ -146,179 +139,77 @@ body {
 	color: var(--primary-foreground);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	font-weight: 600;
-	line-height: var(--leading-tight);
-}
 /*
- * Vertical rhythm: margin-top separates a heading from whatever preceded it
- * (unrelated content above), margin-bottom ties it to the content that
- * follows (which it's introducing) — so top is deliberately larger than
- * bottom at every level, and both shrink together as heading level
- * increases. `:first-child` drops the top margin so a page/container's
- * opening heading doesn't add extra space on top of the container's own
- * padding.
+ * Rendered-markdown typography (headings, tables, code, lists, ...) lives in
+ * typeset.css, concatenated after this file at build time (tsup.config.ts) —
+ * scoped under a `.typeset` container instead of bare element selectors, so
+ * importing this file no longer themes every h1/table/code on the host page.
+ * Wrap rendered markdown output in <div class="typeset typeset-docs">.
  */
-h1 {
-	font-size: var(--text-2xl);
-	font-weight: 700;
-	margin: 2.5rem 0 1rem;
-}
-h2 {
-	font-size: var(--text-xl);
-	margin: 2rem 0 0.875rem;
-}
-h3 {
-	font-size: var(--text-lg);
-	line-height: var(--leading-snug);
-	margin: 1.75rem 0 0.75rem;
-}
-h4,
-h5,
-h6 {
-	font-size: var(--text-base);
-	margin: 1.25rem 0 0.5rem;
-}
-h1:first-child,
-h2:first-child,
-h3:first-child,
-h4:first-child,
-h5:first-child,
-h6:first-child {
-	margin-top: 0;
-}
-
-/*
- * Plain Markdown `![alt](url)` — same bucket as h1-h6/table above, ordinary
- * light-DOM output with no directive or component involved. max-width: 100%
- * keeps a wide source image from overflowing a narrower host container
- * (e.g. examples/vanilla's 860px #root) instead of forcing a horizontal
- * scrollbar on the page.
- */
-img {
-	max-width: 100%;
-	height: auto;
-	border-radius: var(--radius);
-}
-
-/*
- * GFM pipe-table syntax (remark-gfm, wired up in parse.ts) renders as a plain
- * light-DOM <table> — same situation as h1-h6/p/ul above, not a shadow-DOM
- * component — so it's themed here globally rather than via a custom element.
- */
-table {
-	width: 100%;
-	margin: 1.5rem 0;
-	border-collapse: collapse;
-	font-size: var(--text-sm);
-	line-height: var(--leading-normal);
-}
-th,
-td {
-	padding: 0.5rem 0.75rem;
-	text-align: left;
-	border-bottom: 1px solid var(--border);
-}
-thead th {
-	color: var(--muted-foreground);
-	font-weight: 500;
-}
-tbody tr:hover {
-	background: var(--muted);
-}
-
-/*
- * Inline code (`like this`) vs fenced code blocks (<pre><code>) — both plain
- * light-DOM output, same bucket as h1-h6/table/p above. `code`'s font-size is
- * `em`-relative (not a fixed --text-* token) so it scales with whatever
- * surrounding text it's inside — a heading's inline code stays proportional
- * to the heading instead of always rendering small. `pre code` resets that
- * back to a fixed size, since a code block isn't nested inside prose sized
- * text the same way.
- */
-code {
-	font-family: var(--font-mono);
-	font-size: 0.875em;
-	background: var(--muted);
-	padding: 0.15em 0.4em;
-	border-radius: var(--radius);
-}
-pre {
-	margin: 1.5rem 0;
-	padding: 1rem;
-	background: var(--muted);
-	border-radius: var(--radius);
-	overflow-x: auto;
-	line-height: var(--leading-normal);
-}
-pre code {
-	background: none;
-	padding: 0;
-	border-radius: 0;
-	font-size: var(--text-sm);
+.typeset-docs {
+	--typeset-font-body: var(--font-sans);
+	--typeset-font-heading: var(--font-sans);
+	--typeset-font-mono: var(--font-mono);
+	--typeset-size: var(--text-base);
+	--typeset-leading: var(--leading-loose);
+	--typeset-flow: 1.25em;
 }
 
 /*
  * rehype-highlight (wired up in parse.ts, via lowlight — no DOM, stays
  * synchronous, unlike Shiki) emits plain `hljs-*` classes, not inline
  * colors — themed here against this file's own OKLCH tokens rather than an
- * imported highlight.js theme, so highlighted code respects light/dark the
- * same way everything else in this file does. --chart-1..5 are a neutral
- * lightness ramp (not distinct hues, by design — see their definitions
- * above), so weight/italic carry more of the visual distinction here than
- * hue does.
+ * imported highlight.js theme. Scoped under `.typeset` since highlighted
+ * code only ever appears inside rendered markdown. --chart-1..5 are a
+ * neutral lightness ramp (not distinct hues, by design), so weight/italic
+ * carry more of the visual distinction here than hue does.
  */
-.hljs-comment,
-.hljs-quote {
+.typeset .hljs-comment,
+.typeset .hljs-quote {
 	color: var(--muted-foreground);
 	font-style: italic;
 }
-.hljs-keyword,
-.hljs-selector-tag,
-.hljs-literal,
-.hljs-type {
+.typeset .hljs-keyword,
+.typeset .hljs-selector-tag,
+.typeset .hljs-literal,
+.typeset .hljs-type {
 	color: var(--chart-5);
 	font-weight: 600;
 }
-.hljs-string,
-.hljs-attr,
-.hljs-template-tag,
-.hljs-template-variable {
+.typeset .hljs-string,
+.typeset .hljs-attr,
+.typeset .hljs-template-tag,
+.typeset .hljs-template-variable {
 	color: var(--chart-2);
 }
-.hljs-number,
-.hljs-symbol,
-.hljs-bullet {
+.typeset .hljs-number,
+.typeset .hljs-symbol,
+.typeset .hljs-bullet {
 	color: var(--chart-3);
 }
-.hljs-title,
-.hljs-section,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class {
+.typeset .hljs-title,
+.typeset .hljs-section,
+.typeset .hljs-name,
+.typeset .hljs-selector-id,
+.typeset .hljs-selector-class {
 	color: var(--chart-4);
 	font-weight: 600;
 }
-.hljs-variable,
-.hljs-attribute,
-.hljs-built_in,
-.hljs-builtin-name {
+.typeset .hljs-variable,
+.typeset .hljs-attribute,
+.typeset .hljs-built_in,
+.typeset .hljs-builtin-name {
 	color: var(--chart-4);
 }
-.hljs-deletion {
+.typeset .hljs-deletion {
 	color: var(--destructive);
 }
-.hljs-addition {
+.typeset .hljs-addition {
 	color: var(--chart-2);
 }
-.hljs-emphasis {
+.typeset .hljs-emphasis {
 	font-style: italic;
 }
-.hljs-strong {
+.typeset .hljs-strong {
 	font-weight: 700;
 }
