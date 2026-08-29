@@ -108,6 +108,14 @@ const nextItem = currentIndex >= 0 && currentIndex < FLAT_NAV.length - 1 ? FLAT_
 				<>
 					<link href={`${base}/pagefind/pagefind-component-ui.css`} rel="stylesheet" />
 					<script is:inline src={`${base}/pagefind/pagefind-component-ui.js`} type="module" />
+					{
+						// Auto-detection of the bundle path from the script's own src
+						// isn't reliable in practice under a GitHub Pages subpath — set
+						// it explicitly. Must appear before pagefind-modal-trigger/
+						// pagefind-modal connect, so it stays here in <head>, ahead of
+						// them in <body>.
+					}
+					<pagefind-config bundle-path={`${base}/pagefind/`} />
 				</>
 			)
 		}
