@@ -150,9 +150,27 @@ body {
 	--typeset-font-body: var(--font-sans);
 	--typeset-font-heading: var(--font-sans);
 	--typeset-font-mono: var(--font-mono);
-	--typeset-size: var(--text-base);
 	--typeset-leading: var(--leading-loose);
 	--typeset-flow: 1.25em;
+	/*
+	 * font-size set directly, not via --typeset-size: typeset.css's own
+	 * @layer components rule multiplies --typeset-size by 1.125 below its
+	 * 768px breakpoint, which doesn't compose with a 3-tier scale. This
+	 * rule is unlayered, so it always wins over that regardless of order.
+	 */
+	font-size: 15px;
+}
+
+@media (min-width: 64rem) {
+	.typeset-docs {
+		font-size: 16px;
+	}
+}
+
+@media (min-width: 90rem) {
+	.typeset-docs {
+		font-size: 18px;
+	}
 }
 
 /*
