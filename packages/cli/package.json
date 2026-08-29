@@ -21,7 +21,8 @@
 		"check-types": "tsc --noEmit",
 		"bundle:runtime": "node scripts/bundle-runtime.ts",
 		"build:skill": "node scripts/build-skill.ts",
-		"build": "pnpm run bundle:runtime && pnpm run build:skill && tsup"
+		"generate:assets": "node scripts/generate-assets.ts",
+		"build": "pnpm run bundle:runtime && pnpm run build:skill && pnpm run generate:assets && tsup"
 	},
 	"devDependencies": {
 		"@basemark/bio": "workspace:*",

@@ -1,26 +1,25 @@
-import { copyFile, mkdir, rm } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { rm } from 'node:fs/promises';
 
-// No `external`/`noExternal` split — bundle every dependency in, so the
-// published npm `bin` is a single self-contained dist/index.js.
+// `bin` must be one real standalone file, not dist/index.js plus a pile of
+// runtime companions — no `external`/`noExternal` split (bundle every
+// dependency in) and `splitting: false` (tsup/esbuild default splitting to
+// true for esm, which chunks out @basemark/bio's dynamic vendor-library
+// imports even though that code never runs under Node — see AGENTS.md's
+// dynamic-import guard pattern). Its assets (theme.css, the runtime IIFE
+// bundles, bio.css) are baked in as string constants by
+// scripts/generate-assets.ts, imported normally, rather than read off disk
+// at runtime, so there's nothing left for dist/generated/ to hold.
 export default {
 	entry: ['src/index.ts'],
 	outDir: 'dist',
 	format: 'esm',
 	platform: 'node',
 	noExternal: [/.*/],
+	splitting: false,
 	dts: false,
 	clean: true,
-	sourcemap: true,
+	sourcemap: false,
 	async onSuccess() {
-		await mkdir('dist/generated', { recursive: true });
-		const themeCssPath = fileURLToPath(import.meta.resolve('@basemark/core/theme.css'));
-		await copyFile(themeCssPath, 'dist/generated/theme.css');
-		for (const name of ['base', 'common', 'bio', 'charts']) {
-			await copyFile(`src/generated/${name}.global.js`, `dist/generated/${name}.global.js`);
-		}
-		await copyFile('src/generated/bio.css', 'dist/generated/bio.css');
-
 		// @basemark/bio's dynamic `import("locuszoom/dist/locuszoom.css")` (behind
 		// the same HTMLElement guard as its component classes, so it never
 		// actually runs under Node) still gets statically picked up as an

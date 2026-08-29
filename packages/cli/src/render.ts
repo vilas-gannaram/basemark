@@ -2,31 +2,8 @@ import { parseMarkdown, type ComponentRegistry } from '@basemark/core';
 import { toHtml } from 'hast-util-to-html';
 import { visit } from 'unist-util-visit';
 import type { Element as HastElement, Root as HastRoot } from 'hast';
-import { readFileSync } from 'node:fs';
 import { buildRegistry } from './registry';
-
-// Read at runtime, relative to this module's own location, rather than
-// bundled in as string literals — keeps the bundler-agnostic. Assets are
-// copied next to dist/index.js by tsup.config.ts's onSuccess hook, sourced
-// from scripts/bundle-runtime.ts's output (run via `pnpm run bundle:runtime`,
-// or `pnpm run build`, once after cloning) plus @basemark/core's theme.css.
-// base.js is always inlined; the rest only when usedDomains() needs them (bio alone is ~5MB).
-function readAsset(relativePath: string): string {
-	return readFileSync(new URL(relativePath, import.meta.url), 'utf-8');
-}
-
-const themeCss = readAsset('./generated/theme.css');
-const baseRuntimeJs = readAsset('./generated/base.global.js');
-
-const DOMAIN_RUNTIME: Record<string, string> = {
-	common: readAsset('./generated/common.global.js'),
-	bio: readAsset('./generated/bio.global.js'),
-	charts: readAsset('./generated/charts.global.js'),
-};
-
-const DOMAIN_CSS: Record<string, string> = {
-	bio: readAsset('./generated/bio.css'),
-};
+import { themeCss, baseRuntimeJs, domainRuntime as DOMAIN_RUNTIME, domainCss as DOMAIN_CSS } from './generated/assets';
 
 // Falls back to the source's first ATX heading, then a fixed default — no need for a full front-matter parser.
 function deriveTitle(source: string): string {
