@@ -55,8 +55,6 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  configs/vitest-config: {}
-
   examples/react:
     dependencies:
       '@basemark/bio':
