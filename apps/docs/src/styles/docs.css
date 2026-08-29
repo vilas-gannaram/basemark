@@ -132,6 +132,47 @@ body {
 	border-bottom: none;
 }
 
+.docs-prev-next {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: 3rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--border);
+}
+
+.docs-prev-next-link {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	max-width: 48%;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	text-decoration: none;
+	color: var(--foreground);
+}
+
+.docs-prev-next-link:hover {
+	background: var(--muted);
+}
+
+.docs-next {
+	margin-left: auto;
+	text-align: right;
+	align-items: flex-end;
+}
+
+.docs-prev-next-label {
+	font-size: var(--text-xs);
+	color: var(--muted-foreground);
+}
+
+.docs-prev-next-title {
+	font-weight: 600;
+	font-size: var(--text-sm);
+}
+
 @media (max-width: 768px) {
 	.docs-shell {
 		flex-direction: column;
