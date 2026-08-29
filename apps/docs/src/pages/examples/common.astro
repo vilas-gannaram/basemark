@@ -5,9 +5,9 @@ import { renderContent } from '../../lib/render-content';
 import source from '../../../content/examples-common.md?raw';
 
 const registry = await buildRegistry();
-const html = renderContent(source, registry);
+const { html, toc } = renderContent(source, registry);
 ---
 
-<DocsLayout title="Common examples">
+<DocsLayout title="Common examples" toc={toc}>
 	<Fragment set:html={html} />
 </DocsLayout>

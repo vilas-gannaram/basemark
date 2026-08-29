@@ -1,5 +1,6 @@
 ---
 import type { TComponentDefinition } from '@basemark/core';
+import { slugify } from '../lib/slug';
 
 interface Props {
 	name: string;
@@ -11,7 +12,7 @@ const props = definition.schema ? Object.entries(definition.schema) : [];
 ---
 
 <section class="component-ref">
-	<h2>
+	<h2 id={slugify(definition.title)}>
 		{definition.title} <code>::{name}</code>
 	</h2>
 	<p>{definition.description}</p>

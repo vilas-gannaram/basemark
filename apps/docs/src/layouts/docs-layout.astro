@@ -1,12 +1,14 @@
 ---
 import '@basemark/core/theme.css';
 import '../styles/docs.css';
+import type { ITocItem } from '../lib/toc';
 
 interface Props {
 	title: string;
+	toc?: ITocItem[];
 }
 
-const { title } = Astro.props;
+const { title, toc = [] } = Astro.props;
 
 const NAV = [
 	{
@@ -111,8 +113,24 @@ const currentPath = (base && Astro.url.pathname.startsWith(base) ? Astro.url.pat
 				}
 			</nav>
 			<main class="docs-content">
-				<h1>{title}</h1>
-				<slot />
+				<article class="docs-article">
+					<h1>{title}</h1>
+					<slot />
+				</article>
+				{
+					toc.length > 0 && (
+						<aside class="docs-toc" aria-label="On this page">
+							<p class="docs-toc-label">On this page</p>
+							<ul>
+								{toc.map((item) => (
+									<li class={item.level === 3 ? 'docs-toc-sub' : undefined}>
+										<a href={`#${item.id}`}>{item.text}</a>
+									</li>
+								))}
+							</ul>
+						</aside>
+					)
+				}
 			</main>
 		</div>
 		<script is:inline>
