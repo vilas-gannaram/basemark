@@ -81,8 +81,6 @@ importers:
 
   configs/tsconfig-base: {}
 
-  configs/tsup-config: {}
-
   configs/vitest-config: {}
 
   examples/react:
@@ -168,9 +166,6 @@ importers:
       '@basemark/tsconfig-base':
         specifier: workspace:*
         version: link:../../configs/tsconfig-base
-      '@basemark/tsup-config':
-        specifier: workspace:*
-        version: link:../../configs/tsup-config
 
   packages/charts:
     dependencies:
@@ -184,9 +179,6 @@ importers:
       '@basemark/tsconfig-base':
         specifier: workspace:*
         version: link:../../configs/tsconfig-base
-      '@basemark/tsup-config':
-        specifier: workspace:*
-        version: link:../../configs/tsup-config
 
   packages/chem:
     dependencies:
@@ -233,9 +225,6 @@ importers:
       '@basemark/tsconfig-base':
         specifier: workspace:*
         version: link:../../configs/tsconfig-base
-      '@basemark/tsup-config':
-        specifier: workspace:*
-        version: link:../../configs/tsup-config
 
   packages/core:
     dependencies:
@@ -276,9 +265,6 @@ importers:
       '@basemark/tsconfig-base':
         specifier: workspace:*
         version: link:../../configs/tsconfig-base
-      '@basemark/tsup-config':
-        specifier: workspace:*
-        version: link:../../configs/tsup-config
       '@types/hast':
         specifier: ^3.0.5
         version: 3.0.5
@@ -301,9 +287,6 @@ importers:
       '@basemark/tsconfig-base':
         specifier: workspace:*
         version: link:../../configs/tsconfig-base
-      '@basemark/tsup-config':
-        specifier: workspace:*
-        version: link:../../configs/tsup-config
       '@types/hast':
         specifier: ^3.0.5
         version: 3.0.5

@@ -1,4 +1,13 @@
-import { baseTsupConfig } from '@basemark/tsup-config';
 import pkg from './package.json' with { type: 'json' };
 
-export default baseTsupConfig({ entry: ['src/index.ts'], external: Object.keys(pkg.dependencies ?? {}) });
+export default {
+	entry: ['src/index.ts'],
+	outDir: 'dist',
+	format: 'esm',
+	platform: 'browser',
+	external: Object.keys(pkg.dependencies ?? {}),
+	dts: true,
+	tsconfig: 'tsconfig.build.json',
+	clean: true,
+	sourcemap: true,
+};

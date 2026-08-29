@@ -25,7 +25,6 @@
 		"echarts": "^6.1.0"
 	},
 	"devDependencies": {
-		"@basemark/tsconfig-base": "workspace:*",
-		"@basemark/tsup-config": "workspace:*"
+		"@basemark/tsconfig-base": "workspace:*"
 	}
 }

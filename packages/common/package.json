@@ -24,7 +24,6 @@
 		"@basemark/core": "workspace:*"
 	},
 	"devDependencies": {
-		"@basemark/tsconfig-base": "workspace:*",
-		"@basemark/tsup-config": "workspace:*"
+		"@basemark/tsconfig-base": "workspace:*"
 	}
 }
