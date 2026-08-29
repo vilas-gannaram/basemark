@@ -1,4 +1,7 @@
 import type { ComponentRegistry } from '@basemark/core';
+// Type-only — igv's package.json "types" field resolves this to its real
+// dist/igv.d.ts; erased at compile time, no runtime cost or bundling effect.
+import type IgvDefault from 'igv';
 
 export const GENOME_BROWSER_TAG = 'basemark-genome-browser';
 const GENOME_BROWSER_HEIGHT_PX = 500;
@@ -29,9 +32,20 @@ const STYLES = `
 //
 // async — igv touches `document` at module scope (confirmed crash under
 // plain Node), so the import is deferred and awaited first.
+//
+// Explicit ESM path, not bare 'igv' — igv's package.json "browser" field
+// points at a UMD bundle with no static export syntax; a browser-platform
+// bundler resolves the bare specifier there and can't wire up a `default`
+// export, silently leaving it undefined. Same reasoning as structure.ts's
+// explicit `3dmol/build/3Dmol.es6.js` import. No .d.ts for this exact
+// subpath (typed via the bare-specifier `import type` above instead) — an
+// ambient `declare module` here crashes tsup's dts bundler on `export
+// default` inside a module block ("namespace child (hoisting) not
+// supported yet"), so suppress instead of declaring.
 export async function registerGenomeBrowser(registry: ComponentRegistry): Promise<void> {
 	if (typeof HTMLElement !== 'undefined' && typeof customElements !== 'undefined') {
-		const { default: igv } = await import('igv');
+		// @ts-expect-error -- see module comment above
+		const { default: igv }: { default: typeof IgvDefault } = await import('igv/dist/igv.esm.js');
 
 		class GenomeBrowserElement extends HTMLElement {
 			static get observedAttributes(): string[] {
