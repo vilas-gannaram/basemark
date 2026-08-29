@@ -1,5 +1,11 @@
 # @basemark/bio
 
+## 0.1.3
+
+### Patch Changes
+
+- Fix `dependencies`/`devDependencies` shipping the literal `workspace:*` protocol string instead of a real version. `@changesets/cli`'s publish command only rewrites workspace ranges for pnpm/yarn — anything else (npm, Bun included) falls through with zero rewriting, so `npm install @basemark/bio` (and anything else depending on `@basemark/core`) failed outright with `EUNSUPPORTEDPROTOCOL`. The root `release` script now resolves workspace ranges to real versions before publishing (`scripts/resolve-workspace-deps.ts`) and restores them after.
+
 ## 0.1.1
 
 ### Patch Changes

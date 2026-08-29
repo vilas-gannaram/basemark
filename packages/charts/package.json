@@ -1,6 +1,6 @@
 {
 	"name": "@basemark/charts",
-	"version": "0.1.1",
+	"version": "0.1.3",
 	"description": "Chart/plot components (ECharts) — a separate package per ARCHITECTURE.md §7's flag on heavy general-purpose dependencies",
 	"license": "MIT",
 	"repository": {

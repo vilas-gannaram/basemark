@@ -1,6 +1,6 @@
 {
 	"name": "@basemark/common",
-	"version": "0.1.1",
+	"version": "0.1.3",
 	"description": "Common domain components — tables, charts, maps, katex",
 	"license": "MIT",
 	"repository": {
